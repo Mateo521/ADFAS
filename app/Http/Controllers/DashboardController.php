@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Designacion;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Noticia;
 class DashboardController extends Controller
 {
      
@@ -14,6 +14,8 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+
+        
         
         if ($user->rol === 'admin') {
             return Inertia::render('Dashboard', [
@@ -42,13 +44,18 @@ class DashboardController extends Controller
             ->count();
         $totalDesignaciones = Designacion::where('user_id', $user->id)->count();
 
+  
+        $ultimasNoticias = Noticia::latest()->take(3)->get();
+
         return Inertia::render('Dashboard', [
             'esAdmin' => false,
             'proximaDesignacion' => $proximaDesignacion,
             'stats' => [
                 'confirmados' => $partidosConfirmados,
                 'total' => $totalDesignaciones
-            ]
+            ],
+         
+            'noticias' => $ultimasNoticias 
         ]);
     }
 

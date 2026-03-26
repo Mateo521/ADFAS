@@ -2,70 +2,194 @@
 import { ref } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 
- 
 const user = usePage().props.auth.user;
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 text-gray-900 font-sans">
-        
-        <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center shadow">
-                        <span class="text-white text-2xl font-bold leading-none">A</span>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-black text-gray-800 tracking-wider leading-none">ADFAS</p>
-                        <p class="text-sm text-gray-500 font-medium">Asociación Arbitral</p>
-                    </div>
-                </div>
+    <div class="min-h-screen bg-[#F7F5F0] text-gray-900">
 
-                <div class="hidden md:flex items-center gap-2">
-                    <Link :href="route('dashboard')" 
-                          class="px-5 py-3 rounded-lg font-bold text-lg transition-colors"
-                          :class="route().current('dashboard') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'">
+        <!-- Google Fonts — idealmente mover a app.blade.php -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+
+        <!-- ══════════ NAVBAR ══════════ -->
+        <nav class="bg-[#0D1B3E] sticky top-0 z-50 border-b-2 border-[#D4A843]/25 shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
+
+            <!-- Franja dorada decorativa superior -->
+            <div class="h-[3px] bg-gradient-to-r from-transparent via-[#D4A843] to-transparent opacity-60"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-6">
+
+                <!-- ── Logo + Marca ── -->
+                <Link :href="route('dashboard')"
+                      class="flex items-center gap-3 shrink-0 group hover:opacity-90 transition-opacity">
+                    <div class="w-11 h-11 rounded-full border-2 border-[#D4A843]/50 p-[3px] bg-[#D4A843]/10 overflow-hidden shrink-0 shadow-[0_0_0_4px_rgba(212,168,67,0.08)]">
+                        <img src="/images/logo-adfas.jpeg" alt="Logo ADFAS San Luis"
+                             class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <div class="hidden lg:block">
+                        <p class="text-white font-black text-base leading-none tracking-[0.2em] uppercase">ADFAS</p>
+                        <p class="text-[#D4A843] text-[9px] font-bold uppercase tracking-[0.18em] mt-0.5 opacity-80">
+                            Asociación Arbitral San Luis
+                        </p>
+                    </div>
+                </Link>
+
+                <!-- ── Links de navegación (desktop) ── -->
+                <div class="hidden md:flex items-center gap-0.5 flex-1 justify-center">
+
+                    <Link :href="route('dashboard')"
+                          class="relative px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                          :class="route().current('dashboard')
+                              ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
+                              : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
                         Inicio
                     </Link>
-                    <button class="px-5 py-3 rounded-lg font-bold text-lg text-gray-600 hover:bg-gray-100 transition-colors">Designaciones</button>
-                    <button class="px-5 py-3 rounded-lg font-bold text-lg text-gray-600 hover:bg-gray-100 transition-colors">Árbitros</button>
-                    
-                    <Link v-if="user.rol === 'admin'" :href="route('admin.importar.index')" 
-                          class="px-5 py-3 rounded-lg font-bold text-lg transition-colors"
-                          :class="route().current('admin.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'">
-                        Admin
-                    </Link>
 
-                    <Link :href="route('noticias.index')" 
-                          class="px-5 py-3 rounded-lg font-bold text-lg transition-colors"
-                          :class="route().current('noticias.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'">
+                    <template v-if="user.rol === 'admin'">
+                        <div class="w-px h-4 bg-white/15 mx-1"></div>
+
+                        <Link :href="route('admin.importar.index')"
+                              class="px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                              :class="route().current('admin.importar.*')
+                                  ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
+                                  : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
+                            Importar Excel
+                        </Link>
+
+                        <Link :href="route('admin.historial.index')"
+                              class="px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                              :class="route().current('admin.historial.*')
+                                  ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
+                                  : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
+                            Gestión y Monitoreo
+                        </Link>
+                    </template>
+
+                    <div class="w-px h-4 bg-white/15 mx-1"></div>
+
+                    <Link :href="route('noticias.index')"
+                          class="px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                          :class="route().current('noticias.*')
+                              ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
+                              : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
                         Noticias
                     </Link>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-3 border-l pl-4 border-gray-200">
-                        <div class="hidden sm:block text-right">
-                            <p class="text-base font-bold text-gray-800 leading-none">{{ user.name }} {{ user.apellido }}</p>
-                            <p class="text-sm text-blue-600 font-semibold uppercase mt-1">{{ user.rol }}</p>
+                <!-- ── Usuario + Logout (desktop) ── -->
+                <div class="hidden md:flex items-center gap-3 shrink-0">
+
+                    <div class="flex items-center gap-3 pl-4 border-l border-white/15">
+                        <!-- Info textual -->
+                        <div class="text-right">
+                            <p class="text-white text-sm font-black leading-none tracking-wide">
+                                {{ user.name }} {{ user.apellido }}
+                            </p>
+                            <p class="text-[#D4A843] text-[9px] font-bold uppercase tracking-[0.15em] mt-0.5 opacity-80">
+                                {{ user.rol }}
+                            </p>
                         </div>
-                        <div class="w-12 h-12 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center text-blue-700 font-bold text-lg overflow-hidden">
-                            <img v-if="user.foto_perfil" :src="`/storage/${user.foto_perfil}`" class="w-full h-full object-cover">
+                        <!-- Avatar -->
+                        <div class="w-10 h-10 rounded-full border-2 border-[#D4A843]/50 overflow-hidden bg-[#162554] flex items-center justify-center text-[#D4A843] font-black text-sm shrink-0 shadow-[0_0_0_3px_rgba(212,168,67,0.1)]">
+                            <img v-if="user.foto_perfil"
+                                 :src="`/storage/${user.foto_perfil}`"
+                                 class="w-full h-full object-cover">
                             <span v-else>{{ user.name.charAt(0) }}{{ user.apellido.charAt(0) }}</span>
                         </div>
                     </div>
 
+                    <!-- Logout -->
                     <Link :href="route('logout')" method="post" as="button"
-                          class="ml-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg text-sm font-bold uppercase tracking-wider hover:bg-red-100 hover:text-red-700 transition-colors shadow-sm cursor-pointer">
+                          class="ml-1 px-3 py-2 bg-red-950/60 text-red-300 border border-red-500/25 rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-red-900/70 hover:text-red-200 hover:border-red-400/40 transition-all cursor-pointer">
                         Salir
                     </Link>
                 </div>
+
+                <!-- ── Hamburger (mobile) ── -->
+                <button @click="showingNavigationDropdown = !showingNavigationDropdown"
+                        class="md:hidden text-white/70 hover:text-[#D4A843] p-2 rounded-lg bg-white/[0.07] hover:bg-white/10 transition-all border border-white/10">
+                    <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path :class="{'hidden': showingNavigationDropdown, 'inline-flex': !showingNavigationDropdown}"
+                              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': !showingNavigationDropdown, 'inline-flex': showingNavigationDropdown}"
+                              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- ══════════ MENÚ MÓVIL ══════════ -->
+        <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}"
+             class="md:hidden bg-[#060E20] border-b-2 border-[#D4A843]/20 absolute w-full z-40 shadow-2xl">
+
+            <!-- Links -->
+            <div class="px-4 py-3 space-y-0.5">
+                <Link :href="route('dashboard')"
+                      class="flex items-center gap-3 px-4 py-3 rounded-lg text-[11px] font-black uppercase tracking-[0.15em] transition-colors"
+                      :class="route().current('dashboard')
+                          ? 'bg-[#D4A843]/12 text-[#D4A843]'
+                          : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                    <span class="w-1 h-3 rounded-full" :class="route().current('dashboard') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                    Inicio
+                </Link>
+
+                <template v-if="user.rol === 'admin'">
+                    <Link :href="route('admin.importar.index')"
+                          class="flex items-center gap-3 px-4 py-3 rounded-lg text-[11px] font-black uppercase tracking-[0.15em] transition-colors"
+                          :class="route().current('admin.importar.*')
+                              ? 'bg-[#D4A843]/12 text-[#D4A843]'
+                              : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                        <span class="w-1 h-3 rounded-full" :class="route().current('admin.importar.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                        Importar Excel
+                    </Link>
+                    <Link :href="route('admin.historial.index')"
+                          class="flex items-center gap-3 px-4 py-3 rounded-lg text-[11px] font-black uppercase tracking-[0.15em] transition-colors"
+                          :class="route().current('admin.historial.*')
+                              ? 'bg-[#D4A843]/12 text-[#D4A843]'
+                              : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                        <span class="w-1 h-3 rounded-full" :class="route().current('admin.historial.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                        Gestión y Monitoreo
+                    </Link>
+                </template>
+
+                <Link :href="route('noticias.index')"
+                      class="flex items-center gap-3 px-4 py-3 rounded-lg text-[11px] font-black uppercase tracking-[0.15em] transition-colors"
+                      :class="route().current('noticias.*')
+                          ? 'bg-[#D4A843]/12 text-[#D4A843]'
+                          : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                    <span class="w-1 h-3 rounded-full" :class="route().current('noticias.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                    Tablón de Noticias
+                </Link>
+            </div>
+
+            <!-- Perfil móvil -->
+            <div class="px-4 py-5 border-t border-white/10 bg-[#030810]">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full border-2 border-[#D4A843]/50 overflow-hidden bg-[#162554] flex items-center justify-center text-[#D4A843] font-black text-base shrink-0">
+                        <img v-if="user.foto_perfil"
+                             :src="`/storage/${user.foto_perfil}`"
+                             class="w-full h-full object-cover">
+                        <span v-else>{{ user.name.charAt(0) }}{{ user.apellido.charAt(0) }}</span>
+                    </div>
+                    <div>
+                        <p class="text-white font-black text-base leading-none">{{ user.name }} {{ user.apellido }}</p>
+                        <p class="text-[#D4A843] text-[10px] font-bold uppercase tracking-widest mt-1 opacity-80">{{ user.rol }}</p>
+                    </div>
+                </div>
+                <Link :href="route('logout')" method="post" as="button"
+                      class="w-full text-center px-4 py-3 bg-red-950/60 text-red-300 border border-red-500/25 rounded-lg text-[11px] font-black uppercase tracking-widest cursor-pointer hover:bg-red-900/70 transition-colors">
+                    Cerrar Sesión
+                </Link>
+            </div>
+        </div>
+
+        <!-- ══════════ CONTENIDO PRINCIPAL ══════════ -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <slot />
         </main>
 

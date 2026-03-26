@@ -6,14 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ImportController;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\AsignacionController;
 use App\Http\Controllers\NoticiaController;
+use App\Http\Controllers\DesignacionController;
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -34,17 +31,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/importar-partidos', [ImportController::class, 'index'])->name('admin.importar.index');
     Route::post('/admin/importar-partidos', [ImportController::class, 'upload'])->name('admin.importar.upload');
 
- 
+
     Route::get('/noticias', [NoticiaController::class, 'index'])->name('noticias.index');
-    
-  
+
+
     Route::get('/noticias/crear', [NoticiaController::class, 'create'])->name('noticias.create');
-    
-     
+
+
     Route::post('/noticias', [NoticiaController::class, 'store'])->name('noticias.store');
-    
- 
+
+
     Route::get('/noticias/{noticia}', [NoticiaController::class, 'show'])->name('noticias.show');
+
+
+    Route::get('/admin/asignar-arbitros', [AsignacionController::class, 'index'])->name('admin.asignar.index');
+    Route::post('/admin/asignar-arbitros', [AsignacionController::class, 'store'])->name('admin.asignar.store');
+
+    Route::patch('/designaciones/{designacion}/responder', [DesignacionController::class, 'responder'])->name('designaciones.responder');
+
+    Route::get('/admin/historial-asignaciones', [AsignacionController::class, 'historial'])->name('admin.historial.index');
+    
+    
+    Route::post('/admin/historial-asignaciones/{partido}/reasignar', [AsignacionController::class, 'updateReasignacion'])->name('admin.historial.reasignar');
 
 });
 

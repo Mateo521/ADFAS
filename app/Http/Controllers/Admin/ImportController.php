@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use App\Models\Partido;
-use App\Models\Designacion;
-use App\Models\User;
 
 class ImportController extends Controller
 {
@@ -17,67 +15,95 @@ class ImportController extends Controller
         return Inertia::render('Admin/ImportarPartidos');
     }
 
-    public function upload(Request $request)
+  public function upload(Request $request)
     {
         $request->validate([
             'documento' => 'required|mimes:xlsx,csv|max:5120', 
+            'fecha_base' => 'required|date'
         ]);
 
         $file = $request->file('documento');
-        $filas = SimpleExcelReader::create($file->getRealPath())->getRows();
+        $fechaBase = $request->fecha_base; 
+        $extension = $file->getClientOriginalExtension();
+
+        $reader = \Spatie\SimpleExcel\SimpleExcelReader::create($file->getRealPath(), $extension)->noHeaderRow();
+        $filasCrudas = $reader->getRows();
 
         $partidosGuardados = 0;
+        $titulosEncontrados = false;
+        $indices = []; 
 
-        $filas->each(function(array $fila) use (&$partidosGuardados) {
-            if (empty($fila['Local']) || empty($fila['Visitante'])) {
-                return;
+        $filasCrudas->each(function(array $fila) use (&$partidosGuardados, $fechaBase, &$titulosEncontrados, &$indices) {
+            
+            // LA CORRECCIÓN: Manejamos las fechas antes de convertirlas a string
+            $filaTexto = array_map(function($item) {
+                if ($item instanceof \DateTimeInterface) {
+                    $item = $item->format('H:i:s'); // Si es tiempo, lo pasamos a texto primero
+                }
+                return strtoupper(trim((string)$item));
+            }, $fila);
+
+            if (!$titulosEncontrados && in_array('LOCAL', $filaTexto) && in_array('VISITANTE', $filaTexto)) {
+                $titulosEncontrados = true;
+                $indices['cat'] = array_search('CAT.', $filaTexto) !== false ? array_search('CAT.', $filaTexto) : array_search('CATEGORIA', $filaTexto);
+                $indices['local'] = array_search('LOCAL', $filaTexto);
+                $indices['visitante'] = array_search('VISITANTE', $filaTexto);
+                $indices['cancha'] = array_search('CANCHA', $filaTexto);
+                $indices['hora'] = array_search('HORA', $filaTexto);
+                return; 
             }
 
-         
-            $partido = Partido::create([
-                'categoria' => $fila['Categoria'] ?? 'Sin definir',
-                'equipo_local' => $fila['Local'] ?? '',
-                'equipo_visitante' => $fila['Visitante'] ?? '',
-                'cancha' => $fila['Cancha'] ?? '',
-                'fecha' => $fila['Fecha'] ?? '2026-03-29',  
-                'hora_inicio' => $fila['Hora'] ?? '00:00:00',
-                'estado' => 'publicado'
-            ]);
+            if ($titulosEncontrados) {
+                if (empty($fila[$indices['local']]) || empty($fila[$indices['visitante']]) || $fila[$indices['local']] === 'LOCAL' || $fila[$indices['local']] === 'LIGA SANLUISEÑA DE FÚTBOL') {
+                    return;
+                }
 
-      
-            if (!empty($fila['Arbitro_Principal'])) {
-                $this->asignarArbitro($partido->id, $fila['Arbitro_Principal'], 'ARBITRO PRINCIPAL');
+                $horaExacta = '00:00:00';
+                if (isset($indices['hora']) && !empty($fila[$indices['hora']])) {
+                    $horaCelda = $fila[$indices['hora']];
+                    if ($horaCelda instanceof \DateTimeInterface) {
+                        $horaExacta = $horaCelda->format('H:i:s');
+                    } else {
+                        $horaExacta = (string) $horaCelda;
+                    }
+                }
+
+                \App\Models\Partido::create([
+                    'categoria' => isset($indices['cat']) ? (string)$fila[$indices['cat']] : 'Sin definir',
+                    'equipo_local' => (string)$fila[$indices['local']],
+                    'equipo_visitante' => (string)$fila[$indices['visitante']],
+                    'cancha' => isset($indices['cancha']) ? (string)$fila[$indices['cancha']] : 'A Confirmar',
+                    'fecha' => $fechaBase,
+                    'hora_inicio' => $horaExacta,
+                    'estado' => 'publicado' // <-- Volvemos al estado original aceptado
+                ]);
+
+                $partidosGuardados++;
             }
-
-            if (!empty($fila['Asistente_1'])) {
-                $this->asignarArbitro($partido->id, $fila['Asistente_1'], 'ASISTENTE 1');
-            }
-
-            $partidosGuardados++;
         });
 
-        return redirect()->route('admin.importar.index')->with('success', "¡Planilla procesada! Se crearon $partidosGuardados partidos y se enviaron las designaciones.");
+        return redirect()->route('admin.asignar.index')
+            ->with('success', "¡Planilla procesada! Se importaron $partidosGuardados partidos a la Pizarra.");
     }
-
  
-    private function asignarArbitro($partidoId, $nombreExcel, $funcion)
+    private function intentarAsignar($partidoId, $nombreExcel, $funcion)
     {
-  
+        if (empty($nombreExcel)) return;
+
+        
         $partes = explode(' ', trim($nombreExcel));
         $apellidoExcel = $partes[0];
 
-     
-        $arbitro = User::where('rol', 'arbitro')
+        $arbitro = \App\Models\User::where('rol', 'arbitro')
             ->where('apellido', 'LIKE', '%' . $apellidoExcel . '%')
             ->first();
 
-       
         if ($arbitro) {
-            Designacion::create([
+            \App\Models\Designacion::create([
                 'partido_id' => $partidoId,
                 'user_id' => $arbitro->id,
                 'funcion' => $funcion,
-                'estado_confirmacion' => 'pendiente'
+                'estado_confirmacion' => 'borrador'  
             ]);
         }
     }

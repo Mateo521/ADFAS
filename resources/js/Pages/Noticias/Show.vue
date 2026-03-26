@@ -5,61 +5,107 @@ import { Head, Link } from '@inertiajs/vue3';
 defineProps({
     noticia: Object
 });
+
+// Lógica de colores institucionales para la etiqueta
+const colorTipo = (tipo) => {
+    if (tipo === 'Urgente') return 'bg-red-50 text-red-700 border-red-200';
+    if (tipo === 'Citación') return 'bg-[#D4A843]/10 text-[#A87C20] border-[#D4A843]/30';
+    return 'bg-[#0D1B3E]/5 text-[#0D1B3E] border-[#0D1B3E]/20';
+};
 </script>
 
 <template>
     <Head :title="noticia.titulo + ' - ADFAS'" />
 
     <AuthenticatedLayout>
-        <div class="max-w-4xl mx-auto">
+        
+        <div class="max-w-7xl mx-auto pb-12 font-['Lato',sans-serif]">
             
-            <Link :href="route('noticias.index')" class="inline-flex items-center gap-2 text-blue-600 font-bold text-lg hover:underline mb-6">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/></svg>
-                Volver al Tablón
-            </Link>
+            <div class="mb-6">
+                <Link :href="route('noticias.index')" class="inline-flex items-center gap-2 text-[12px] font-bold text-[#6B7280] hover:text-[#D4A843] uppercase tracking-widest transition-colors group">
+                    <div class="p-1.5 rounded-full bg-white border border-[#E5E7EB] group-hover:border-[#D4A843] transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                    </div>
+                    Volver al Tablón
+                </Link>
+            </div>
 
-            <div class="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+            <article class="bg-white border border-[#E5E7EB] rounded overflow-hidden shadow-[0_8px_30px_rgba(13,27,62,0.04)]">
                 
-                <div v-if="noticia.imagen_ruta" class="w-full h-64 md:h-96 bg-gray-100 border-b-2 border-gray-200">
+                <div v-if="noticia.imagen_ruta" class="w-full h-[300px] md:h-[450px] relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
                     <img :src="`/storage/${noticia.imagen_ruta}`" class="w-full h-full object-cover">
                 </div>
 
-                <div class="p-6 md:p-10">
-                    <div class="flex items-center justify-between border-b-2 border-gray-100 pb-6 mb-6">
+                <div v-else class="w-full h-32 bg-[#0D1B3E] relative overflow-hidden flex items-center justify-center border-b border-[#D4A843]/30">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23D4A843\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+                    <div class="absolute top-0 right-0 bottom-0 w-32 bg-gradient-to-l from-[#D4A843]/10 to-transparent"></div>
+                </div>
+
+                <div class="p-8 md:p-14">
+                    
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-6 mb-8">
                         <div>
-                            <span class="px-4 py-1.5 bg-gray-100 text-gray-700 text-sm font-black rounded-md uppercase tracking-wider border border-gray-300">
+                            <span :class="colorTipo(noticia.tipo)" class="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-[0.15em] border rounded mb-3">
                                 {{ noticia.tipo }}
                             </span>
-                            <p class="text-gray-500 font-bold mt-3">
-                                Publicado por: <span class="text-gray-800">{{ noticia.autor.name }} {{ noticia.autor.apellido }}</span>
-                            </p>
+                            <div class="flex items-center gap-2 text-[13px] font-semibold text-[#6B7280]">
+                                <svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                Emitido por: <span class="text-[#0D1B3E] font-black uppercase tracking-wider">{{ noticia.autor.name }} {{ noticia.autor.apellido }}</span>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <p class="text-xl font-black text-blue-600">{{ new Date(noticia.created_at).toLocaleDateString('es-ES') }}</p>
+                        <div class="text-left md:text-right">
+                            <p class="text-[12px] font-bold text-[#9CA3AF] uppercase tracking-widest mb-1">Fecha de Publicación</p>
+                            <p class="text-[16px] font-black text-[#0D1B3E]">{{ new Date(noticia.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() }}</p>
                         </div>
                     </div>
 
-                    <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-8 leading-tight">
+                    <h1 class="font-['Playfair_Display',serif] text-[36px] md:text-[48px] font-extrabold text-[#0D1B3E] leading-[1.15] mb-6">
                         {{ noticia.titulo }}
                     </h1>
+                    <div class="flex items-center gap-3 mb-10">
+                        <span class="w-16 h-[2px] bg-[#D4A843]"></span>
+                        <span class="w-2 h-2 bg-[#D4A843] rotate-45"></span>
+                        <span class="flex-1 h-px bg-gradient-to-r from-[#D4A843]/50 to-transparent"></span>
+                    </div>
 
-                    <div class="text-xl text-gray-700 font-medium leading-relaxed whitespace-pre-wrap mb-10">
+                    <div class="text-[16px] md:text-[18px] text-[#374151] font-medium leading-[1.8] whitespace-pre-wrap mb-14 text-justify">
                         {{ noticia.contenido }}
                     </div>
 
-                    <div v-if="noticia.archivo_ruta" class="bg-purple-50 border-2 border-purple-200 rounded-xl p-8 text-center">
-                        <h3 class="text-2xl font-black text-purple-900 mb-2">Material Adjunto</h3>
-                        <p class="text-lg text-purple-700 font-medium mb-6">Descarga el documento relacionado a este comunicado.</p>
+                    <div v-if="noticia.archivo_ruta" class="bg-[#0D1B3E] rounded p-8 md:p-10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-[#D4A843]/30 shadow-lg">
                         
-                        <a :href="`/storage/${noticia.archivo_ruta}`" target="_blank" download
-                           class="inline-flex items-center justify-center gap-3 w-full md:w-auto px-10 py-5 bg-purple-600 text-white text-xl font-black uppercase tracking-wider rounded-xl hover:bg-purple-700 transition-colors shadow-md">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            Descargar Archivo
-                        </a>
+                        <div class="absolute -top-24 -right-24 w-48 h-48 bg-[#D4A843]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <div class="relative z-10 flex-1 text-center md:text-left">
+                            <div class="flex items-center justify-center md:justify-start gap-2 mb-2">
+                                <svg class="w-5 h-5 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <h3 class="text-[14px] font-black text-[#D4A843] uppercase tracking-[0.2em]">Material Adjunto</h3>
+                            </div>
+                            <p class="text-[15px] text-white/80 font-medium leading-relaxed">
+                                Este comunicado incluye un documento oficial. Por favor, descárgalo para acceder a la información completa.
+                            </p>
+                        </div>
+                        
+                        <div class="relative z-10 w-full md:w-auto shrink-0">
+                            <a :href="`/storage/${noticia.archivo_ruta}`" target="_blank" download
+                               class="group relative overflow-hidden flex items-center justify-center gap-3 w-full px-8 py-4 bg-gradient-to-r from-[#C9920E] via-[#D4A843] to-[#C9920E] bg-[length:200%_100%] text-[#0D1B3E] text-[13px] font-black uppercase tracking-[2px] rounded-lg transition-all duration-300 shadow-[0_2px_12px_rgba(212,168,67,0.25)] hover:bg-[100%_0] hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(168,124,32,0.35)]">
+                                <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <span class="relative z-10 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    Descargar Archivo
+                                </span>
+                            </a>
+                        </div>
                     </div>
 
                 </div>
+            </article>
+
+            <div class="mt-8 text-center">
+                <p class="text-[12px] font-bold text-[#9CA3AF] uppercase tracking-widest">Fin del Comunicado</p>
             </div>
+
         </div>
     </AuthenticatedLayout>
 </template>
