@@ -34,11 +34,10 @@ class ImportController extends Controller
         $indices = []; 
 
         $filasCrudas->each(function(array $fila) use (&$partidosGuardados, $fechaBase, &$titulosEncontrados, &$indices) {
-            
-            // LA CORRECCIÓN: Manejamos las fechas antes de convertirlas a string
+           
             $filaTexto = array_map(function($item) {
                 if ($item instanceof \DateTimeInterface) {
-                    $item = $item->format('H:i:s'); // Si es tiempo, lo pasamos a texto primero
+                    $item = $item->format('H:i:s');  
                 }
                 return strtoupper(trim((string)$item));
             }, $fila);
@@ -75,7 +74,7 @@ class ImportController extends Controller
                     'cancha' => isset($indices['cancha']) ? (string)$fila[$indices['cancha']] : 'A Confirmar',
                     'fecha' => $fechaBase,
                     'hora_inicio' => $horaExacta,
-                    'estado' => 'publicado' // <-- Volvemos al estado original aceptado
+                    'estado' => 'publicado'  
                 ]);
 
                 $partidosGuardados++;

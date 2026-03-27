@@ -9,20 +9,17 @@ const showingNavigationDropdown = ref(false);
 <template>
     <div class="min-h-screen bg-[#F7F5F0] text-gray-900">
 
-        <!-- Google Fonts — idealmente mover a app.blade.php -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+     
 
-        <!-- ══════════ NAVBAR ══════════ -->
+        
         <nav class="bg-[#0D1B3E] sticky top-0 z-50 border-b-2 border-[#D4A843]/25 shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
 
-            <!-- Franja dorada decorativa superior -->
+        
             <div class="h-[3px] bg-gradient-to-r from-transparent via-[#D4A843] to-transparent opacity-60"></div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-6">
 
-                <!-- ── Logo + Marca ── -->
+              
                 <Link :href="route('dashboard')"
                       class="flex items-center gap-3 shrink-0 group hover:opacity-90 transition-opacity">
                     <div class="w-11 h-11 rounded-full border-2 border-[#D4A843]/50 p-[3px] bg-[#D4A843]/10 overflow-hidden shrink-0 shadow-[0_0_0_4px_rgba(212,168,67,0.08)]">
@@ -37,7 +34,7 @@ const showingNavigationDropdown = ref(false);
                     </div>
                 </Link>
 
-                <!-- ── Links de navegación (desktop) ── -->
+      
                 <div class="hidden md:flex items-center gap-0.5 flex-1 justify-center">
 
                     <Link :href="route('dashboard')"
@@ -79,11 +76,11 @@ const showingNavigationDropdown = ref(false);
                     </Link>
                 </div>
 
-                <!-- ── Usuario + Logout (desktop) ── -->
+             
                 <div class="hidden md:flex items-center gap-3 shrink-0">
 
                     <div class="flex items-center gap-3 pl-4 border-l border-white/15">
-                        <!-- Info textual -->
+                       
                         <div class="text-right">
                             <p class="text-white text-sm font-black leading-none tracking-wide">
                                 {{ user.name }} {{ user.apellido }}
@@ -92,7 +89,7 @@ const showingNavigationDropdown = ref(false);
                                 {{ user.rol }}
                             </p>
                         </div>
-                        <!-- Avatar -->
+                     
                         <div class="w-10 h-10 rounded-full border-2 border-[#D4A843]/50 overflow-hidden bg-[#162554] flex items-center justify-center text-[#D4A843] font-black text-sm shrink-0 shadow-[0_0_0_3px_rgba(212,168,67,0.1)]">
                             <img v-if="user.foto_perfil"
                                  :src="`/storage/${user.foto_perfil}`"
@@ -101,14 +98,14 @@ const showingNavigationDropdown = ref(false);
                         </div>
                     </div>
 
-                    <!-- Logout -->
+                  
                     <Link :href="route('logout')" method="post" as="button"
                           class="ml-1 px-3 py-2 bg-red-950/60 text-red-300 border border-red-500/25 rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-red-900/70 hover:text-red-200 hover:border-red-400/40 transition-all cursor-pointer">
                         Salir
                     </Link>
                 </div>
 
-                <!-- ── Hamburger (mobile) ── -->
+             
                 <button @click="showingNavigationDropdown = !showingNavigationDropdown"
                         class="md:hidden text-white/70 hover:text-[#D4A843] p-2 rounded-lg bg-white/[0.07] hover:bg-white/10 transition-all border border-white/10">
                     <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -123,7 +120,7 @@ const showingNavigationDropdown = ref(false);
             </div>
         </nav>
 
-        <!-- ══════════ MENÚ MÓVIL ══════════ -->
+      
         <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}"
              class="md:hidden bg-[#060E20] border-b-2 border-[#D4A843]/20 absolute w-full z-40 shadow-2xl">
 
@@ -167,7 +164,7 @@ const showingNavigationDropdown = ref(false);
                 </Link>
             </div>
 
-            <!-- Perfil móvil -->
+         
             <div class="px-4 py-5 border-t border-white/10 bg-[#030810]">
                 <div class="flex items-center gap-4 mb-4">
                     <div class="w-12 h-12 rounded-full border-2 border-[#D4A843]/50 overflow-hidden bg-[#162554] flex items-center justify-center text-[#D4A843] font-black text-base shrink-0">
@@ -188,7 +185,7 @@ const showingNavigationDropdown = ref(false);
             </div>
         </div>
 
-        <!-- ══════════ CONTENIDO PRINCIPAL ══════════ -->
+        
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <slot />
         </main>

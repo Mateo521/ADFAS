@@ -107,7 +107,7 @@ class AsignacionController extends Controller
         ]);
     }
 
-    // NUEVO MÉTODO: Guarda la reasignación
+   
     public function updateReasignacion(Request $request, Partido $partido)
     {
         $request->validate([
@@ -115,10 +115,10 @@ class AsignacionController extends Controller
             'asistente_id' => 'nullable|exists:users,id'
         ]);
 
-        // 1. Borramos las designaciones viejas de este partido
+        
         $partido->designaciones()->delete();
 
-        // 2. Creamos la nueva para el Principal (vuelve a estar PENDIENTE)
+       
         \App\Models\Designacion::create([
             'partido_id' => $partido->id,
             'user_id' => $request->principal_id,
@@ -126,7 +126,7 @@ class AsignacionController extends Controller
             'estado_confirmacion' => 'pendiente' 
         ]);
 
-        // 3. Creamos la nueva para el Asistente (si se eligió uno)
+      
         if ($request->asistente_id) {
             \App\Models\Designacion::create([
                 'partido_id' => $partido->id,
@@ -136,6 +136,6 @@ class AsignacionController extends Controller
             ]);
         }
 
-        return back(); // Volvemos a la pantalla silenciosamente
+        return back();  
     }
 }

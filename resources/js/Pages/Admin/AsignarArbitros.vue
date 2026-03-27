@@ -20,7 +20,7 @@ const Toast = Swal.mixin({
     toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true
 });
 
-// ¡LA MAGIA ANTI-TOPES DE HORARIO!
+ 
 const arbitrosDisponibles = (indexPartidoActual) => {
     const partidoActual = props.partidos[indexPartidoActual];
     

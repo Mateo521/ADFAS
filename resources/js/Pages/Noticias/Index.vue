@@ -6,7 +6,7 @@ defineProps({
     noticias: Array
 });
 
-// Colores refinados y elegantes para las etiquetas institucionales
+ 
 const colorTipo = (tipo) => {
     if (tipo === 'Urgente') return 'bg-red-50 text-red-700 border-red-200';
     if (tipo === 'Citación') return 'bg-[#D4A843]/10 text-[#A87C20] border-[#D4A843]/30';

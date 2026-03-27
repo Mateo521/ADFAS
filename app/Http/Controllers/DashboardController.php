@@ -71,7 +71,7 @@ class DashboardController extends Controller
             'estado' => 'required|in:confirmado,rechazado'
         ]);
 
-        // Actualizamos la base de datos
+     
         $designacion->update([
             'estado_confirmacion' => $request->estado
         ]);

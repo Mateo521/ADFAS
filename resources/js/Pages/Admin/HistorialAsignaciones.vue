@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 
 const props = defineProps({
     partidos: Object,
-    arbitros: Array, // <-- Recibimos la lista de árbitros
+    arbitros: Array,  
     filtros: Object
 });
 
@@ -16,9 +16,7 @@ const filtroEquipo = ref(props.filtros.equipo || '');
 
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
 
-// ==========================================
-// LÓGICA DEL MODAL DE REASIGNACIÓN
-// ==========================================
+ 
 const modalAbierto = ref(false);
 const partidoSeleccionado = ref(null);
 
@@ -31,8 +29,7 @@ const abrirModalReasignar = (partido) => {
     partidoSeleccionado.value = partido;
     const principal = getPrincipal(partido);
     const asistente = getAsistente(partido);
-    
-    // Precargamos a los árbitros actuales
+ 
     formReasignar.principal_id = principal ? principal.user_id : '';
     formReasignar.asistente_id = asistente ? asistente.user_id : '';
     
@@ -44,14 +41,12 @@ const cerrarModal = () => {
     partidoSeleccionado.value = null;
     formReasignar.reset();
 };
-
-// Filtro Inteligente para el Modal (Evita Topes de Horario)
+ 
 const arbitrosDisponibles = computed(() => {
     if (!partidoSeleccionado.value) return props.arbitros;
     
     const pActual = partidoSeleccionado.value;
-    
-    // Buscamos quiénes están ocupados a esa MISMA hora en OTROS partidos
+     
     const ocupados = props.partidos.data.map(p => {
         if (p.id !== pActual.id && p.fecha === pActual.fecha && p.hora_inicio === pActual.hora_inicio) {
             return p.designaciones.map(d => d.user_id);
@@ -71,10 +66,7 @@ const confirmarReasignacion = () => {
         }
     });
 };
-
-// ==========================================
-// RADAR EN TIEMPO REAL (POLLING CON MEMORIA Y ALERTAS PERSISTENTES)
-// ==========================================
+ 
 let intervalId = null;
 
 const obtenerEstadosEnPantalla = () => {
@@ -109,7 +101,7 @@ onMounted(() => {
                                 const nombrePartido = `${partido.equipo_local} VS ${partido.equipo_visitante}`;
                                 const horaPartido = partido.hora_inicio.substring(0,5);
 
-                                // Configuramos la alerta dependiendo de si aceptó o rechazó
+                               
                                 if (estadoNuevo === 'confirmado' || estadoNuevo === 'rechazado') {
                                     
                                     const esConfirmado = estadoNuevo === 'confirmado';
@@ -149,9 +141,7 @@ onMounted(() => {
 
 onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
 
-// ==========================================
-// UTILIDADES DE LA TABLA
-// ==========================================
+ 
 const aplicarFiltros = () => {
     router.get(route('admin.historial.index'), { fecha: filtroFecha.value, categoria: filtroCategoria.value, equipo: filtroEquipo.value }, { preserveState: true, replace: true });
 };
