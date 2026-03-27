@@ -35,14 +35,14 @@ const submit = () => {
     <AuthenticatedLayout>
         
         <div class="mb-8">
-            <h1 class="font-['Playfair_Display',serif] text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
+            <h1 class="font-['Playfair_Display',serif]- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
                 Importar Planilla
             </h1>
             <div class="flex items-center gap-2.5 mb-2">
                 <span class="w-12 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>
                 <span class="w-1 h-1 bg-[#D4A843] rotate-45 shrink-0"></span>
             </div>
-            <p class="text-[11px] text-[#6B7280] font-black uppercase tracking-[0.2em]">Módulo de Administración</p>
+            <p class="text-base text-[#6B7280] font-black uppercase ">Módulo de Administración</p>
         </div>
 
         <div class="grid lg:grid-cols-3 gap-6 items-start font-['Lato',sans-serif]">
@@ -52,7 +52,7 @@ const submit = () => {
                 <form @submit.prevent="submit" class="flex flex-col gap-6">
                     
                     <div class="flex flex-col gap-2">
-                        <label for="fecha_base" class="flex items-center gap-2 text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">
+                        <label for="fecha_base" class="flex items-center gap-2 text-base font-black tracking-[1px] uppercase text-[#0D1B3E]">
                             <span class="text-[#D4A843]">
                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                                     <rect x="2" y="3" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
@@ -65,7 +65,7 @@ const submit = () => {
                             <input type="date" id="fecha_base" v-model="form.fecha_base" required
                                    class="w-full px-4 py-3 border-none bg-transparent text-[13px] text-[#111827] font-semibold rounded-lg focus:ring-0 uppercase tracking-wide">
                         </div>
-                        <p class="text-[11px] text-[#6B7280] font-medium mt-0.5">El sistema usará esta fecha para rellenar los partidos del documento Excel.</p>
+                        <p class="text-base text-[#6B7280] font-medium mt-0.5">El sistema usará esta fecha para rellenar los partidos del documento excel.</p>
                     </div>
 
                     <div class="relative group mt-2">
@@ -79,8 +79,8 @@ const submit = () => {
                                 <div class="w-12 h-12 mb-3 rounded-full bg-white border border-[#E5E7EB] flex items-center justify-center shadow-sm text-[#9CA3AF] group-hover:text-[#D4A843] group-hover:border-[#D4A843]/30 transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                                 </div>
-                                <p class="text-[13px] font-bold text-[#374151]">Haz clic o arrastra tu archivo Excel aquí</p>
-                                <p class="text-[11px] font-medium text-[#9CA3AF] mt-1 uppercase tracking-wider">Formatos soportados: .XLSX, .CSV</p>
+                                <p class="text-[13px] font-bold text-[#374151]">Hacé clic o arrastra tu archivo Excel acá</p>
+                                <p class="text-base font-medium text-[#9CA3AF] mt-1 uppercase tracking-wider">Formatos soportados: .XLSX, .CSV</p>
                             </div>
 
                             <div v-else class="flex flex-col items-center text-center z-20">
@@ -88,8 +88,8 @@ const submit = () => {
                                     <svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <span class="text-white font-bold text-[13px] truncate max-w-[200px]">{{ nombreArchivo }}</span>
                                 </div>
-                                <p class="text-[11px] font-black text-[#D4A843] mt-3 uppercase tracking-widest">Archivo Listo para Procesar</p>
-                                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">Haz clic nuevamente si deseas cambiarlo</p>
+                                <p class="text-base font-black text-[#D4A843] mt-3 uppercase tracking-widest">Archivo Listo para Procesar</p>
+                                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider">Hacé clic nuevamente si querés cambiarlo</p>
                             </div>
                         </div>
                     </div>
@@ -123,13 +123,13 @@ const submit = () => {
                 <div class="relative z-10 p-7">
                     <div class="flex items-center gap-2.5 mb-5">
                         <span class="w-1.5 h-1.5 bg-[#D4A843] rotate-45 shrink-0"></span>
-                        <h3 class="text-[#D4A843] font-black text-[11px] tracking-[0.2em] uppercase">Instrucciones del Sistema</h3>
+                        <h3 class="text-[#D4A843] font-black text-base  uppercase">Instrucciones del Sistema</h3>
                     </div>
                     
-                    <ul class="text-white/80 text-[13px] font-medium space-y-4">
+                    <ul class="text-white/80  font-medium space-y-4">
                         <li class="flex items-start gap-3">
                             <span class="text-[#D4A843] font-black mt-0.5 opacity-70">01.</span>
-                            <p class="leading-relaxed">El sistema es inteligente, pero requiere que la palabra <strong class="text-white">LOCAL</strong> y <strong class="text-white">VISITANTE</strong> existan en la misma fila para detectar los encabezados.</p>
+                            <p class="leading-relaxed">El sistema es inteligente, pero necesita que la palabra <strong class="text-white">LOCAL</strong> y <strong class="text-white">VISITANTE</strong> existan en la misma fila para detectar los encabezados.</p>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-[#D4A843] font-black mt-0.5 opacity-70">02.</span>
@@ -137,13 +137,13 @@ const submit = () => {
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-[#D4A843] font-black mt-0.5 opacity-70">03.</span>
-                            <p class="leading-relaxed">El sistema hará coincidir los apellidos automáticamente con la base de datos de usuarios registrados.</p>
+                            <p class="leading-relaxed">El va a coincidir los apellidos automáticamente con la base de datos de usuarios registrados.</p>
                         </li>
                     </ul>
 
                     <div class="mt-8 pt-5 border-t border-white/10 flex items-center gap-3">
                         <svg class="w-8 h-8 text-[#D4A843]/50 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <p class="text-[11px] text-white/50 leading-tight">Procesamiento seguro. Los datos no se publicarán hasta que los confirmes en la Pizarra.</p>
+                        <p class="text-base text-white/50 leading-tight">Procesamiento seguro. Los datos no se van a publicar hasta que los confirmes en la pizarra</p>
                     </div>
                 </div>
             </div>

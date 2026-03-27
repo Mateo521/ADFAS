@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Creamos al Administrador
+        
         $admin = User::firstOrCreate(
             ['email' => 'admin@adfas.com'],
             [
@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Creamos a los árbitros reales
+        
         $arbitrosReales = ['Noguera', 'Lucero', 'Chavez', 'Gallardo', 'Parodi', 'Escudero', 'Morales', 'Peralta', 'Vargas', 'Quiroga'];
         $usuariosArbitros = [];
         
@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        // 3. Creamos Partidos con FECHAS FUTURAS para ver en el Monitor
+    
         $fechaProxima = Carbon::now()->addDays(2)->toDateString();
         
         $partidosData = [
@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
                 'estado' => 'publicado'  
             ]);
 
-            // Asignamos a Noguera como principal a todos para probar el monitor
+            
             Designacion::create([
                 'partido_id' => $nuevoPartido->id,
                 'user_id' => $usuariosArbitros['Noguera']->id,
@@ -73,7 +73,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 4. GENERADOR DE NOTICIAS (15 noticias para probar paginación)
+        
         $tipos = ['Información', 'Citación', 'Urgente', 'Actualización de Reglas'];
         
         for ($i = 1; $i <= 15; $i++) {
@@ -82,9 +82,9 @@ class DatabaseSeeder extends Seeder
                 'tipo' => $tipos[array_rand($tipos)],
                 'titulo' => "Comunicado Oficial N° $i: Actualización del Protocolo ADFAS",
                 'contenido' => "Este es el contenido detallado de la noticia número $i. En este apartado se informan las novedades respecto al desempeño arbitral en la provincia de San Luis, recordamos a todos los colegiados mantener la integridad y puntualidad en los estadios asignados. Se adjuntan directivas para la próxima jornada del Torneo Apertura 2026.",
-                'imagen_ruta' => null, // Puedes subir una imagen a storage/app/public/ y poner el nombre aquí
+                'imagen_ruta' => null,  
                 'archivo_ruta' => null,
-                'created_at' => Carbon::now()->subHours($i * 2), // Para que aparezcan ordenadas por tiempo
+                'created_at' => Carbon::now()->subHours($i * 2),  
             ]);
         }
     }

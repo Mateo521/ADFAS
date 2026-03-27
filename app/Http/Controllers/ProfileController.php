@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -27,17 +29,49 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'apellido' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                Rule::unique(\App\Models\User::class)->ignore($request->user()->id)
+            ],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'foto_perfil' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        $user = $request->user();
+
+
+        $user->fill($request->only(['name', 'apellido', 'email', 'telefono']));
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
 
-        return Redirect::route('profile.edit');
+        if ($request->hasFile('foto_perfil')) {
+
+
+            if ($user->foto_perfil) {
+                Storage::disk('public')->delete($user->foto_perfil);
+            }
+
+
+            $user->foto_perfil = $request->file('foto_perfil')->store('perfiles', 'public');
+        }
+
+
+        $user->save();
+
+        return redirect()->route('profile.edit');
     }
 
     /**

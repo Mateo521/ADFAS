@@ -8,7 +8,8 @@ const user = usePage().props.auth.user;
 
 const props = defineProps({
     esAdmin: Boolean,
-    proximaDesignacion: Object,
+    designaciones: Array,    
+    telefonoAdmin: String,   
     stats: Object,
     statsAdmin: Object,
     noticias: Array
@@ -22,14 +23,14 @@ let intervalId = null;
 let confirmadasAnteriores = props.statsAdmin ? props.statsAdmin.confirmadas : 0;
 let rechazadasAnteriores  = props.statsAdmin ? props.statsAdmin.rechazadas  : 0;
 
-  
-let ultimaDesignacionId = props.proximaDesignacion ? props.proximaDesignacion.id : null;
+
+let idsAnteriores = props.designaciones ? props.designaciones.map(d => d.id).join(',') : '';
 
 onMounted(() => {
     intervalId = setInterval(() => {
         
         if (props.esAdmin) {
-             
+         
             router.reload({
                 only: ['statsAdmin'],
                 preserveScroll: true,
@@ -51,21 +52,17 @@ onMounted(() => {
         } else {
            
             router.reload({
-                only: ['proximaDesignacion', 'stats', 'noticias'], 
+                only: ['designaciones', 'stats', 'noticias'], 
                 preserveScroll: true, 
                 preserveState: true,
                 onSuccess: (page) => {
-                    const nuevaDesig = page.props.proximaDesignacion;
-                    const nuevoId = nuevaDesig ? nuevaDesig.id : null;
+                    const nuevasDesig = page.props.designaciones || [];
+                    const nuevosIds = nuevasDesig.map(d => d.id).join(',');
 
-                     
-                    if (nuevoId !== ultimaDesignacionId) {
-                        if (nuevoId) {
-                            Toast.fire({ icon: 'info', title: ' ¡Te han asignado un nuevo partido!' });
-                        } else {
-                            Toast.fire({ icon: 'warning', title: ' Tu designación fue reasignada.' });
-                        }
-                        ultimaDesignacionId = nuevoId;
+                  
+                    if (nuevosIds !== idsAnteriores) {
+                        Toast.fire({ icon: 'info', title: ' Tu lista de designaciones fue actualizada.' });
+                        idsAnteriores = nuevosIds;
                     }
                 }
             });
@@ -73,12 +70,16 @@ onMounted(() => {
 
     }, 5000);
 });
+
 onUnmounted(() => {
     if (intervalId) clearInterval(intervalId);
 });
 
 const responder = (idDesignacion, estadoRespuesta) => {
-    if (estadoRespuesta === 'rechazado' && props.proximaDesignacion.estado_confirmacion === 'confirmado') {
+ 
+    const desig = props.designaciones.find(d => d.id === idDesignacion);
+
+    if (estadoRespuesta === 'rechazado' && desig && desig.estado_confirmacion === 'confirmado') {
         Swal.fire({
             title: '¿Estás seguro?',
             text: "Cancelar una asistencia confirmada a último momento puede afectar el torneo.",
@@ -87,7 +88,8 @@ const responder = (idDesignacion, estadoRespuesta) => {
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Sí, cancelar asistencia',
-            cancelButtonText: 'Volver'
+            cancelButtonText: 'Volver',
+            customClass: { popup: 'font-["Lato",sans-serif] rounded-xl' }
         }).then((result) => {
             if (result.isConfirmed) enviarRespuesta(idDesignacion, estadoRespuesta);
         });
@@ -119,15 +121,12 @@ const colorNoticia = (tipo) => {
 
     <AuthenticatedLayout>
 
-        <!-- ══════════════════════════════════════════════ -->
-        <!--  ENCABEZADO DE BIENVENIDA                      -->
-        <!-- ══════════════════════════════════════════════ -->
         <div class="mb-10 pb-8 border-b border-[#0D1B3E]/10">
-            <p class="text-[#A87C20] text-[11px] font-black uppercase tracking-[0.25em] mb-2">
+            <p class="text-[#A87C20] text-base font-black uppercase tracking-[0.25em] mb-2">
                 Bienvenido de vuelta
             </p>
             <h1 class="text-4xl md:text-5xl font-black text-[#0D1B3E] tracking-tight leading-none mb-4"
-                style="font-family:'Playfair Display',serif;">
+                >
                 {{ user.name }} {{ user.apellido }}
             </h1>
             <div class="flex flex-wrap items-center gap-3 mt-4">
@@ -142,26 +141,22 @@ const colorNoticia = (tipo) => {
         </div>
 
 
-        <!-- ══════════════════════════════════════════════ -->
-        <!--  VISTA ADMINISTRADOR                           -->
-        <!-- ══════════════════════════════════════════════ -->
         <div v-if="props.esAdmin">
 
-            <!-- Título sección -->
+           
             <div class="flex items-center gap-3 mb-6">
                 <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
                     <span class="w-2.5 h-2.5 bg-[#D4A843] rounded-sm rotate-45 block"></span>
                 </div>
-                <h2 class="text-sm font-black text-[#0D1B3E] uppercase tracking-[0.2em]"
-                    style="font-family:'Playfair Display',serif;">
+                <h2 class="text-sm font-black text-[#0D1B3E] uppercase "
+                    >
                     Estado General del Torneo
                 </h2>
             </div>
 
-            <!-- ── Stats cards ── -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
 
-                <!-- Total partidos -->
+              
                 <div class="bg-white rounded border border-[#0D1B3E]/10 p-5 shadow-sm border-l-4 border-l-[#0D1B3E]">
                     <p class="text-[10px] font-black text-[#0D1B3E]/50 uppercase tracking-[0.15em] mb-3">
                         Partidos en Sistema
@@ -170,7 +165,7 @@ const colorNoticia = (tipo) => {
                     <div class="w-8 h-0.5 bg-[#D4A843] mt-3 rounded-full"></div>
                 </div>
 
-                <!-- Confirmados -->
+            
                 <div class="bg-white rounded border border-green-100 p-5 shadow-sm border-l-4 border-l-green-500">
                     <p class="text-[10px] font-black text-green-600/70 uppercase tracking-[0.15em] mb-3">
                         Confirmados
@@ -179,7 +174,7 @@ const colorNoticia = (tipo) => {
                     <div class="w-8 h-0.5 bg-green-400 mt-3 rounded-full"></div>
                 </div>
 
-                <!-- Pendientes -->
+              
                 <div class="bg-white rounded border border-amber-100 p-5 shadow-sm border-l-4 border-l-amber-400">
                     <p class="text-[10px] font-black text-amber-700/70 uppercase tracking-[0.15em] mb-3">
                         Faltan Confirmar
@@ -188,7 +183,7 @@ const colorNoticia = (tipo) => {
                     <div class="w-8 h-0.5 bg-amber-400 mt-3 rounded-full"></div>
                 </div>
 
-                <!-- Rechazados -->
+              
                 <div class="bg-white rounded border border-red-100 p-5 shadow-sm border-l-4 border-l-red-500">
                     <p class="text-[10px] font-black text-red-600/70 uppercase tracking-[0.15em] mb-3">
                         Ausencias
@@ -198,20 +193,20 @@ const colorNoticia = (tipo) => {
                 </div>
             </div>
 
-            <!-- ── Acciones rápidas ── -->
+           
             <div class="flex items-center gap-3 mb-5">
                 <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
                     <span class="w-2.5 h-2.5 bg-[#D4A843] rounded-sm rotate-45 block"></span>
                 </div>
-                <h2 class="text-sm font-black text-[#0D1B3E] uppercase tracking-[0.2em]"
-                    style="font-family:'Playfair Display',serif;">
+                <h2 class="text-sm font-black text-[#0D1B3E] uppercase "
+                    >
                     Acciones
                 </h2>
             </div>
 
             <div class="grid md:grid-cols-3 gap-4 mb-10">
 
-                <!-- Importar Excel -->
+             
                 <Link :href="route('admin.importar.index')"
                       class="group bg-white border border-[#0D1B3E]/10 rounded p-6 hover:border-[#D4A843]/60 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between">
                     <div>
@@ -224,8 +219,8 @@ const colorNoticia = (tipo) => {
                         <h3 class="text-sm font-black text-[#0D1B3E] uppercase tracking-widest mb-1">
                             Subir Designaciones
                         </h3>
-                        <p class="text-xs text-[#0D1B3E]/50 font-semibold leading-relaxed">
-                            Carga partidos nuevos desde Excel
+                        <p class="text-base text-[#0D1B3E]/50 font-semibold leading-relaxed">
+                            Cargá partidos nuevos desde Excel
                         </p>
                     </div>
                     <svg class="w-5 h-5 text-[#D4A843]/40 group-hover:text-[#D4A843] group-hover:translate-x-1 transition-all shrink-0 ml-4"
@@ -234,7 +229,7 @@ const colorNoticia = (tipo) => {
                     </svg>
                 </Link>
 
-                <!-- Publicar Noticia -->
+               
                 <Link :href="route('noticias.create')"
                       class="group bg-white border border-[#0D1B3E]/10 rounded p-6 hover:border-[#D4A843]/60 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between">
                     <div>
@@ -247,7 +242,7 @@ const colorNoticia = (tipo) => {
                         <h3 class="text-sm font-black text-[#0D1B3E] uppercase tracking-widest mb-1">
                             Publicar Noticia
                         </h3>
-                        <p class="text-xs text-[#0D1B3E]/50 font-semibold leading-relaxed">
+                        <p class="text-base text-[#0D1B3E]/50 font-semibold leading-relaxed">
                             Avisa reuniones o adjunta reglamentos
                         </p>
                     </div>
@@ -257,7 +252,7 @@ const colorNoticia = (tipo) => {
                     </svg>
                 </Link>
 
-                <!-- Asignar Árbitros -->
+             
                 <Link :href="route('admin.asignar.index')"
                       class="group bg-white border border-[#0D1B3E]/10 rounded p-6 hover:border-[#D4A843]/60 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-between">
                     <div>
@@ -270,8 +265,8 @@ const colorNoticia = (tipo) => {
                         <h3 class="text-sm font-black text-[#0D1B3E] uppercase tracking-widest mb-1">
                             Asignar Árbitros
                         </h3>
-                        <p class="text-xs text-[#0D1B3E]/50 font-semibold leading-relaxed">
-                            Cruza partidos huérfanos con el plantel
+                        <p class="text-base text-[#0D1B3E]/50 font-semibold leading-relaxed">
+                            Cruza partidos con el plantel
                         </p>
                     </div>
                     <svg class="w-5 h-5 text-[#D4A843]/40 group-hover:text-[#D4A843] group-hover:translate-x-1 transition-all shrink-0 ml-4"
@@ -283,161 +278,93 @@ const colorNoticia = (tipo) => {
         </div>
 
 
-        <!-- ══════════════════════════════════════════════ -->
-        <!--  VISTA ÁRBITRO                                 -->
-        <!-- ══════════════════════════════════════════════ -->
         <div v-else>
 
-            <!-- Próxima Designación -->
-            <div v-if="proximaDesignacion" class="mb-10">
+           
+            <div v-if="designaciones && designaciones.length > 0" class="mb-10 space-y-6">
 
-                <!-- Título sección -->
                 <div class="flex items-center gap-3 mb-5">
                     <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
                         <span class="w-2.5 h-2.5 bg-[#D4A843] rounded-sm rotate-45 block"></span>
                     </div>
-                    <h2 class="text-sm font-black text-[#0D1B3E] uppercase tracking-[0.2em]"
-                        style="font-family:'Playfair Display',serif;">
-                        Tu Próxima Designación
+                    <h2 class="text-sm font-black text-[#0D1B3E] uppercase tracking-widest">
+                        Tus Próximos Partidos ({{ designaciones.length }})
                     </h2>
                 </div>
 
-                <!-- Card de partido -->
-                <div class="bg-white rounded border border-[#0D1B3E]/10 overflow-hidden shadow-sm">
-
-                    <!-- Cabecera navy -->
+                <div v-for="desig in designaciones" :key="desig.id" class="bg-white rounded border border-[#0D1B3E]/10 overflow-hidden shadow-sm">
+                    
                     <div class="bg-[#0D1B3E] px-6 py-3 flex items-center justify-between">
                         <span class="text-[#D4A843] text-[10px] font-black uppercase tracking-[0.2em]">
                             Partido Designado
                         </span>
                         <span class="px-2.5 py-1 bg-[#D4A843]/15 border border-[#D4A843]/30 text-[#D4A843] text-[10px] font-black uppercase tracking-wider rounded-md">
-                            {{ proximaDesignacion.partido.categoria }}
+                            {{ desig.partido.categoria }}
                         </span>
                     </div>
 
-                    <!-- Cuerpo -->
                     <div class="p-6 md:p-8">
                         <div class="flex flex-col lg:flex-row gap-8 lg:gap-10">
 
-                            <!-- Info del partido -->
                             <div class="flex-1">
-
-                                <!-- Equipos VS -->
                                 <div class="flex items-center gap-4 mb-6">
-                                    <!-- Local -->
                                     <div class="flex-1 text-center">
                                         <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase tracking-[0.15em] mb-1">Local</p>
-                                        <p class="text-xl md:text-2xl font-black text-[#0D1B3E] leading-tight"
-                                           style="font-family:'Playfair Display',serif;">
-                                            {{ proximaDesignacion.partido.equipo_local }}
-                                        </p>
+                                        <p class="text-xl md:text-2xl font-black text-[#0D1B3E] leading-tight">{{ desig.partido.equipo_local }}</p>
                                     </div>
-
-                                    <!-- VS badge -->
                                     <div class="shrink-0 flex flex-col items-center gap-1">
-                                        <div class="w-px h-6 bg-[#D4A843]/30"></div>
-                                        <span class="text-[11px] font-black text-[#D4A843] bg-[#0D1B3E] px-3 py-1.5 rounded-md tracking-widest">
-                                            VS
-                                        </span>
-                                        <div class="w-px h-6 bg-[#D4A843]/30"></div>
+                                        <span class="text-base font-black text-[#D4A843] bg-[#0D1B3E] px-3 py-1.5 rounded-md">VS</span>
                                     </div>
-
-                                    <!-- Visitante -->
                                     <div class="flex-1 text-center">
                                         <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase tracking-[0.15em] mb-1">Visitante</p>
-                                        <p class="text-xl md:text-2xl font-black text-[#0D1B3E] leading-tight"
-                                           style="font-family:'Playfair Display',serif;">
-                                            {{ proximaDesignacion.partido.equipo_visitante }}
-                                        </p>
+                                        <p class="text-xl md:text-2xl font-black text-[#0D1B3E] leading-tight">{{ desig.partido.equipo_visitante }}</p>
                                     </div>
                                 </div>
 
-                                <!-- Separador -->
-                                <div class="w-full h-px bg-gradient-to-r from-transparent via-[#D4A843]/30 to-transparent mb-5"></div>
-
-                                <!-- Detalles: hora, fecha, cancha -->
                                 <div class="grid grid-cols-3 gap-3">
                                     <div class="bg-[#F7F5F0] rounded-lg px-4 py-3 text-center">
-                                        <svg class="w-4 h-4 text-[#D4A843] mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase tracking-wide mb-0.5">Hora</p>
-                                        <p class="text-sm font-black text-[#0D1B3E]">{{ proximaDesignacion.partido.hora_inicio }}</p>
+                                        <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase mb-0.5">Hora</p>
+                                        <p class="text-sm font-black text-[#0D1B3E]">{{ desig.partido.hora_inicio }}</p>
                                     </div>
                                     <div class="bg-[#F7F5F0] rounded-lg px-4 py-3 text-center">
-                                        <svg class="w-4 h-4 text-[#D4A843] mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                        <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase tracking-wide mb-0.5">Fecha</p>
-                                        <p class="text-sm font-black text-[#0D1B3E]">{{ proximaDesignacion.partido.fecha }}</p>
+                                        <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase mb-0.5">Fecha</p>
+                                        <p class="text-sm font-black text-[#0D1B3E]">{{ desig.partido.fecha }}</p>
                                     </div>
                                     <div class="bg-[#F7F5F0] rounded-lg px-4 py-3 text-center">
-                                        <svg class="w-4 h-4 text-[#D4A843] mx-auto mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        </svg>
-                                        <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase tracking-wide mb-0.5">Cancha</p>
-                                        <p class="text-sm font-black text-[#0D1B3E] truncate">{{ proximaDesignacion.partido.cancha }}</p>
+                                        <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase mb-0.5">Cancha</p>
+                                        <p class="text-sm font-black text-[#0D1B3E] truncate">{{ desig.partido.cancha }}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Panel de confirmación -->
                             <div class="flex flex-col items-center justify-center gap-4 lg:border-l lg:border-[#0D1B3E]/8 lg:pl-10 min-w-[200px]">
 
-                                <p class="text-[10px] font-black text-[#0D1B3E]/50 uppercase tracking-[0.2em] text-center">
-                                    ¿Confirmás asistencia?
-                                </p>
-
-                                <!-- Estado: pendiente -->
-                                <div v-if="proximaDesignacion.estado_confirmacion === 'pendiente'"
-                                     class="flex lg:flex-col gap-3 w-full">
-                                    <button @click="responder(proximaDesignacion.id, 'confirmado')"
-                                            class="flex-1 flex items-center justify-center gap-2.5 px-5 py-4 bg-green-50 hover:bg-green-100 border-2 border-green-400 rounded transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer">
-                                        <svg class="w-6 h-6 text-green-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                        <span class="text-green-800 text-sm font-black uppercase tracking-widest">Asisto</span>
-                                    </button>
-
-                                    <button @click="responder(proximaDesignacion.id, 'rechazado')"
-                                            class="flex-1 flex items-center justify-center gap-2.5 px-5 py-4 bg-red-50 hover:bg-red-100 border-2 border-red-400 rounded transition-all hover:-translate-y-0.5 hover:shadow-md cursor-pointer">
-                                        <svg class="w-6 h-6 text-red-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                        <span class="text-red-800 text-sm font-black uppercase tracking-widest">No asisto</span>
-                                    </button>
+                                <div v-if="desig.estado_confirmacion === 'pendiente'" class="flex gap-2 w-full">
+                                    <button @click="responder(desig.id, 'confirmado')" class="flex-1 py-3 bg-green-50 text-green-800 border border-green-400 font-black text-xs uppercase rounded">Asisto</button>
+                                    <button @click="responder(desig.id, 'rechazado')" class="flex-1 py-3 bg-red-50 text-red-800 border border-red-400 font-black text-xs uppercase rounded">No Asisto</button>
                                 </div>
 
-                                <!-- Estado: confirmado -->
-                                <div v-else-if="proximaDesignacion.estado_confirmacion === 'confirmado'"
-                                     class="flex flex-col items-center w-full gap-3">
-                                    <div class="flex items-center gap-2.5 bg-green-50 border-2 border-green-400 px-5 py-4 rounded w-full justify-center">
-                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                        <span class="text-green-800 text-sm font-black uppercase tracking-widest">¡Confirmado!</span>
-                                    </div>
-                                    <button @click="responder(proximaDesignacion.id, 'rechazado')"
-                                            class="text-[11px] font-bold text-red-400 hover:text-red-600 hover:underline cursor-pointer transition-colors">
-                                        Emergencia: Cancelar asistencia
-                                    </button>
+                                <div v-else-if="desig.estado_confirmacion === 'confirmado'" class="w-full text-center">
+                                    <div class="bg-green-50 text-green-800 border border-green-400 py-3 font-black text-xs uppercase rounded w-full mb-2">¡Confirmado!</div>
+                                    <button @click="responder(desig.id, 'rechazado')" class="text-[10px] text-red-500 font-bold hover:underline">Cancelar asistencia</button>
                                 </div>
 
-                                <!-- Estado: rechazado -->
-                                <div v-else
-                                     class="flex items-center gap-2.5 bg-red-50 border-2 border-red-400 px-5 py-4 rounded w-full justify-center">
-                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                    <span class="text-red-800 text-sm font-black uppercase tracking-widest">Rechazado</span>
-                                </div>
+                                <div v-else class="bg-red-50 text-red-800 border border-red-400 py-3 font-black text-xs uppercase rounded w-full text-center">Rechazado</div>
+
+                                <a :href="`https://wa.me/${telefonoAdmin}?text=Hola soy el árbitro ${user.apellido}, te escribo por el partido ${desig.partido.equipo_local} vs ${desig.partido.equipo_visitante} del día ${desig.partido.fecha}.`" 
+                                   target="_blank"
+                                   class="w-full flex items-center justify-center gap-2 mt-2 px-4 py-2.5 bg-[#25D366]/10 text-[#075E54] border border-[#25D366]/30 rounded hover:bg-[#25D366]/20 transition-colors cursor-pointer">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.383 0 12.03c0 2.124.553 4.195 1.605 6.01L.031 24l6.143-1.579a12.015 12.015 0 005.857 1.522c6.645 0 12.03-5.385 12.03-12.03C24 5.383 18.675 0 12.031 0zm0 21.944c-1.802 0-3.565-.483-5.111-1.398l-.367-.217-3.801.977 1.015-3.69-.239-.38a9.988 9.988 0 01-1.525-5.305c0-5.508 4.484-9.992 9.992-9.992s9.992 4.484 9.992 9.992-4.484 9.992-9.992 9.992zm5.48-7.48c-.301-.15-1.782-.88-2.057-.98-.276-.1-.478-.15-.678.15-.2.302-.779.98-.954 1.18-.175.201-.351.226-.652.076a8.212 8.212 0 01-2.42-1.493 8.973 8.973 0 01-1.678-2.083c-.176-.301-.019-.465.132-.615.136-.135.301-.351.452-.526.15-.176.2-.302.3-.502.101-.202.051-.377-.025-.527-.075-.15-.678-1.63-.928-2.232-.243-.586-.489-.507-.678-.516-.175-.008-.376-.008-.577-.008a1.11 1.11 0 00-.803.376 3.36 3.36 0 00-1.054 2.502c0 1.956 1.405 3.847 1.605 4.122.2.276 2.81 4.288 6.804 6.015 2.593 1.123 3.633 1.206 4.887 1.018.99-.148 3.123-1.275 3.563-2.507.44-1.232.44-2.285.308-2.507-.132-.222-.478-.352-.779-.502z"/></svg>
+                                    <span class="text-[11px] font-black uppercase tracking-widest">Contactar a la Liga</span>
+                                </a>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Sin designaciones -->
+           
             <div v-else class="mb-10 bg-white border border-dashed border-[#0D1B3E]/15 rounded p-10 text-center shadow-sm">
                 <div class="w-14 h-14 rounded-full bg-[#F7F5F0] border border-[#0D1B3E]/10 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-7 h-7 text-[#0D1B3E]/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -446,7 +373,7 @@ const colorNoticia = (tipo) => {
                     </svg>
                 </div>
                 <h2 class="text-lg font-black text-[#0D1B3E] mb-2 uppercase tracking-widest"
-                    style="font-family:'Playfair Display',serif;">
+                    >
                     Sin partidos asignados
                 </h2>
                 <p class="text-sm text-[#0D1B3E]/50 font-medium max-w-sm mx-auto leading-relaxed">
@@ -456,22 +383,20 @@ const colorNoticia = (tipo) => {
         </div>
 
 
-        <!-- ══════════════════════════════════════════════ -->
-        <!--  TABLÓN DE NOTICIAS (compartido)               -->
-        <!-- ══════════════════════════════════════════════ -->
+    
         <div class="flex items-center gap-3 mb-5">
             <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
                 <span class="w-2.5 h-2.5 bg-[#D4A843] rounded-sm rotate-45 block"></span>
             </div>
-            <h2 class="text-sm font-black text-[#0D1B3E] uppercase tracking-[0.2em]"
-                style="font-family:'Playfair Display',serif;">
+            <h2 class="text-sm font-black text-[#0D1B3E] uppercase "
+                >
                 Tablón de Noticias
             </h2>
         </div>
 
         <div class="space-y-3">
 
-            <!-- Sin noticias -->
+          
             <div v-if="!noticias || noticias.length === 0"
                  class="bg-white border border-dashed border-[#0D1B3E]/15 rounded p-8 text-center">
                 <p class="text-sm text-[#0D1B3E]/40 font-bold uppercase tracking-wide">
@@ -479,13 +404,13 @@ const colorNoticia = (tipo) => {
                 </p>
             </div>
 
-            <!-- Lista de noticias -->
+         
             <Link v-for="noticia in noticias" :key="noticia.id"
                   :href="route('noticias.show', noticia.id)"
                   class="flex items-start gap-4 bg-white rounded border p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                   :class="colorNoticia(noticia.tipo).border">
 
-                <!-- Ícono tipo -->
+               
                 <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border"
                      :class="[colorNoticia(noticia.tipo).iconBg, colorNoticia(noticia.tipo).iconBorder]">
                     <svg class="w-5 h-5" :class="colorNoticia(noticia.tipo).iconText"
@@ -495,31 +420,31 @@ const colorNoticia = (tipo) => {
                     </svg>
                 </div>
 
-                <!-- Contenido -->
+              
                 <div class="flex-1 overflow-hidden">
                     <div class="flex items-center justify-between gap-3 mb-1.5">
                         <span class="px-2.5 py-0.5 text-[10px] font-black rounded-md uppercase tracking-widest border"
                               :class="colorNoticia(noticia.tipo).tag">
                             {{ noticia.tipo }}
                         </span>
-                        <span class="text-[11px] text-[#0D1B3E]/40 font-bold shrink-0">
+                        <span class="text-base text-[#0D1B3E]/40 font-bold shrink-0">
                             {{ new Date(noticia.created_at).toLocaleDateString('es-ES') }}
                         </span>
                     </div>
                     <h3 class="text-sm font-black text-[#0D1B3E] truncate mb-0.5">{{ noticia.titulo }}</h3>
-                    <p class="text-xs text-[#0D1B3E]/50 font-medium truncate">{{ noticia.contenido }}</p>
+                    <p class="text-base text-[#0D1B3E]/50 font-medium truncate">{{ noticia.contenido }}</p>
                 </div>
 
-                <!-- Flecha -->
+                
                 <svg class="w-4 h-4 text-[#D4A843]/40 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
             </Link>
 
-            <!-- Ver todas -->
+           
             <div class="text-right pt-1" v-if="noticias && noticias.length > 0">
                 <Link :href="route('noticias.index')"
-                      class="inline-flex items-center gap-1.5 text-[11px] font-black text-[#A87C20] hover:text-[#0D1B3E] uppercase tracking-[0.2em] transition-colors">
+                      class="inline-flex items-center gap-1.5 text-base font-black text-[#A87C20] hover:text-[#0D1B3E] uppercase  transition-colors">
                     Ver todas las noticias
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

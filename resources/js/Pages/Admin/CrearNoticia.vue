@@ -55,8 +55,8 @@ const submit = () => {
                     Volver al Panel
                 </Link>
                 
-                <p class="text-[11px] font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Módulo de Comunicación</p>
-                <h1 class="font-['Playfair_Display',serif] text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
+                <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Módulo de Comunicación</p>
+                <h1 class="font-['Playfair_Display',serif]- text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
                     Redactar Comunicado
                 </h1>
                 <div class="flex items-center gap-2.5">
@@ -73,32 +73,32 @@ const submit = () => {
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="md:col-span-1 flex flex-col gap-2">
-                            <label for="tipo" class="text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Tipo de Aviso</label>
+                            <label for="tipo" class="text-base font-black tracking-[1px] uppercase text-[#0D1B3E]">Tipo de Aviso</label>
                             <select id="tipo" v-model="form.tipo" class="w-full px-4 py-3 bg-[#F9FAFB] border border-[#D1D5DB] rounded-lg text-[14px] font-semibold text-[#111827] focus:border-[#D4A843] focus:bg-white focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all cursor-pointer">
                                 <option value="Información">Información General</option>
                                 <option value="Citación">Citación Oficial</option>
                                 <option value="Urgente">Aviso Urgente</option>
                                 <option value="Actualización de Reglas">Actualización de Reglas</option>
                             </select>
-                            <div v-if="form.errors.tipo" class="text-[11px] font-bold text-red-500 mt-1">{{ form.errors.tipo }}</div>
+                            <div v-if="form.errors.tipo" class="text-base font-bold text-red-500 mt-1">{{ form.errors.tipo }}</div>
                         </div>
 
                         <div class="md:col-span-2 flex flex-col gap-2">
-                            <label for="titulo" class="text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Titular de la Noticia</label>
+                            <label for="titulo" class="text-base font-black tracking-[1px] uppercase text-[#0D1B3E]">Titular de la Noticia</label>
                             <input id="titulo" type="text" v-model="form.titulo" required placeholder="Ej: Citación obligatoria a pruebas físicas anuales"
                                    class="w-full px-4 py-3 bg-[#F9FAFB] border border-[#D1D5DB] rounded-lg text-[14px] font-bold text-[#111827] placeholder:text-[#9CA3AF] placeholder:font-medium focus:border-[#D4A843] focus:bg-white focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all">
-                            <div v-if="form.errors.titulo" class="text-[11px] font-bold text-red-500 mt-1">{{ form.errors.titulo }}</div>
+                            <div v-if="form.errors.titulo" class="text-base font-bold text-red-500 mt-1">{{ form.errors.titulo }}</div>
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-2">
                         <div class="flex items-center justify-between">
-                            <label for="contenido" class="text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Cuerpo del Comunicado</label>
-                            <span class="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">Puedes usar múltiples párrafos</span>
+                            <label for="contenido" class="text-base font-black tracking-[1px] uppercase text-[#0D1B3E]">Cuerpo del Comunicado</label>
+                            <span class="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider">Podés usar múltiples párrafos</span>
                         </div>
-                        <textarea id="contenido" v-model="form.contenido" rows="8" required placeholder="Escribe aquí los detalles del comunicado de forma clara y directa..."
+                        <textarea id="contenido" v-model="form.contenido" rows="8" required placeholder="Escribí acá los detalles del comunicado de forma clara y directa..."
                                   class="w-full px-5 py-4 bg-[#F9FAFB] border border-[#D1D5DB] rounded text-[15px] font-medium text-[#374151] leading-relaxed placeholder:text-[#9CA3AF] focus:border-[#D4A843] focus:bg-white focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all resize-y min-h-[150px]"></textarea>
-                        <div v-if="form.errors.contenido" class="text-[11px] font-bold text-red-500 mt-1">{{ form.errors.contenido }}</div>
+                        <div v-if="form.errors.contenido" class="text-base font-bold text-red-500 mt-1">{{ form.errors.contenido }}</div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[#E5E7EB]">
@@ -110,12 +110,12 @@ const submit = () => {
                                 </div>
                                 <div>
                                     <p class="text-[13px] font-black text-[#0D1B3E] uppercase tracking-wide">Foto de Portada</p>
-                                    <p class="text-[11px] font-bold text-[#9CA3AF]">JPG, PNG (Opcional)</p>
+                                    <p class="text-base font-bold text-[#9CA3AF]">JPG, PNG (Opcional)</p>
                                 </div>
                             </div>
                             <input id="imagen" type="file" @input="form.imagen = $event.target.files[0]" accept="image/*"
-                                   class="block w-full text-[12px] text-[#6B7280] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-[11px] file:font-black file:uppercase file:tracking-wider file:bg-[#0D1B3E] file:text-white hover:file:bg-[#162554] hover:file:text-[#D4A843] file:transition-colors cursor-pointer focus:outline-none">
-                            <div v-if="form.errors.imagen" class="text-[11px] font-bold text-red-500 mt-2">{{ form.errors.imagen }}</div>
+                                   class="block w-full text-[12px] text-[#6B7280] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-base file:font-black file:uppercase file:tracking-wider file:bg-[#0D1B3E] file:text-white hover:file:bg-[#162554] hover:file:text-[#D4A843] file:transition-colors cursor-pointer focus:outline-none">
+                            <div v-if="form.errors.imagen" class="text-base font-bold text-red-500 mt-2">{{ form.errors.imagen }}</div>
                         </div>
 
                         <div class="group relative border-2 border-dashed border-[#D1D5DB] hover:border-[#D4A843]/60 bg-[#F9FAFB] hover:bg-white rounded p-6 transition-all duration-300">
@@ -125,18 +125,18 @@ const submit = () => {
                                 </div>
                                 <div>
                                     <p class="text-[13px] font-black text-[#0D1B3E] uppercase tracking-wide">Documento Adjunto</p>
-                                    <p class="text-[11px] font-bold text-[#9CA3AF]">PDF, Word, Excel (Opcional)</p>
+                                    <p class="text-base font-bold text-[#9CA3AF]">PDF, Word, Excel (Opcional)</p>
                                 </div>
                             </div>
                             <input id="archivo" type="file" @input="form.archivo = $event.target.files[0]" accept=".pdf,.doc,.docx,.xls,.xlsx"
-                                   class="block w-full text-[12px] text-[#6B7280] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-[11px] file:font-black file:uppercase file:tracking-wider file:bg-[#0D1B3E] file:text-white hover:file:bg-[#162554] hover:file:text-[#D4A843] file:transition-colors cursor-pointer focus:outline-none">
-                            <div v-if="form.errors.archivo" class="text-[11px] font-bold text-red-500 mt-2">{{ form.errors.archivo }}</div>
+                                   class="block w-full text-[12px] text-[#6B7280] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-base file:font-black file:uppercase file:tracking-wider file:bg-[#0D1B3E] file:text-white hover:file:bg-[#162554] hover:file:text-[#D4A843] file:transition-colors cursor-pointer focus:outline-none">
+                            <div v-if="form.errors.archivo" class="text-base font-bold text-red-500 mt-2">{{ form.errors.archivo }}</div>
                         </div>
 
                     </div>
 
                     <div class="pt-6 border-t border-[#E5E7EB] flex items-center justify-between flex-wrap-reverse gap-4">
-                        <p class="text-[11px] font-bold text-[#9CA3AF] uppercase tracking-wider">
+                        <p class="text-base font-bold text-[#9CA3AF] uppercase tracking-wider">
                             La noticia será visible inmediatamente para todos los árbitros.
                         </p>
                         <button type="submit" :disabled="form.processing"

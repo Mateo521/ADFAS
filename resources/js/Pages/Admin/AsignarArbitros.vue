@@ -56,14 +56,14 @@ const submit = () => {
         
         <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h1 class="font-['Playfair_Display',serif] text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
+                <h1 class="font-['Playfair_Display',serif]- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
                     Pizarra de Asignaciones
                 </h1>
                 <div class="flex items-center gap-2.5 mb-2">
                     <span class="w-12 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>
                     <span class="w-1 h-1 bg-[#D4A843] rotate-45 shrink-0"></span>
                 </div>
-                <p class="text-[11px] text-[#6B7280] font-black uppercase tracking-[0.2em]">Módulo de Administración</p>
+                <p class="text-base text-[#6B7280] font-black uppercase ">Módulo de Administración</p>
             </div>
 
             <div v-if="partidos.length > 0" class="flex items-center gap-3 bg-white border border-[#D4A843]/30 px-5 py-2.5 rounded-lg shadow-sm">
@@ -76,9 +76,9 @@ const submit = () => {
             <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-green-100">
                 <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h2 class="font-['Playfair_Display',serif] text-[24px] font-extrabold text-[#0D1B3E] mb-2 uppercase tracking-wide">¡Todo al día!</h2>
-            <p class="text-[14px] text-[#6B7280] font-medium">No hay partidos pendientes de asignación en este momento. Sube una nueva planilla Excel para comenzar.</p>
-            <Link :href="route('admin.importar.index')" class="inline-block mt-6 px-6 py-2.5 bg-gradient-to-r from-[#0D1B3E] to-[#162554] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-md hover:shadow-lg transition-all">
+            <h2 class="font-['Playfair_Display',serif]- text-[24px] font-extrabold text-[#0D1B3E] mb-2 uppercase tracking-wide">¡Todo al día!</h2>
+            <p class="text-[14px] text-[#6B7280] font-medium">No hay partidos pendientes de asignación en este momento. Subí una nueva planilla excel para comenzar.</p>
+            <Link :href="route('admin.importar.index')" class="inline-block mt-6 px-6 py-2.5 bg-gradient-to-r from-[#0D1B3E] to-[#162554] text-white text-base font-black uppercase tracking-widest rounded-lg shadow-md hover:shadow-lg transition-all">
                 Ir a Importar Excel
             </Link>
         </div>

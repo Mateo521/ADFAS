@@ -16,7 +16,7 @@ import { Head } from '@inertiajs/vue3';
             <div class="absolute inset-0 pattern-bg"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-[#162554]/60 to-[#0D1B3E]/95"></div>
 
-            <div class="absolute -bottom-8 -right-5 font-['Playfair_Display',serif] text-[100px] md:text-[160px] font-extrabold text-[#D4A843]/5 tracking-tighter pointer-events-none select-none leading-none">
+            <div class="absolute -bottom-8 -right-5 font-['Playfair_Display',serif]- text-[100px] md:text-[160px] font-extrabold text-[#D4A843]/5 tracking-tighter pointer-events-none select-none leading-none">
                 ADFAS
             </div>
 
@@ -27,7 +27,7 @@ import { Head } from '@inertiajs/vue3';
                 </div>
 
                 <div class="flex flex-col items-center gap-2 md:gap-2.5 animate-fadeUp delay-200">
-                    <p class="font-['Playfair_Display',serif] text-3xl md:text-[42px] font-extrabold text-white tracking-[6px] leading-none">ADFAS</p>
+                    <p class="font-['Playfair_Display',serif]- text-3xl md:text-[42px] font-extrabold text-white tracking-[6px] leading-none">ADFAS</p>
                     <div class="hidden md:block w-[60px] h-[2px] bg-gradient-to-r from-transparent via-[#D4A843] to-transparent"></div>
                     <p class="hidden md:block text-[13px] font-bold text-white/70 tracking-[1.5px] uppercase leading-relaxed text-center">
                         Asociación de Árbitros<br>de Fútbol San Luis
@@ -43,12 +43,12 @@ import { Head } from '@inertiajs/vue3';
                     <span class="flex-1 h-[1px] bg-gradient-to-r from-[#D4A843]/40 to-transparent"></span>
                 </div>
 
-                <blockquote class="hidden md:block font-['Playfair_Display',serif] italic text-base text-white/75 leading-relaxed animate-fadeUp delay-400">
+                <blockquote class="hidden md:block font-['Playfair_Display',serif]- italic text-base text-white/75 leading-relaxed animate-fadeUp delay-400">
                     <p>"Transparencia, integridad<br>y excelencia arbitral."</p>
                 </blockquote>
 
                 <div class="hidden md:block mt-1 animate-fadeUp delay-500">
-                    <span class="inline-block px-4.5 py-1.5 border border-[#D4A843]/30 rounded-full text-[11px] font-bold tracking-[2px] uppercase text-[#D4A843]/70">
+                    <span class="inline-block px-4.5 py-1.5 border border-[#D4A843]/30 rounded-full text-base font-bold tracking-[2px] uppercase text-[#D4A843]/70">
                         San Luis, Argentina
                     </span>
                 </div>
@@ -66,7 +66,7 @@ import { Head } from '@inertiajs/vue3';
                 <slot />
             </div>
 
-            <footer class="absolute bottom-5 flex items-center gap-2.5 text-[11px] text-[#6B7280] font-semibold tracking-wide">
+            <footer class="absolute bottom-5 flex items-center gap-2.5 text-base text-[#6B7280] font-semibold tracking-wide">
                 <span>© {{ new Date().getFullYear() }} ADFAS San Luis</span>
                 <span class="text-[#A87C20]">·</span>
                 <span>Sistema Institucional</span>

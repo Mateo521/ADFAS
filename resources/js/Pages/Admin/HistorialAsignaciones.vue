@@ -167,7 +167,7 @@ const getStatusClasses = (estado) => {
             
             <div class="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 class="font-['Playfair_Display',serif] text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
+                    <h1 class="font-['Playfair_Display',serif]- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
                         Gestión y Monitoreo
                     </h1>
                     <div class="flex items-center gap-2.5 mb-2">
@@ -233,7 +233,7 @@ const getStatusClasses = (estado) => {
                                 <div class="font-black text-[13px] text-[#0D1B3E] uppercase">{{ partido.equipo_local }}</div>
                                 <div class="text-[10px] text-gray-400 font-bold my-0.5">VS</div>
                                 <div class="font-black text-[13px] text-[#0D1B3E] uppercase">{{ partido.equipo_visitante }}</div>
-                                <div class="text-[11px] text-[#6B7280] mt-1.5 font-medium flex items-center justify-center gap-1">{{ partido.cancha }}</div>
+                                <div class="text-base text-[#6B7280] mt-1.5 font-medium flex items-center justify-center gap-1">{{ partido.cancha }}</div>
                             </td>
                             <td class="px-5 py-3 border-r border-[#E5E7EB] bg-blue-50/10">
                                 <div v-if="getPrincipal(partido)" class="flex flex-col items-start gap-1.5">
@@ -251,7 +251,7 @@ const getStatusClasses = (estado) => {
                             </td>
                             
                             <td class="px-5 py-3 text-center">
-                                <button @click="abrirModalReasignar(partido)" class="text-[#0D1B3E] font-bold text-[11px] uppercase tracking-wider bg-[#0D1B3E]/5 px-3 py-1.5 rounded border border-[#0D1B3E]/20 hover:bg-[#D4A843]/10 hover:text-[#A87C20] hover:border-[#D4A843]/30 transition-colors">
+                                <button @click="abrirModalReasignar(partido)" class="text-[#0D1B3E] font-bold text-base uppercase tracking-wider bg-[#0D1B3E]/5 px-3 py-1.5 rounded border border-[#0D1B3E]/20 hover:bg-[#D4A843]/10 hover:text-[#A87C20] hover:border-[#D4A843]/30 transition-colors">
                                     Reasignar
                                 </button>
                             </td>
@@ -274,7 +274,7 @@ const getStatusClasses = (estado) => {
                 
                 <div class="bg-[#0D1B3E] p-6 text-center relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-[#D4A843]/20 rounded-full blur-2xl"></div>
-                    <h2 class="relative z-10 font-['Playfair_Display',serif] text-[22px] font-extrabold text-white uppercase tracking-wide">
+                    <h2 class="relative z-10 font-['Playfair_Display',serif]- text-[22px] font-extrabold text-white uppercase tracking-wide">
                         Modificar Designación
                     </h2>
                     <p class="relative z-10 text-[12px] font-medium text-[#D4A843] mt-1 uppercase tracking-widest">
@@ -286,7 +286,7 @@ const getStatusClasses = (estado) => {
                     <form @submit.prevent="confirmarReasignacion" class="space-y-6">
                         
                         <div class="flex flex-col gap-2">
-                            <label class="text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Nuevo Árbitro Principal</label>
+                            <label class="text-base font-black tracking-[1px] uppercase text-[#0D1B3E]">Nuevo Árbitro Principal</label>
                             <select v-model="formReasignar.principal_id" required class="w-full px-4 py-3 bg-gray-50 border border-[#D1D5DB] rounded-lg text-[14px] font-semibold text-[#111827] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all cursor-pointer">
                                 <option value="" disabled class="text-gray-400">-- Seleccione un Árbitro --</option>
                                 <option v-for="arbitro in arbitrosDisponibles" :key="arbitro.id" :value="arbitro.id">
@@ -296,7 +296,7 @@ const getStatusClasses = (estado) => {
                         </div>
 
                         <div class="flex flex-col gap-2">
-                            <label class="text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Nuevo Asistente (Opcional)</label>
+                            <label class="text-base font-black tracking-[1px] uppercase text-[#0D1B3E]">Nuevo Asistente (Opcional)</label>
                             <select v-model="formReasignar.asistente_id" class="w-full px-4 py-3 bg-gray-50 border border-[#D1D5DB] rounded-lg text-[14px] font-semibold text-[#111827] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all cursor-pointer">
                                 <option value="">-- Dejar sin Asistente --</option>
                                 <option v-for="arbitro in arbitrosDisponibles" :key="arbitro.id" :value="arbitro.id">
@@ -307,7 +307,7 @@ const getStatusClasses = (estado) => {
 
                         <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3 mt-2">
                             <svg class="w-5 h-5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            <p class="text-[11px] font-medium text-blue-800 leading-tight">Al guardar, los árbitros anteriores serán desvinculados y los nuevos recibirán una notificación. Sus estados volverán a "PENDIENTE".</p>
+                            <p class="text-base font-medium text-blue-800 leading-tight">Al guardar, los árbitros anteriores van a ser desvinculados y los nuevos van a recibir una notificación. Sus estados van a volver a PENDIENTE.</p>
                         </div>
 
                         <div class="flex justify-end gap-3 pt-4 border-t border-[#E5E7EB]">

@@ -28,10 +28,10 @@ const submit = () => {
         <Head title="Ingresar — ADFAS San Luis" />
 
         <div class="mb-8 text-center">
-            <p class="text-[11px] font-black tracking-[3px] uppercase text-[#A87C20] mb-2">
+            <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">
                 Portal Institucional
             </p>
-            <h1 class="font-['Playfair_Display',serif] text-[32px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-[14px]">
+            <h1 class="font-['Playfair_Display',serif]- text-[32px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-[14px]">
                 Acceso al Sistema
             </h1>
             <div class="flex items-center justify-center gap-2.5">

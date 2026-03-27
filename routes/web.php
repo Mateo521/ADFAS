@@ -41,8 +41,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/noticias', [NoticiaController::class, 'store'])->name('noticias.store');
 
 
+
     Route::get('/noticias/{noticia}', [NoticiaController::class, 'show'])->name('noticias.show');
 
+    Route::get('/noticias/{noticia}/editar', [NoticiaController::class, 'edit'])->name('noticias.edit');
+
+    Route::put('/noticias/{noticia}', [NoticiaController::class, 'update'])->name('noticias.update');
+
+    Route::delete('/noticias/{noticia}', [NoticiaController::class, 'destroy'])->name('noticias.destroy');
+
+    
 
     Route::get('/admin/asignar-arbitros', [AsignacionController::class, 'index'])->name('admin.asignar.index');
     Route::post('/admin/asignar-arbitros', [AsignacionController::class, 'store'])->name('admin.asignar.store');
@@ -50,8 +58,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/designaciones/{designacion}/responder', [DesignacionController::class, 'responder'])->name('designaciones.responder');
 
     Route::get('/admin/historial-asignaciones', [AsignacionController::class, 'historial'])->name('admin.historial.index');
-    
-    
+
+
     Route::post('/admin/historial-asignaciones/{partido}/reasignar', [AsignacionController::class, 'updateReasignacion'])->name('admin.historial.reasignar');
 
 });
