@@ -69,16 +69,14 @@ import { Head } from '@inertiajs/vue3';
             <footer class="absolute bottom-5 flex items-center gap-2.5 text-base text-[#6B7280] font-semibold tracking-wide">
                 <span>© {{ new Date().getFullYear() }} ADFAS San Luis</span>
                 <span class="text-[#A87C20]">·</span>
-                <span>Sistema Institucional</span>
+                <!--span>Sistema Institucional</span-->
             </footer>
         </main>
     </div>
 </template>
 
 <style scoped>
-/* Mantenemos el patrón complejo SVG y las animaciones personalizadas 
-  en un bloque <style scoped> por fuera del template, como manda Vue. 
-*/
+ 
 .pattern-bg {
     background-image:
         radial-gradient(circle at 20% 20%, rgba(212,168,67,0.08) 0%, transparent 50%),
@@ -86,12 +84,12 @@ import { Head } from '@inertiajs/vue3';
         url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4A843' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Animaciones Personalizadas */
+ 
 .animate-logoAppear { animation: logoAppear 0.8s ease both; }
 .animate-fadeUp { animation: fadeUp 0.8s ease both; }
 .animate-formAppear { animation: formAppear 0.7s 0.1s ease both; }
 
-/* Utilidades de retardo para la cascada de animaciones */
+ 
 .delay-200 { animation-delay: 0.2s; }
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }

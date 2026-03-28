@@ -59,13 +59,13 @@ const submit = () => {
                                     <path d="M4 1.5v2m6-2v2M2 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                                 </svg>
                             </span>
-                            Fecha Principal de la Jornada
+                            Fecha Principal
                         </label>
                         <div class="relative rounded-lg border-[1.5px] border-[#D1D5DB] bg-white transition-all duration-200 focus-within:border-[#D4A843] focus-within:ring-[3px] focus-within:ring-[#D4A843]/15">
                             <input type="date" id="fecha_base" v-model="form.fecha_base" required
                                    class="w-full px-4 py-3 border-none bg-transparent text-[13px] text-[#111827] font-semibold rounded-lg focus:ring-0 uppercase tracking-wide">
                         </div>
-                        <p class="text-base text-[#6B7280] font-medium mt-0.5">El sistema usará esta fecha para rellenar los partidos del documento excel.</p>
+                        <p class="text-base text-[#6B7280] font-medium mt-0.5">El sistema va a usar esta fecha para rellenar los partidos del documento excel.</p>
                     </div>
 
                     <div class="relative group mt-2">
