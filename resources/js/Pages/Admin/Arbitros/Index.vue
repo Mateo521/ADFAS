@@ -2,9 +2,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     arbitros: Object,
+    pendientes: Array,
     filtros: Object
 });
 
@@ -12,6 +14,30 @@ const buscar = ref(props.filtros.buscar || '');
 
 const aplicarFiltro = () => {
     router.get(route('admin.arbitros.index'), { buscar: buscar.value }, { preserveState: true, replace: true });
+};
+const aprobarArbitro = (id, nombre) => {
+    Swal.fire({
+        title: '¿Aprobar ingreso?',
+        text: `Estás por darle acceso oficial al sistema a ${nombre}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#25D366',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, aprobar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.post(route('admin.arbitros.aprobar', id), {}, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    Swal.fire({
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+                        icon: 'success', title: 'Árbitro aprobado correctamente'
+                    });
+                }
+            });
+        }
+    });
 };
 
 const limpiarFiltro = () => {
@@ -27,7 +53,36 @@ const limpiarFiltro = () => {
     <AuthenticatedLayout>
         <div class="font-['Lato',sans-serif] max-w-7xl mx-auto pb-12">
 
+            <div v-if="pendientes && pendientes.length > 0"
+                    class="mb-8 bg-red-50 border-l-4 border-red-500 rounded-r-xl p-5 shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <h3 class="text-red-800 font-black uppercase tracking-widest text-[13px]">Solicitudes Pendientes
+                            de Aprobación ({{ pendientes.length }})</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div v-for="user in pendientes" :key="user.id"
+                            class="bg-white border border-red-100 rounded-lg p-3 flex items-center justify-between shadow-sm">
+                            <div class="flex flex-col">
+                                <span class="text-[13px] font-bold text-[#0D1B3E] uppercase">{{ user.name }} {{
+                                    user.apellido }}</span>
+                                <span class="text-[11px] text-gray-500">{{ user.email }}</span>
+                            </div>
+                            <button @click="aprobarArbitro(user.id, user.apellido)"
+                                class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm">
+                                Aprobar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                
+
                 <div>
                     <p class="text-[11px] font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Plantel Oficial</p>
                     <h1

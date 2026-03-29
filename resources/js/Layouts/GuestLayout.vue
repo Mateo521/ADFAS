@@ -44,11 +44,11 @@ import { Head } from '@inertiajs/vue3';
                 </div>
 
                 <blockquote class="hidden md:block font-['Playfair_Display',serif]- italic text-base text-white/75 leading-relaxed animate-fadeUp delay-400">
-                    <p>"Transparencia, integridad<br>y excelencia arbitral."</p>
+                    <p>"Prueba de app<br>acá podria ir alguna frase."</p>
                 </blockquote>
 
                 <div class="hidden md:block mt-1 animate-fadeUp delay-500">
-                    <span class="inline-block px-4.5 py-1.5 border border-[#D4A843]/30 rounded-full text-base font-bold tracking-[2px] uppercase text-[#D4A843]/70">
+                    <span class="inline-block  py-1.5 border border-[#D4A843]/30 rounded-full text-base font-bold px-5 uppercase text-[#D4A843]/70">
                         San Luis, Argentina
                     </span>
                 </div>
@@ -69,7 +69,7 @@ import { Head } from '@inertiajs/vue3';
             <footer class="absolute bottom-5 flex items-center gap-2.5 text-base text-[#6B7280] font-semibold tracking-wide">
                 <span>© {{ new Date().getFullYear() }} ADFAS San Luis</span>
                 <span class="text-[#A87C20]">·</span>
-                <!--span>Sistema Institucional</span-->
+                
             </footer>
         </main>
     </div>

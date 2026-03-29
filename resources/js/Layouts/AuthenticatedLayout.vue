@@ -65,6 +65,14 @@ const showingNavigationDropdown = ref(false);
                                 : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
                             Gestión y Monitoreo
                         </Link>
+                        <Link :href="route('admin.arbitros.index')"
+                            class="px-4 py-2 text-sm font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                            :class="route().current('admin.arbitros.*')
+                                ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
+                                : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
+                            Panel de árbitros
+                        </Link>
+
                     </template>
 
                     <div class="w-px h-4 bg-white/15 mx-1"></div>
@@ -77,7 +85,7 @@ const showingNavigationDropdown = ref(false);
                         Noticias
                     </Link>
 
-                     <Link :href="route('profile.edit')"
+                    <Link :href="route('profile.edit')"
                         class="px-4 py-2 text-sm font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
                         :class="route().current('profile.*')
                             ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
@@ -167,6 +175,16 @@ const showingNavigationDropdown = ref(false);
                             :class="route().current('admin.historial.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
                         Gestión y Monitoreo
                     </Link>
+
+                    <Link :href="route('admin.arbitros.index')"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-black uppercase tracking-[0.15em] transition-colors"
+                        :class="route().current('admin.arbitros.*')
+                            ? 'bg-[#D4A843]/12 text-[#D4A843]'
+                            : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                        <span class="w-1 h-3 rounded-full"
+                            :class="route().current('admin.arbitros.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                        Panel de árbitros
+                    </Link>
                 </template>
 
                 <Link :href="route('noticias.index')"
@@ -179,7 +197,7 @@ const showingNavigationDropdown = ref(false);
                     Tablón de Noticias
                 </Link>
 
-              <Link :href="route('profile.edit')"
+                <Link :href="route('profile.edit')"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-black uppercase tracking-[0.15em] transition-colors"
                     :class="route().current('profile.edit')
                         ? 'bg-[#D4A843]/12 text-[#D4A843]'

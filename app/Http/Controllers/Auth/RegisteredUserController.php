@@ -54,13 +54,13 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'foto_perfil' => $rutaFoto,
-            'rol' => 'arbitro', //  todos los que se registran son arbitros
+            'rol' => 'arbitro',  
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+       
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')->with('status', 'Registro correcto. Tu cuenta está pendiente de aprobación por la administración.');
     }
 }

@@ -11,11 +11,11 @@ use Inertia\Inertia;
 class ArbitroController extends Controller
 {
    
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        $query = User::where('rol', 'arbitro');
+       
+        $query = User::where('rol', 'arbitro')->where('estado', 'aprobado');
 
-     
         if ($request->has('buscar') && $request->buscar !== null) {
             $busqueda = $request->buscar;
             $query->where(function ($q) use ($busqueda) {
@@ -24,15 +24,23 @@ class ArbitroController extends Controller
             });
         }
 
-  
-        $arbitros = $query->orderBy('apellido', 'asc')
-                          ->paginate(15)
-                          ->withQueryString();  
+        $arbitros = $query->orderBy('apellido', 'asc')->paginate(15)->withQueryString();
+
+   
+        $pendientes = User::where('rol', 'arbitro')->where('estado', 'pendiente')->get();
 
         return Inertia::render('Admin/Arbitros/Index', [
             'arbitros' => $arbitros,
+            'pendientes' => $pendientes,  
             'filtros' => $request->only('buscar')
         ]);
+    }
+
+     
+    public function aprobar(User $user)
+    {
+        $user->update(['estado' => 'aprobado']);
+        return back()->with('success', 'El árbitro ha sido aprobado y ya puede ingresar al sistema.');
     }
 
     

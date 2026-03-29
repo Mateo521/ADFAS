@@ -19,6 +19,7 @@ return new class extends Migration
         $table->string('whatsapp')->nullable();
         $table->string('foto_perfil')->nullable();
         $table->enum('rol', ['admin', 'arbitro'])->default('arbitro'); // control de permisos
+        $table->enum('estado', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');  
         $table->string('email')->unique();
         $table->timestamp('email_verified_at')->nullable();
         $table->string('password');

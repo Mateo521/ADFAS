@@ -35,7 +35,7 @@ const submit = () => {
                 <span class="w-10 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>
             </div>
             <p class="text-[13px] text-[#6B7280] font-medium leading-relaxed">
-                Complete los datos para solicitar acceso al sistema de ADFAS
+                Completá los datos para el solicitar acceso al sistema de la ADFAS
             </p>
         </div>
 
@@ -75,7 +75,7 @@ const submit = () => {
                             <path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                         </svg>
                     </span>
-                    Correo Electrónico Institucional
+                    Correo Electrónico
                 </label>
                 <div class="relative rounded-lg border-[1.5px] bg-white transition-all duration-200 focus-within:border-[#D4A843] focus-within:ring-[3px] focus-within:ring-[#D4A843]/15"
                      :class="form.errors.email ? 'border-[#B91C1C]' : 'border-[#D1D5DB]'">
@@ -173,7 +173,7 @@ const submit = () => {
                             <circle cx="8" cy="8" r="6.75" stroke="currentColor" stroke-width="1.5"/>
                             <path d="M5.5 8l2 2 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Solicitar Registro
+                        Registrarse
                     </span>
                     <span v-else class="relative z-10 flex items-center justify-center gap-2.5">
                         <svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none">
