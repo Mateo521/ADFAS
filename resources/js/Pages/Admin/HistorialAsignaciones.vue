@@ -16,7 +16,16 @@ const filtroEquipo = ref(props.filtros.equipo || '');
 
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
 
- 
+ const formatearFecha = (fecha) => {
+    if (!fecha) return '';
+    const partes = fecha.split('-');  
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;  
+};
+
+const filtroArbitro = ref(props.filtros.arbitro || '');  
+
+
+
 const modalAbierto = ref(false);
 const partidoSeleccionado = ref(null);
 
@@ -24,6 +33,9 @@ const formReasignar = useForm({
     principal_id: '',
     asistente_id: ''
 });
+
+
+
 
 const abrirModalReasignar = (partido) => {
     partidoSeleccionado.value = partido;
@@ -143,10 +155,20 @@ onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
 
  
 const aplicarFiltros = () => {
-    router.get(route('admin.historial.index'), { fecha: filtroFecha.value, categoria: filtroCategoria.value, equipo: filtroEquipo.value }, { preserveState: true, replace: true });
+    router.get(route('admin.historial.index'), { 
+        fecha: filtroFecha.value, 
+        categoria: filtroCategoria.value, 
+        equipo: filtroEquipo.value,
+        arbitro: filtroArbitro.value  
+    }, { preserveState: true, replace: true });
 };
+
 const limpiarFiltros = () => {
-    filtroFecha.value = ''; filtroCategoria.value = ''; filtroEquipo.value = ''; aplicarFiltros();
+    filtroFecha.value = ''; 
+    filtroCategoria.value = ''; 
+    filtroEquipo.value = ''; 
+    filtroArbitro.value = '';  
+    aplicarFiltros();
 };
 const getPrincipal = (partido) => partido.designaciones.find(d => d.funcion === 'ARBITRO PRINCIPAL');
 const getAsistente = (partido) => partido.designaciones.find(d => d.funcion === 'ASISTENTE 1');
@@ -196,6 +218,10 @@ const getStatusClasses = (estado) => {
                     <label class="text-[10px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Buscar Equipo</label>
                     <input type="text" v-model="filtroEquipo" @keyup.enter="aplicarFiltros" placeholder="Buscar por club..." class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-[13px] font-medium text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all uppercase">
                 </div>
+                <div class="flex flex-col gap-1.5 flex-1 min-w-[150px]">
+                    <label class="text-[10px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Buscar Árbitro</label>
+                    <input type="text" v-model="filtroArbitro" @keyup.enter="aplicarFiltros" placeholder="Ej: Noguera..." class="w-full px-3 py-2 border border-[#D1D5DB] rounded-lg text-[13px] font-medium text-[#111827] placeholder:text-[#9CA3AF] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all uppercase">
+                </div>
                 <div class="flex gap-2">
                     <button @click="limpiarFiltros" class="px-5 py-2 rounded-lg text-[12px] font-black uppercase tracking-widest text-[#6B7280] bg-white border border-[#D1D5DB] hover:bg-gray-50 transition-colors">Limpiar</button>
                     <button @click="aplicarFiltros" class="px-6 py-2 rounded-lg text-[12px] font-black uppercase tracking-widest text-white bg-gradient-to-br from-[#0D1B3E] to-[#1E3370] border border-[#D4A843]/30 hover:shadow-md transition-all hover:-translate-y-[1px]">Buscar</button>
@@ -223,7 +249,7 @@ const getStatusClasses = (estado) => {
                         </tr>
                         <tr v-for="partido in partidos.data" :key="partido.id" class="border-b border-[#E5E7EB] hover:bg-gray-50 transition-colors">
                             <td class="px-5 py-3 border-r border-[#E5E7EB]">
-                                <span class="font-bold text-[13px] text-[#374151] block">{{ partido.fecha }}</span> 
+                                <span class="font-bold text-[13px] text-[#374151] block">{{ formatearFecha(partido.fecha) }}</span>
                                 <span class="text-[#D4A843] font-black text-[13px]">{{ partido.hora_inicio.substring(0,5) }} hs</span>
                             </td>
                             <td class="px-5 py-3 border-r border-[#E5E7EB] text-center">
@@ -235,19 +261,36 @@ const getStatusClasses = (estado) => {
                                 <div class="font-black text-[13px] text-[#0D1B3E] uppercase">{{ partido.equipo_visitante }}</div>
                                 <div class="text-base text-[#6B7280] mt-1.5 font-medium flex items-center justify-center gap-1">{{ partido.cancha }}</div>
                             </td>
-                            <td class="px-5 py-3 border-r border-[#E5E7EB] bg-blue-50/10">
+                            <td class="px-5 py-3 border-r border-[#E5E7EB] bg-blue-50/10 relative group cursor-pointer">
                                 <div v-if="getPrincipal(partido)" class="flex flex-col items-start gap-1.5">
                                     <p class="font-bold text-[13px] text-[#111827] uppercase">{{ getPrincipal(partido).user.apellido }}, {{ getPrincipal(partido).user.name.charAt(0) }}.</p>
                                     <span class="text-[9px] px-2 py-0.5 rounded-full border uppercase font-black tracking-widest transition-colors duration-500" :class="getStatusClasses(getPrincipal(partido).estado_confirmacion)">{{ getPrincipal(partido).estado_confirmacion }}</span>
                                 </div>
                                 <span v-else class="text-[12px] text-gray-400 font-medium italic">Sin designar</span>
+
+                                <Link v-if="getPrincipal(partido)" :href="route('admin.arbitros.show', getPrincipal(partido).user.id)" 
+                                      class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover:scale-100">
+                                    <span class="text-[11px] font-black text-[#0D1B3E] uppercase tracking-widest flex items-center gap-1.5 hover:text-[#D4A843] transition-colors">
+                                        <svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        Ver Ficha
+                                    </span>
+                                </Link>
                             </td>
-                            <td class="px-5 py-3 border-r border-[#E5E7EB] bg-blue-50/10">
+
+                            <td class="px-5 py-3 border-r border-[#E5E7EB] bg-blue-50/10 relative group cursor-pointer">
                                 <div v-if="getAsistente(partido)" class="flex flex-col items-start gap-1.5">
                                     <p class="font-bold text-[13px] text-[#111827] uppercase">{{ getAsistente(partido).user.apellido }}, {{ getAsistente(partido).user.name.charAt(0) }}.</p>
                                     <span class="text-[9px] px-2 py-0.5 rounded-full border uppercase font-black tracking-widest transition-colors duration-500" :class="getStatusClasses(getAsistente(partido).estado_confirmacion)">{{ getAsistente(partido).estado_confirmacion }}</span>
                                 </div>
                                 <span v-else class="text-[12px] text-gray-400 font-medium italic">Sin designar</span>
+
+                                <Link v-if="getAsistente(partido)" :href="route('admin.arbitros.show', getAsistente(partido).user.id)" 
+                                      class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover:scale-100">
+                                    <span class="text-[11px] font-black text-[#0D1B3E] uppercase tracking-widest flex items-center gap-1.5 hover:text-[#D4A843] transition-colors">
+                                        <svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        Ver Ficha
+                                    </span>
+                                </Link>
                             </td>
                             
                             <td class="px-5 py-3 text-center">

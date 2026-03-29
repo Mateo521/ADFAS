@@ -78,16 +78,18 @@ class AsignacionController extends Controller
 
 
     
-    public function historial(Request $request)
+   public function historial(Request $request)
     {
         $query = Partido::with(['designaciones.user'])->has('designaciones');
 
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
+        
         if ($request->filled('categoria')) {
             $query->where('categoria', 'LIKE', '%' . $request->categoria . '%');
         }
+        
         if ($request->filled('equipo')) {
             $query->where(function($q) use ($request) {
                 $q->where('equipo_local', 'LIKE', '%' . $request->equipo . '%')
@@ -95,15 +97,26 @@ class AsignacionController extends Controller
             });
         }
 
-        $partidos = $query->orderBy('fecha', 'desc')->orderBy('hora_inicio', 'desc')->paginate(20)->withQueryString();
+   
+        if ($request->filled('arbitro')) {
+            $query->whereHas('designaciones.user', function ($q) use ($request) {
+                $q->where('name', 'LIKE', '%' . $request->arbitro . '%')
+                  ->orWhere('apellido', 'LIKE', '%' . $request->arbitro . '%');
+            });
+        }
 
-        
+        $partidos = $query->orderBy('fecha', 'desc')
+                          ->orderBy('hora_inicio', 'desc')
+                          ->paginate(20)
+                          ->withQueryString();
+
         $arbitros = \App\Models\User::where('rol', 'arbitro')->orderBy('apellido', 'asc')->get();
 
         return Inertia::render('Admin/HistorialAsignaciones', [
             'partidos' => $partidos,
             'arbitros' => $arbitros,  
-            'filtros' => $request->only(['fecha', 'categoria', 'equipo'])
+          
+            'filtros' => $request->only(['fecha', 'categoria', 'equipo', 'arbitro']) 
         ]);
     }
 

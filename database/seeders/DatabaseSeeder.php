@@ -9,18 +9,21 @@ use App\Models\Noticia;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Faker\Factory as Faker;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        
+        $faker = Faker::create('es_ES');  
+
+     
         $admin = User::firstOrCreate(
             ['email' => 'admin@adfas.com'],
             [
                 'name' => 'Mateo',
                 'apellido' => 'Admin',
-                'telefono' => '2664000000',
+                'telefono' => '5492664000000',
                 'password' => Hash::make('admin1234'),
                 'rol' => 'admin'
             ]
@@ -31,60 +34,99 @@ class DatabaseSeeder extends Seeder
         $usuariosArbitros = [];
         
         foreach ($arbitrosReales as $apellido) {
-            $usuariosArbitros[$apellido] = User::firstOrCreate(
+            $usuariosArbitros[] = User::firstOrCreate(
                 ['email' => strtolower($apellido) . '@adfas.com'],
                 [
-                    'name' => 'Árbitro', 
+                    'name' => $faker->firstName, 
                     'apellido' => $apellido,
-                    'telefono' => '2664000000',
+                    'telefono' => '5492664' . $faker->randomNumber(6, true),
                     'password' => Hash::make('password'),
                     'rol' => 'arbitro'
                 ]
             );
         }
 
-    
-        $fechaProxima = Carbon::now()->addDays(2)->toDateString();
-        
-        $partidosData = [
-            ['cat' => 'PRIMERA A', 'l' => 'JUVENTUD', 'v' => 'ESTUDIANTES', 'c' => 'EL VOLCAN', 'h' => '15:00:00'],
-            ['cat' => 'PRIMERA B', 'l' => 'VICTORIA', 'v' => 'HURACAN', 'c' => 'SAN IGNACIO', 'h' => '16:30:00'],
-            ['cat' => 'RESERVA', 'l' => 'PUEYRREDON', 'v' => 'EFIC', 'c' => 'CAMPUS ULP', 'h' => '11:00:00'],
-            ['cat' => 'PRIMERA A', 'l' => 'GEPU', 'v' => 'UNION', 'c' => 'PANORAMICO', 'h' => '17:00:00'],
-        ];
+      
+        for ($i = 0; $i < 130; $i++) {
+            $usuariosArbitros[] = User::create([
+                'name' => $faker->firstName,
+                'apellido' => $faker->lastName,
+                'email' => $faker->unique()->safeEmail,
+                'telefono' => '5492664' . $faker->randomNumber(6, true),
+                'password' => Hash::make('password'),
+                'rol' => 'arbitro'
+            ]);
+        }
 
-        foreach ($partidosData as $p) {
-            $nuevoPartido = Partido::create([
-                'categoria' => $p['cat'],
-                'equipo_local' => $p['l'],
-                'equipo_visitante' => $p['v'],
-                'cancha' => $p['c'],
-                'fecha' => $fechaProxima,
-                'hora_inicio' => $p['h'],
+       
+        $categorias = ['PRIMERA A', 'PRIMERA B', 'RESERVA', 'SUB 17', 'FEMENINO'];
+        $canchas = ['EL VOLCAN', 'SAN IGNACIO', 'CAMPUS ULP', 'PANORAMICO', 'ASEBA', 'ESTANCIA GRANDE'];
+        $estadosConfirmacion = ['pendiente', 'confirmado', 'confirmado', 'confirmado', 'rechazado'];  
+
+        for ($i = 0; $i < 50; $i++) {
+       
+            $diasOffset = $i < 30 ? rand(-30, -1) : rand(1, 14); 
+            $fechaPartido = Carbon::now()->addDays($diasOffset)->toDateString();
+            
+            $partido = Partido::create([
+                'categoria' => $categorias[array_rand($categorias)],
+                'equipo_local' => strtoupper($faker->word) . ' FC',
+                'equipo_visitante' => strtoupper($faker->word) . ' CLUB',
+                'cancha' => $canchas[array_rand($canchas)],
+                'fecha' => $fechaPartido,
+                'hora_inicio' => $faker->time('H:00:00'),
                 'estado' => 'publicado'  
             ]);
 
             
+            $terna = collect($usuariosArbitros)->random(3);
+
+          
             Designacion::create([
-                'partido_id' => $nuevoPartido->id,
-                'user_id' => $usuariosArbitros['Noguera']->id,
+                'partido_id' => $partido->id,
+                'user_id' => $terna[0]->id,
                 'funcion' => 'ARBITRO PRINCIPAL',
-                'estado_confirmacion' => 'pendiente'
+                'estado_confirmacion' => $estadosConfirmacion[array_rand($estadosConfirmacion)]
+            ]);
+
+           
+            Designacion::create([
+                'partido_id' => $partido->id,
+                'user_id' => $terna[1]->id,
+                'funcion' => 'ASISTENTE 1',
+                'estado_confirmacion' => $estadosConfirmacion[array_rand($estadosConfirmacion)]
+            ]);
+
+            
+            Designacion::create([
+                'partido_id' => $partido->id,
+                'user_id' => $terna[2]->id,
+                'funcion' => 'ASISTENTE 2',
+                'estado_confirmacion' => $estadosConfirmacion[array_rand($estadosConfirmacion)]
             ]);
         }
 
-        
+       
+        $partidoNoguera = Partido::create([
+            'categoria' => 'PRIMERA A', 'equipo_local' => 'JUVENTUD', 'equipo_visitante' => 'ESTUDIANTES',
+            'cancha' => 'EL BAJO', 'fecha' => Carbon::now()->addDays(2)->toDateString(), 'hora_inicio' => '15:00:00', 'estado' => 'publicado'
+        ]);
+        Designacion::create([
+            'partido_id' => $partidoNoguera->id,
+            'user_id' => User::where('email', 'noguera@adfas.com')->first()->id,
+            'funcion' => 'ARBITRO PRINCIPAL',
+            'estado_confirmacion' => 'pendiente'
+        ]);
+
+       
         $tipos = ['Información', 'Citación', 'Urgente', 'Actualización de Reglas'];
-        
         for ($i = 1; $i <= 15; $i++) {
             Noticia::create([
                 'user_id' => $admin->id,
                 'tipo' => $tipos[array_rand($tipos)],
-                'titulo' => "Comunicado Oficial N° $i: Actualización del Protocolo ADFAS",
-                'contenido' => "Este es el contenido detallado de la noticia número $i. En este apartado se informan las novedades respecto al desempeño arbitral en la provincia de San Luis, recordamos a todos los colegiados mantener la integridad y puntualidad en los estadios asignados. Se adjuntan directivas para la próxima jornada del Torneo Apertura 2026.",
-                'imagen_ruta' => null,  
-                'archivo_ruta' => null,
-                'created_at' => Carbon::now()->subHours($i * 2),  
+                'titulo' => "Comunicado Oficial N° $i: Actualización del Protocolo",
+                'contenido' => "Este es el contenido detallado de la noticia número $i. pruebas y mas pruebas.",
+                'created_at' => Carbon::now()->subHours($i * 5),  
             ]);
         }
     }

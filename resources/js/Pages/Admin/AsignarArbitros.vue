@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
+import { ref, watch, onMounted } from 'vue';  
 import Swal from 'sweetalert2';
 
 const props = defineProps({
@@ -19,6 +20,79 @@ const form = useForm({
 const Toast = Swal.mixin({
     toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true
 });
+
+ 
+const CLAVE_BORRADOR = 'adfas_borrador_asignaciones';
+let temporizador = null;
+const tieneBorrador = ref(false);  
+
+onMounted(() => {
+ 
+    const borradorGuardado = localStorage.getItem(CLAVE_BORRADOR);
+    
+    if (borradorGuardado && props.partidos.length > 0) {
+        const asignacionesRecuperadas = JSON.parse(borradorGuardado);
+        
+         
+        if (asignacionesRecuperadas.length === form.asignaciones.length) {
+            form.asignaciones = asignacionesRecuperadas;
+            tieneBorrador.value = true;
+            
+            Toast.fire({ 
+                icon: 'info', 
+                title: 'Progreso recuperado',
+                text: 'Se restauraron tus asignaciones previas.',
+                timer: 4000
+            });
+        } else {
+          
+            localStorage.removeItem(CLAVE_BORRADOR);
+        }
+    }
+});
+
+ 
+watch(() => form.asignaciones, (nuevosDatos) => {
+    clearTimeout(temporizador);
+    
+   
+    temporizador = setTimeout(() => {
+        localStorage.setItem(CLAVE_BORRADOR, JSON.stringify(nuevosDatos));
+        tieneBorrador.value = true;
+        
+        Toast.fire({ 
+            icon: 'success', 
+            title: 'Cambios guardados',
+            timer: 1500  
+        });
+    }, 1000); 
+
+}, { deep: true });
+
+ 
+const limpiarBorrador = () => {
+    Swal.fire({
+        title: '¿Limpiar pizarra?',
+        text: "Se borrarán todas las designaciones que hiciste hasta ahora y volverán a estar vacías.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, limpiar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem(CLAVE_BORRADOR);
+            tieneBorrador.value = false;
+            
+            form.asignaciones = props.partidos.map(partido => ({
+                partido_id: partido.id,
+                principal_id: '',
+                asistente_id: ''
+            }));
+        }
+    });
+};
 
  
 const arbitrosDisponibles = (indexPartidoActual) => {
@@ -43,6 +117,9 @@ const submit = () => {
     form.post(route('admin.asignar.store'), {
         preserveScroll: true,
         onSuccess: () => {
+            
+            localStorage.removeItem(CLAVE_BORRADOR);
+            tieneBorrador.value = false;
             Toast.fire({ icon: 'success', title: '¡Designaciones publicadas y enviadas a los árbitros!' });
         },
     });
@@ -149,7 +226,7 @@ const submit = () => {
 
             <div class="bg-white p-5 border border-t-0 border-[#E5E7EB] rounded-b-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex items-center justify-between z-30 shrink-0">
                 <p class="text-[12px] text-[#6B7280] font-medium hidden md:block">
-                    Al confirmar, se enviarán notificaciones inmediatas a los árbitros seleccionados.
+                    Al confirmar, se van a enviar notificaciones a los árbitros seleccionados.
                 </p>
                 <button type="submit" :disabled="form.processing"
                         class="group relative overflow-hidden px-8 py-3.5 bg-gradient-to-r from-[#C9920E] via-[#D4A843] to-[#C9920E] bg-[length:200%_100%] text-[#0D1B3E] text-[12px] font-black uppercase tracking-[2px] rounded-lg transition-all duration-300 shadow-[0_2px_8px_rgba(212,168,67,0.3)] hover:bg-[100%_0] hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(168,124,32,0.35)] disabled:opacity-65 disabled:cursor-not-allowed disabled:transform-none w-full md:w-auto">

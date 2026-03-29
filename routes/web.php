@@ -62,6 +62,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/admin/historial-asignaciones/{partido}/reasignar', [AsignacionController::class, 'updateReasignacion'])->name('admin.historial.reasignar');
 
+   
+    Route::get('/admin/arbitros', [App\Http\Controllers\Admin\ArbitroController::class, 'index'])->name('admin.arbitros.index');
+    Route::get('/admin/arbitros/{user}', [App\Http\Controllers\Admin\ArbitroController::class, 'show'])->name('admin.arbitros.show');
+
+
 });
 
 require __DIR__ . '/auth.php';
