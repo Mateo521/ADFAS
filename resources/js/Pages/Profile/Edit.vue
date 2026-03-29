@@ -32,7 +32,7 @@ defineProps({
                 
                 <p class="text-[11px] font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Configuración de Cuenta</p>
                 <h1 class="font-['Playfair_Display',serif] text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
-                    Mi Perfil Institucional
+                    Mi Perfil
                 </h1>
                 <div class="flex items-center gap-2.5">
                     <span class="w-16 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>

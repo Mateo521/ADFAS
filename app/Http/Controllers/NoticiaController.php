@@ -27,7 +27,7 @@ class NoticiaController extends Controller
     {
 
         if (Auth::user()->rol !== 'admin') {
-            abort(403, 'No tienes permiso para publicar noticias.');
+            abort(403, 'No tenés permiso para publicar noticias.');
         }
 
         $request->validate([

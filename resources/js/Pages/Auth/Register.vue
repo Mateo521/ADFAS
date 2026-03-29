@@ -24,7 +24,7 @@ const submit = () => {
 
         <div class="mb-7 text-center">
             <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">
-                Portal Institucional
+                Portal 
             </p>
             <h1 class="font-['Playfair_Display',serif]- text-[30px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
                 Crear Cuenta
@@ -86,7 +86,7 @@ const submit = () => {
                         v-model="form.email"
                         required
                         autocomplete="username"
-                        placeholder="usuario@adfas.org.ar"
+                        placeholder="ejemplo@gmail.com"
                     />
                 </div>
                 <InputError class="text-[12px] font-bold text-[#B91C1C]" :message="form.errors.email" />
@@ -150,7 +150,7 @@ const submit = () => {
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none" class="shrink-0">
                     <path d="M6.5 1L2 3v3.5c0 2.5 2 4.8 4.5 5.5C9 11.3 11 9 11 6.5V3L6.5 1z" stroke="#A87C20" stroke-width="1.2" stroke-linejoin="round"/>
                 </svg>
-                Sus datos son confidenciales y de uso exclusivo institucional.
+                Sus datos son confidenciales.
             </div>
 
             <div class="flex flex-col gap-3.5 pt-2 border-t border-[#E5E7EB]">

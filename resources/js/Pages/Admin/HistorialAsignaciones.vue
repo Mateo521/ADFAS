@@ -122,7 +122,7 @@ onMounted(() => {
                                         toast: true,
                                         position: 'top-end',
                                         icon: esConfirmado ? 'success' : 'error',
-                                        title: esConfirmado ? '¡Asistencia Confirmada!' : ' Asistencia Rechazada',
+                                        title: esConfirmado ? 'Asistencia confirmada' : ' Asistencia rechazada',
                                         html: `
                                             <div style="text-align: left; font-size: 13px; margin-top: 5px; font-family: 'Lato', sans-serif;">
                                                 <b>Árbitro:</b> ${nombreArbitro}<br>

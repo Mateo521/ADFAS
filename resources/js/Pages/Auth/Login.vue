@@ -50,11 +50,11 @@ onMounted(() => {
 
         <div class="mb-8 text-center">
             <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">
-                Portal Institucional
+                Portal
             </p>
             <h1
                 class="font-['Playfair_Display',serif]- text-[32px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-[14px]">
-                Acceso al Sistema
+                Acceso al sistema
             </h1>
             <div class="flex items-center justify-center gap-2.5">
                 <span class="w-12 h-px bg-gradient-to-r from-transparent to-[#D4A843]"></span>
@@ -92,7 +92,7 @@ onMounted(() => {
                     <TextInput id="email" type="email"
                         class="w-full px-4 py-[13px] border-none bg-transparent font-['Lato',sans-serif] text-[15px] text-[#111827] rounded-lg focus:ring-0 placeholder:text-[#9CA3AF] placeholder:font-normal"
                         v-model="form.email" required autofocus autocomplete="username"
-                        placeholder="usuario@adfas.org.ar" />
+                        placeholder="ejemplo@gmail.com" />
                 </div>
                 <InputError class="text-[12px] font-bold text-[#B91C1C] mt-1" :message="form.errors.email" />
             </div>
