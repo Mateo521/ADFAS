@@ -1,17 +1,44 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-
+import { Head, Link , router } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 const props = defineProps({
     arbitro: Object,
     stats: Object,
-    historial: Array
+    historial: Array,
+    licencias: Array
 });
 
 const getStatusClasses = (estado) => {
     if (estado === 'confirmado') return 'bg-green-50 text-green-700 border-green-200';
     if (estado === 'rechazado') return 'bg-red-50 text-red-700 border-red-200';
     return 'bg-[#D4A843]/10 text-[#A87C20] border-[#D4A843]/30'; 
+};
+
+const formatearFecha = (fecha) => {
+    if (!fecha) return '';
+    const [year, month, day] = fecha.split('-');
+    return `${day}/${month}/${year}`;
+};
+
+ 
+const cambiarEstadoLicencia = (id, nuevoEstado) => {
+    Swal.fire({
+        title: `¿${nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1)} certificado?`,
+        icon: nuevoEstado === 'aprobado' ? 'question' : 'warning',
+        showCancelButton: true,
+        confirmButtonColor: nuevoEstado === 'aprobado' ? '#10B981' : '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: `Sí, ${nuevoEstado}`,
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.patch(route('admin.licencias.estado', id), { estado: nuevoEstado }, {
+                preserveScroll: true,
+                onSuccess: () => Swal.fire('¡Listo!', `Certificado ${nuevoEstado}.`, 'success')
+            });
+        }
+    });
 };
 </script>
 
@@ -87,6 +114,44 @@ const getStatusClasses = (estado) => {
                     </div>
 
                     <div>
+                        <div v-if="licencias && licencias.length > 0" class="mb-10">
+                        <h3 class="font-['Playfair_Display',serif] text-[20px] font-extrabold text-[#0D1B3E] mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Certificados y Licencias
+                        </h3>
+                        
+                        <div class="grid gap-4">
+                            <div v-for="licencia in licencias" :key="licencia.id" class="bg-white border border-[#E5E7EB] rounded-xl p-5 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center justify-between" :class="{'border-l-4 border-l-amber-400': licencia.estado === 'pendiente', 'border-l-4 border-l-green-500': licencia.estado === 'aprobado', 'border-l-4 border-l-red-500': licencia.estado === 'rechazado'}">
+                                
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded" :class="{'bg-amber-100 text-amber-700': licencia.estado === 'pendiente', 'bg-green-100 text-green-700': licencia.estado === 'aprobado', 'bg-red-100 text-red-700': licencia.estado === 'rechazado'}">
+                                            {{ licencia.estado }}
+                                        </span>
+                                        <span class="text-[12px] font-bold text-gray-500">
+                                            {{ formatearFecha(licencia.fecha_desde) }} al {{ formatearFecha(licencia.fecha_hasta) }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm font-bold text-[#0D1B3E]">{{ licencia.motivo }}</p>
+                                </div>
+
+                                <div class="flex items-center gap-2 w-full md:w-auto">
+                                    <a v-if="licencia.certificado_path" :href="`/storage/${licencia.certificado_path}`" target="_blank" class="flex-1 md:flex-none text-center px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-black uppercase rounded transition-colors">
+                                        Ver Archivo
+                                    </a>
+                                    
+                                    <template v-if="licencia.estado === 'pendiente'">
+                                        <button @click="cambiarEstadoLicencia(licencia.id, 'aprobado')" class="flex-1 md:flex-none px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-black uppercase rounded transition-colors shadow-sm">
+                                            Aprobar
+                                        </button>
+                                        <button @click="cambiarEstadoLicencia(licencia.id, 'rechazado')" class="flex-1 md:flex-none px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-black uppercase rounded transition-colors shadow-sm">
+                                            Rechazar
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                         <h3 class="font-['Playfair_Display',serif] text-[20px] font-extrabold text-[#0D1B3E] mb-4">
                             Últimos 10 Partidos
                         </h3>

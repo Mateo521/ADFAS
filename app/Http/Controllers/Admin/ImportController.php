@@ -15,7 +15,7 @@ class ImportController extends Controller
         return Inertia::render('Admin/ImportarPartidos');
     }
 
-  public function upload(Request $request)
+    public function upload(Request $request)
     {
         $request->validate([
             'documento' => 'required|mimes:xlsx,csv|max:5120', 
@@ -26,15 +26,17 @@ class ImportController extends Controller
         $fechaBase = $request->fecha_base; 
         $extension = $file->getClientOriginalExtension();
 
-        $reader = \Spatie\SimpleExcel\SimpleExcelReader::create($file->getRealPath(), $extension)->noHeaderRow();
+        $reader = SimpleExcelReader::create($file->getRealPath(), $extension)->noHeaderRow();
         $filasCrudas = $reader->getRows();
 
         $partidosGuardados = 0;
+        $partidosActualizados = 0; // <-- NUEVO: Contador de actualizados
         $titulosEncontrados = false;
         $indices = []; 
 
-        $filasCrudas->each(function(array $fila) use (&$partidosGuardados, $fechaBase, &$titulosEncontrados, &$indices) {
-           
+        // Pasamos por referencia las variables que vamos a modificar adentro
+        $filasCrudas->each(function(array $fila) use (&$partidosGuardados, &$partidosActualizados, $fechaBase, &$titulosEncontrados, &$indices) {
+            
             $filaTexto = array_map(function($item) {
                 if ($item instanceof \DateTimeInterface) {
                     $item = $item->format('H:i:s');  
@@ -42,6 +44,7 @@ class ImportController extends Controller
                 return strtoupper(trim((string)$item));
             }, $fila);
 
+            // Buscamos las columnas dinámicamente
             if (!$titulosEncontrados && in_array('LOCAL', $filaTexto) && in_array('VISITANTE', $filaTexto)) {
                 $titulosEncontrados = true;
                 $indices['cat'] = array_search('CAT.', $filaTexto) !== false ? array_search('CAT.', $filaTexto) : array_search('CATEGORIA', $filaTexto);
@@ -49,10 +52,14 @@ class ImportController extends Controller
                 $indices['visitante'] = array_search('VISITANTE', $filaTexto);
                 $indices['cancha'] = array_search('CANCHA', $filaTexto);
                 $indices['hora'] = array_search('HORA', $filaTexto);
+                
+                // NUEVO: Buscamos la columna DISCIPLINA
+                $indices['disciplina'] = array_search('DISCIPLINA', $filaTexto);
                 return; 
             }
 
             if ($titulosEncontrados) {
+                // Si la fila está vacía o es otra vez un encabezado, la saltamos
                 if (empty($fila[$indices['local']]) || empty($fila[$indices['visitante']]) || $fila[$indices['local']] === 'LOCAL' || $fila[$indices['local']] === 'LIGA SANLUISEÑA DE FÚTBOL') {
                     return;
                 }
@@ -63,32 +70,53 @@ class ImportController extends Controller
                     if ($horaCelda instanceof \DateTimeInterface) {
                         $horaExacta = $horaCelda->format('H:i:s');
                     } else {
-                        $horaExacta = (string) $horaCelda;
+                        // Limpieza de hora por si viene como "10:00" en texto
+                        $horaTexto = (string) $horaCelda;
+                        $horaExacta = strlen($horaTexto) == 5 ? $horaTexto . ':00' : $horaTexto;
                     }
                 }
 
-                \App\Models\Partido::create([
-                    'categoria' => isset($indices['cat']) ? (string)$fila[$indices['cat']] : 'Sin definir',
-                    'equipo_local' => (string)$fila[$indices['local']],
-                    'equipo_visitante' => (string)$fila[$indices['visitante']],
-                    'cancha' => isset($indices['cancha']) ? (string)$fila[$indices['cancha']] : 'A Confirmar',
-                    'fecha' => $fechaBase,
-                    'hora_inicio' => $horaExacta,
-                    'estado' => 'publicado'  
-                ]);
+                // Extraemos los datos de forma segura
+                $equipoLocal = (string)$fila[$indices['local']];
+                $equipoVisitante = (string)$fila[$indices['visitante']];
+                $categoria = isset($indices['cat']) && isset($fila[$indices['cat']]) ? (string)$fila[$indices['cat']] : 'Sin definir';
+                $cancha = isset($indices['cancha']) && isset($fila[$indices['cancha']]) ? (string)$fila[$indices['cancha']] : 'A Confirmar';
+                $disciplina = isset($indices['disciplina']) && isset($fila[$indices['disciplina']]) ? strtoupper(trim((string)$fila[$indices['disciplina']])) : null;
 
-                $partidosGuardados++;
+              
+                $partido = Partido::updateOrCreate(
+                    [
+                      
+                        'fecha' => $fechaBase,
+                        'hora_inicio' => $horaExacta,
+                        'equipo_local' => $equipoLocal,
+                        'equipo_visitante' => $equipoVisitante,
+                    ],
+                    [
+                      
+                        'categoria' => $categoria,
+                        'cancha' => $cancha,
+                        'disciplina' => $disciplina, // Guardamos la 'F', '11' o 'I'
+                        'estado' => 'publicado'  
+                    ]
+                );
+
+                // Contamos qué fue lo que hizo
+                if ($partido->wasRecentlyCreated) {
+                    $partidosGuardados++;
+                } else {
+                    $partidosActualizados++;
+                }
             }
         });
 
         return redirect()->route('admin.asignar.index')
-            ->with('success', "¡Planilla procesada! Se importaron $partidosGuardados partidos a la Pizarra.");
+            ->with('success', "¡Planilla procesada! Nuevos: $partidosGuardados | Actualizados: $partidosActualizados.");
     }
  
     private function intentarAsignar($partidoId, $nombreExcel, $funcion)
     {
         if (empty($nombreExcel)) return;
-
         
         $partes = explode(' ', trim($nombreExcel));
         $apellidoExcel = $partes[0];

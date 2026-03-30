@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
     
         $admin = User::firstOrCreate(
-            ['email' => 'admin@adfas.com'],
+            ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Admin',
                 'apellido' => 'Principal',
@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
  
         for ($i = 1; $i <= 15; $i++) {
             User::firstOrCreate(
-                ['email' => "arbitro{$i}@adfas.com"],
+                ['email' => "arbitro{$i}@gmail.com"],
                 [
                     'name' => 'Árbitro',
                     'apellido' => "Prueba {$i}",

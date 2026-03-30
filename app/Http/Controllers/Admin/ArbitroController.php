@@ -46,12 +46,10 @@ class ArbitroController extends Controller
     
     public function show(User $user)
     {
-       
         if ($user->rol !== 'arbitro') {
             abort(404, 'El usuario solicitado no es un árbitro del plantel.');
         }
 
-       
         $stats = [
             'total' => Designacion::where('user_id', $user->id)->count(),
             'confirmadas' => Designacion::where('user_id', $user->id)->where('estado_confirmacion', 'confirmado')->count(),
@@ -59,7 +57,6 @@ class ArbitroController extends Controller
             'pendientes' => Designacion::where('user_id', $user->id)->where('estado_confirmacion', 'pendiente')->count(),
         ];
 
-       
         $historial = Designacion::with('partido')
             ->select('designaciones.*')
             ->join('partidos', 'partidos.id', '=', 'designaciones.partido_id')
@@ -69,10 +66,14 @@ class ArbitroController extends Controller
             ->take(10)
             ->get();
 
+        
+        $licencias = $user->licencias()->orderBy('created_at', 'desc')->get();
+
         return Inertia::render('Admin/Arbitros/Show', [
             'arbitro' => $user,
             'stats' => $stats,
-            'historial' => $historial
+            'historial' => $historial,
+            'licencias' => $licencias  
         ]);
     }
 }

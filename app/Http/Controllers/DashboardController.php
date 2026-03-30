@@ -11,46 +11,62 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
-    public function index()
+public function index()
     {
         $user = Auth::user();
 
-        
+     
         if ($user->rol === 'admin') {
+            
+            $pendientes = \App\Models\Designacion::with(['user', 'partido'])
+                ->where('estado_confirmacion', 'pendiente')
+                ->get();
+
+            $rechazadas = \App\Models\Designacion::with(['user', 'partido'])
+                ->where('estado_confirmacion', 'rechazado')
+                ->get();
+
+         
+            $licenciasPendientes = \App\Models\Licencia::with('user')
+                ->where('estado', 'pendiente')
+                ->get();
+
             return Inertia::render('Dashboard', [
                 'esAdmin' => true,
                 'statsAdmin' => [
                     'totalPartidos' => \App\Models\Partido::count(),
                     'confirmadas' => \App\Models\Designacion::where('estado_confirmacion', 'confirmado')->count(),
-                    'pendientes' => \App\Models\Designacion::where('estado_confirmacion', 'pendiente')->count(),
-                    'rechazadas' => \App\Models\Designacion::where('estado_confirmacion', 'rechazado')->count(),
-                ]
+                    'pendientes' => $pendientes->count(),
+                    'rechazadas' => $rechazadas->count(),
+                ],
+                'listaPendientes' => $pendientes,
+                'listaRechazadas' => $rechazadas,
+                'licenciasPendientes' => $licenciasPendientes,  
             ]);
         }
 
-      
-        $designaciones = Designacion::with('partido')
+
+ 
+        $designaciones = \App\Models\Designacion::with(['partido.designaciones.user'])  
             ->select('designaciones.*')
             ->join('partidos', 'partidos.id', '=', 'designaciones.partido_id')
             ->where('designaciones.user_id', $user->id)
             ->where('partidos.fecha', '>=', now()->toDateString())
+            ->orderByRaw("FIELD(designaciones.estado_confirmacion, 'pendiente', 'confirmado', 'rechazado')") 
             ->orderBy('partidos.fecha', 'asc')
             ->orderBy('partidos.hora_inicio', 'asc')
             ->get(); 
 
-        
-        $admin = User::where('rol', 'admin')->first();
-        
+        $admin = \App\Models\User::where('rol', 'admin')->first();
         $telefonoAdmin = $admin && $admin->telefono ? $admin->telefono : '5492664000000'; 
 
-      
-        $partidosConfirmados = Designacion::where('user_id', $user->id)
+        $partidosConfirmados = \App\Models\Designacion::where('user_id', $user->id)
             ->where('estado_confirmacion', 'confirmado')
             ->count();
-        $totalDesignaciones = Designacion::where('user_id', $user->id)->count();
+            
+        $totalDesignaciones = \App\Models\Designacion::where('user_id', $user->id)->count();
 
-       
-        $ultimasNoticias = Noticia::latest()->take(3)->get();
+        $ultimasNoticias = \App\Models\Noticia::latest()->take(3)->get();
 
         return Inertia::render('Dashboard', [
             'esAdmin' => false,
@@ -63,7 +79,6 @@ class DashboardController extends Controller
             'noticias' => $ultimasNoticias 
         ]);
     }
-
     // (Asisto / no asisto)
     public function responderDesignacion(Request $request, Designacion $designacion)
     {

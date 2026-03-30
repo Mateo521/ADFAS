@@ -11,16 +11,22 @@ use App\Models\Designacion;
 
 class AsignacionController extends Controller
 {
-    
-   public function index()
+  public function index()
     {
-        
         $partidos = Partido::doesntHave('designaciones')
                            ->orderBy('fecha', 'asc')
                            ->orderBy('hora_inicio', 'asc')
                            ->get();
 
+       
         $arbitros = User::where('rol', 'arbitro')
+                        ->with(['licencias' => function($query) {
+                            $query->where('estado', 'aprobado');
+                        }, 
+                        'designaciones' => function($query) {
+                            
+                            $query->with('partido')->latest()->take(10); 
+                        }])
                         ->orderBy('apellido', 'asc')
                         ->get();
 
@@ -30,21 +36,23 @@ class AsignacionController extends Controller
         ]);
     }
 
-   
     public function store(Request $request)
     {
+      
         $request->validate([
             'asignaciones' => 'required|array',
             'asignaciones.*.partido_id' => 'required|exists:partidos,id',
             'asignaciones.*.principal_id' => 'nullable|exists:users,id',
             'asignaciones.*.asistente_id' => 'nullable|exists:users,id',
+            'asignaciones.*.asistente_2_id' => 'nullable|exists:users,id',  
+            'asignaciones.*.asistente_3_id' => 'nullable|exists:users,id',  
         ]);
 
         $partidosAsignados = 0;
 
         foreach ($request->asignaciones as $asignacion) {
-             
-            if (!empty($asignacion['principal_id']) || !empty($asignacion['asistente_id'])) {
+         
+            if (!empty($asignacion['principal_id']) || !empty($asignacion['asistente_id']) || !empty($asignacion['asistente_2_id']) || !empty($asignacion['asistente_3_id'])) {
                 
                 if (!empty($asignacion['principal_id'])) {
                     Designacion::create([
@@ -64,6 +72,25 @@ class AsignacionController extends Controller
                     ]);
                 }
 
+             
+                if (!empty($asignacion['asistente_2_id'])) {
+                    Designacion::create([
+                        'partido_id' => $asignacion['partido_id'],
+                        'user_id' => $asignacion['asistente_2_id'],
+                        'funcion' => 'ASISTENTE 2',
+                        'estado_confirmacion' => 'pendiente'
+                    ]);
+                }
+
+                
+                if (!empty($asignacion['asistente_3_id'])) {
+                    Designacion::create([
+                        'partido_id' => $asignacion['partido_id'],
+                        'user_id' => $asignacion['asistente_3_id'],
+                        'funcion' => 'ASISTENTE 3 / CRONO',
+                        'estado_confirmacion' => 'pendiente'
+                    ]);
+                }
                 
                 Partido::where('id', $asignacion['partido_id'])->update([
                     'estado' => 'publicado'
@@ -77,8 +104,7 @@ class AsignacionController extends Controller
     }
 
 
-    
-   public function historial(Request $request)
+    public function historial(Request $request)
     {
         $query = Partido::with(['designaciones.user'])->has('designaciones');
 
@@ -97,7 +123,6 @@ class AsignacionController extends Controller
             });
         }
 
-   
         if ($request->filled('arbitro')) {
             $query->whereHas('designaciones.user', function ($q) use ($request) {
                 $q->where('name', 'LIKE', '%' . $request->arbitro . '%')
@@ -115,22 +140,21 @@ class AsignacionController extends Controller
         return Inertia::render('Admin/HistorialAsignaciones', [
             'partidos' => $partidos,
             'arbitros' => $arbitros,  
-          
             'filtros' => $request->only(['fecha', 'categoria', 'equipo', 'arbitro']) 
         ]);
     }
 
-   
     public function updateReasignacion(Request $request, Partido $partido)
     {
+        
         $request->validate([
             'principal_id' => 'required|exists:users,id',
-            'asistente_id' => 'nullable|exists:users,id'
+            'asistente_id' => 'nullable|exists:users,id',
+            'asistente_2_id' => 'nullable|exists:users,id',  
+            'asistente_3_id' => 'nullable|exists:users,id'   
         ]);
-
         
         $partido->designaciones()->delete();
-
        
         \App\Models\Designacion::create([
             'partido_id' => $partido->id,
@@ -139,12 +163,31 @@ class AsignacionController extends Controller
             'estado_confirmacion' => 'pendiente' 
         ]);
 
-      
         if ($request->asistente_id) {
             \App\Models\Designacion::create([
                 'partido_id' => $partido->id,
                 'user_id' => $request->asistente_id,
                 'funcion' => 'ASISTENTE 1',
+                'estado_confirmacion' => 'pendiente'
+            ]);
+        }
+
+    
+        if ($request->asistente_2_id) {
+            \App\Models\Designacion::create([
+                'partido_id' => $partido->id,
+                'user_id' => $request->asistente_2_id,
+                'funcion' => 'ASISTENTE 2',
+                'estado_confirmacion' => 'pendiente'
+            ]);
+        }
+
+ 
+        if ($request->asistente_3_id) {
+            \App\Models\Designacion::create([
+                'partido_id' => $partido->id,
+                'user_id' => $request->asistente_3_id,
+                'funcion' => 'ASISTENTE 3 / CRONO',
                 'estado_confirmacion' => 'pendiente'
             ]);
         }

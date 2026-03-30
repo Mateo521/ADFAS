@@ -60,4 +60,9 @@ class User extends Authenticatable
         return $this->hasMany(Designacion::class);
     }
 
+    public function licencias()
+    {
+        return $this->hasMany(Licencia::class);
+    }
+
 }

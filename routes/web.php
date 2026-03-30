@@ -56,6 +56,10 @@ Route::middleware(['auth', 'aprobado'])->group(function () {
 
     Route::post('/admin/arbitros/{user}/aprobar', [App\Http\Controllers\Admin\ArbitroController::class, 'aprobar'])->name('admin.arbitros.aprobar');
     
+ 
+    Route::post('/licencias', [App\Http\Controllers\LicenciaController::class, 'store'])->name('licencias.store');
+    
+    Route::patch('/admin/licencias/{licencia}/estado', [App\Http\Controllers\LicenciaController::class, 'updateEstado'])->name('admin.licencias.estado');
 
 });
 
