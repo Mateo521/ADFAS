@@ -66,9 +66,7 @@ watch(() => form.asignaciones, (nuevosDatos) => {
 }, { deep: true });
 
 
-// ═════════════════════════════════════════════════════════
-//  1. LÓGICA DE DÍAS Y CANCHAS (NUEVO SELECTOR)
-// ═════════════════════════════════════════════════════════
+
 const fechasDisponibles = computed(() => {
     if (!props.partidos) return [];
     const fechas = [...new Set(props.partidos.map(p => p.fecha))];
@@ -107,7 +105,7 @@ const partidosAgrupados = computed(() => {
     }, {});
 });
 
-// NUEVO: Calculamos las canchas de este día y seleccionamos la primera
+ 
 const canchasDisponibles = computed(() => Object.keys(partidosAgrupados.value));
 const canchaSeleccionada = ref(null);
 
@@ -122,9 +120,7 @@ watch(canchasDisponibles, (nuevasCanchas) => {
 }, { immediate: true });
 
 
-// ═════════════════════════════════════════════════════════
-//  2. FUNCIONES DE AYUDA Y MATEMÁTICA
-// ═════════════════════════════════════════════════════════
+ 
 const limpiarBorrador = () => {
     Swal.fire({
         title: '¿Limpiar pizarra?',
@@ -198,12 +194,12 @@ const formatearNombreArbitro = (arbitro, partido) => {
 
     if (licencia) {
         const [y, m, d] = licencia.fecha_hasta.split('-');
-        return `⛔ [LICENCIA] ${nombreBase} (Hasta ${d}/${m})`;
+        return ` [LICENCIA] ${nombreBase} (Hasta ${d}/${m})`;
     }
 
     const repetido = chequearHistorial(arbitro.id, partido.equipo_local, partido.equipo_visitante);
     if (repetido) {
-        return `⚠️ [REPETIDO] ${nombreBase}`;
+        return ` [REPETIDO] ${nombreBase}`;
     }
     return nombreBase;
 };

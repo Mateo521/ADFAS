@@ -30,11 +30,11 @@ class ImportController extends Controller
         $filasCrudas = $reader->getRows();
 
         $partidosGuardados = 0;
-        $partidosActualizados = 0; // <-- NUEVO: Contador de actualizados
+        $partidosActualizados = 0;  
         $titulosEncontrados = false;
         $indices = []; 
 
-        // Pasamos por referencia las variables que vamos a modificar adentro
+         
         $filasCrudas->each(function(array $fila) use (&$partidosGuardados, &$partidosActualizados, $fechaBase, &$titulosEncontrados, &$indices) {
             
             $filaTexto = array_map(function($item) {
@@ -44,7 +44,7 @@ class ImportController extends Controller
                 return strtoupper(trim((string)$item));
             }, $fila);
 
-            // Buscamos las columnas dinámicamente
+     
             if (!$titulosEncontrados && in_array('LOCAL', $filaTexto) && in_array('VISITANTE', $filaTexto)) {
                 $titulosEncontrados = true;
                 $indices['cat'] = array_search('CAT.', $filaTexto) !== false ? array_search('CAT.', $filaTexto) : array_search('CATEGORIA', $filaTexto);
@@ -53,13 +53,13 @@ class ImportController extends Controller
                 $indices['cancha'] = array_search('CANCHA', $filaTexto);
                 $indices['hora'] = array_search('HORA', $filaTexto);
                 
-                // NUEVO: Buscamos la columna DISCIPLINA
+           
                 $indices['disciplina'] = array_search('DISCIPLINA', $filaTexto);
                 return; 
             }
 
             if ($titulosEncontrados) {
-                // Si la fila está vacía o es otra vez un encabezado, la saltamos
+                
                 if (empty($fila[$indices['local']]) || empty($fila[$indices['visitante']]) || $fila[$indices['local']] === 'LOCAL' || $fila[$indices['local']] === 'LIGA SANLUISEÑA DE FÚTBOL') {
                     return;
                 }
@@ -70,13 +70,13 @@ class ImportController extends Controller
                     if ($horaCelda instanceof \DateTimeInterface) {
                         $horaExacta = $horaCelda->format('H:i:s');
                     } else {
-                        // Limpieza de hora por si viene como "10:00" en texto
+                        
                         $horaTexto = (string) $horaCelda;
                         $horaExacta = strlen($horaTexto) == 5 ? $horaTexto . ':00' : $horaTexto;
                     }
                 }
 
-                // Extraemos los datos de forma segura
+           
                 $equipoLocal = (string)$fila[$indices['local']];
                 $equipoVisitante = (string)$fila[$indices['visitante']];
                 $categoria = isset($indices['cat']) && isset($fila[$indices['cat']]) ? (string)$fila[$indices['cat']] : 'Sin definir';
@@ -96,12 +96,12 @@ class ImportController extends Controller
                       
                         'categoria' => $categoria,
                         'cancha' => $cancha,
-                        'disciplina' => $disciplina, // Guardamos la 'F', '11' o 'I'
+                        'disciplina' => $disciplina,  
                         'estado' => 'publicado'  
                     ]
                 );
 
-                // Contamos qué fue lo que hizo
+                
                 if ($partido->wasRecentlyCreated) {
                     $partidosGuardados++;
                 } else {

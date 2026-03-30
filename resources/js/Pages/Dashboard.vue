@@ -57,7 +57,7 @@ const abrirModalDetalles = (tipo) => {
     }
     mostrarModalDetalles.value = true;
 };
-// ════════════════════════════════════════════════
+
 
 let intervalId = null;
 let confirmadasAnteriores = props.statsAdmin ? props.statsAdmin.confirmadas : 0;
@@ -76,7 +76,7 @@ onMounted(() => {
 
         if (props.esAdmin) {
             router.reload({
-                // Agregamos 'licenciasPendientes' a la lista de actualización en vivo
+                
                 only: ['statsAdmin', 'listaPendientes', 'listaRechazadas', 'licenciasPendientes'], 
                 preserveScroll: true,
                 preserveState: true,
