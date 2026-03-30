@@ -110,8 +110,13 @@ class ImportController extends Controller
             }
         });
 
-        return redirect()->route('admin.asignar.index')
-            ->with('success', "¡Planilla procesada! Nuevos: $partidosGuardados | Actualizados: $partidosActualizados.");
+       return redirect()->route('admin.asignar.index')
+            ->with('import_summary', [
+                'nuevos' => $partidosGuardados,
+                'actualizados' => $partidosActualizados,
+                'total_filas' => $partidosGuardados + $partidosActualizados
+            ])
+            ->with('success', "Planilla procesada con éxito");
     }
  
     private function intentarAsignar($partidoId, $nombreExcel, $funcion)

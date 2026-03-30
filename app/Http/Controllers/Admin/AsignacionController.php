@@ -32,7 +32,8 @@ class AsignacionController extends Controller
 
         return Inertia::render('Admin/AsignarArbitros', [
             'partidos' => $partidos,
-            'arbitros' => $arbitros
+            'arbitros' => $arbitros,
+            'import_summary' => session('import_summary')
         ]);
     }
 

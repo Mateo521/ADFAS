@@ -1,13 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, usePage } from '@inertiajs/vue3';
 import { ref, watch, onMounted, computed } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({
     partidos: Array,
-    arbitros: Array
+    arbitros: Array,
+    import_summary: Object
 });
+
+const mostrarResumen = ref(!!props.import_summary);
 
 const form = useForm({
     asignaciones: props.partidos.map(partido => ({
@@ -249,6 +252,57 @@ const submit = () => {
     <Head title="Pizarra de Asignaciones - ADFAS" />
 
     <AuthenticatedLayout>
+
+        <div v-if="import_summary && mostrarResumen" class="mb-8 bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm relative overflow-hidden animate-fade-in">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="flex items-start gap-4 relative z-10">
+                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm mt-0.5">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                
+                <div class="flex-1">
+                    <h3 class="text-green-800 font-black text-[15px] uppercase tracking-widest mb-1">Carga Completada</h3>
+                    <p class="text-green-700 text-sm font-medium mb-4">El sistema procesó el archivo y filtrado automáticamente los partidos repetidos.</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="bg-white rounded-lg p-3 border border-green-100 shadow-sm flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
+                                <span class="text-green-600 font-black">{{ import_summary.total_filas }}</span>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-500 font-black uppercase tracking-wider">Filas Leídas</p>
+                                <p class="text-xs font-bold text-[#0D1B3E]">Total en excel</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-3 border border-green-100 shadow-sm flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                <span class="text-blue-600 font-black">{{ import_summary.nuevos }}</span>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-blue-500 font-black uppercase tracking-wider">Creados</p>
+                                <p class="text-xs font-bold text-[#0D1B3E]">Partidos nuevos</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-3 border border-green-100 shadow-sm flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center">
+                                <span class="text-amber-600 font-black">{{ import_summary.actualizados }}</span>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-amber-500 font-black uppercase tracking-wider">Omitidos / Actualizados</p>
+                                <p class="text-xs font-bold text-[#0D1B3E]">Partidos repetidos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button @click="mostrarResumen = false" class="text-green-500 hover:text-green-700 bg-green-100 hover:bg-green-200 rounded-full p-1.5 transition-colors focus:outline-none">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
 
         <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
@@ -521,4 +575,6 @@ const submit = () => {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
