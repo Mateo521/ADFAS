@@ -11,6 +11,18 @@ const colorTipo = (tipo) => {
     if (tipo === 'Citación') return 'bg-[#D4A843]/10 text-[#A87C20] border-[#D4A843]/30';
     return 'bg-[#0D1B3E]/5 text-[#0D1B3E] border-[#0D1B3E]/20';
 };
+
+// ═════════════════════════════════════════════════════════
+// NUEVO: Función para formatear texto estilo WhatsApp (Preview)
+// ═════════════════════════════════════════════════════════
+const formatearTextoWhatsApp = (texto) => {
+    if (!texto) return '';
+    let seguro = texto.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    seguro = seguro.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-[#0D1B3E]">$1</strong>');
+    seguro = seguro.replace(/\*(.*?)\*/g, '<strong class="font-black text-[#0D1B3E]">$1</strong>');
+    seguro = seguro.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
+    return seguro;
+};
 </script>
 
 <template>
@@ -82,9 +94,7 @@ const colorTipo = (tipo) => {
                         {{ noticia.titulo }}
                     </h2>
                     
-                    <p class="text-[14px] text-[#6B7280] font-medium leading-relaxed line-clamp-2">
-                        {{ noticia.contenido }}
-                    </p>
+                    <p class="text-[14px] text-[#6B7280] font-medium leading-relaxed line-clamp-2" v-html="formatearTextoWhatsApp(noticia.contenido)"></p>
                     
                     <div v-if="noticia.archivo_ruta" class="mt-5 inline-flex items-center gap-2 text-[#162554] bg-[#F7F5F0] px-4 py-2 rounded-lg border border-[#E5E7EB] text-base font-bold tracking-wide uppercase self-start group-hover:border-[#D4A843]/40 transition-colors">
                         <svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
@@ -115,4 +125,4 @@ const colorTipo = (tipo) => {
 
         </div>
     </AuthenticatedLayout>
-</template> 
+</template>

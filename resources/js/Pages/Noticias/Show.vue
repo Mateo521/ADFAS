@@ -15,7 +15,27 @@ const colorTipo = (tipo) => {
     return 'bg-[#0D1B3E]/5 text-[#0D1B3E] border-[#0D1B3E]/20';
 };
 
- 
+// ═════════════════════════════════════════════════════════
+// NUEVO: Función para formatear texto estilo WhatsApp
+// ═════════════════════════════════════════════════════════
+const formatearTextoWhatsApp = (texto) => {
+    if (!texto) return '';
+    
+    // 1. Escapamos etiquetas HTML por seguridad (evitar XSS)
+    let seguro = texto.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // 2. Reemplazamos **texto** por negrita (Markdown estándar)
+    seguro = seguro.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-[#0D1B3E]">$1</strong>');
+    
+    // 3. Reemplazamos *texto* por negrita (Estilo WhatsApp)
+    seguro = seguro.replace(/\*(.*?)\*/g, '<strong class="font-black text-[#0D1B3E]">$1</strong>');
+    
+    // 4. Reemplazamos _texto_ por cursiva (Estilo WhatsApp)
+    seguro = seguro.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
+
+    return seguro;
+};
+
 const confirmarEliminacion = () => {
     Swal.fire({
         title: '¿Eliminar Comunicado?',
@@ -95,9 +115,7 @@ const confirmarEliminacion = () => {
                         <span class="flex-1 h-px bg-gradient-to-r from-[#D4A843]/50 to-transparent"></span>
                     </div>
 
-                    <div class="text-[16px] md:text-[18px] text-[#374151] font-medium leading-[1.8] whitespace-pre-wrap mb-14 text-justify">
-                        {{ noticia.contenido }}
-                    </div>
+                    <div class="text-[16px] md:text-[18px] text-[#374151] font-medium leading-[1.8] whitespace-pre-wrap mb-14 text-justify" v-html="formatearTextoWhatsApp(noticia.contenido)"></div>
 
                     <div v-if="noticia.archivo_ruta" class="bg-[#0D1B3E] rounded-xl p-8 md:p-10 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 border border-[#D4A843]/30 shadow-lg mb-10">
                         <div class="absolute -top-24 -right-24 w-48 h-48 bg-[#D4A843]/10 rounded-full blur-3xl pointer-events-none"></div>

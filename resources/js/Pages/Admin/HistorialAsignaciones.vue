@@ -23,10 +23,26 @@ const formatearFecha = (fecha) => {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;  
 };
 
+ 
+const esPartidoPasado = (fechaString) => {
+    if (!fechaString) return false;
+    
+    
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+     
+    const [year, month, day] = fechaString.split('-');
+    const fechaPartido = new Date(year, month - 1, day);
+    fechaPartido.setHours(0, 0, 0, 0);
+
+    
+    return fechaPartido < hoy;
+};
+
 const modalAbierto = ref(false);
 const partidoSeleccionado = ref(null);
 
-// 1. ACTUALIZADO: Soportar 4 árbitros en el formulario
 const formReasignar = useForm({
     principal_id: '',
     asistente_id: '',
@@ -166,7 +182,6 @@ const limpiarFiltros = () => {
     aplicarFiltros();
 };
 
-// 2. ACTUALIZADO: Funciones para extraer a los 4 árbitros
 const getPrincipal = (partido) => partido.designaciones.find(d => d.funcion === 'ARBITRO PRINCIPAL');
 const getAsistente = (partido) => partido.designaciones.find(d => d.funcion === 'ASISTENTE 1');
 const getAsistente2 = (partido) => partido.designaciones.find(d => d.funcion === 'ASISTENTE 2');
@@ -195,7 +210,7 @@ const getStatusClasses = (estado) => {
                         <span class="w-12 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>
                         <span class="w-1 h-1 bg-[#D4A843] rotate-45 shrink-0"></span>
                     </div>
-                    <p class="text-[12px] text-[#6B7280] font-medium tracking-wide">Supervisa el estado de confirmación de los árbitros en tiempo real.</p>
+                    <p class="text-[12px] text-[#6B7280] font-medium tracking-wide">Supervisa el estado de confirmación de los árbitros en tiempo real y revisa el historial.</p>
                 </div>
                 <div class="hidden md:flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full shadow-sm">
                     <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -247,23 +262,33 @@ const getStatusClasses = (estado) => {
                         <tr v-if="partidos.data.length === 0">
                             <td colspan="7" class="px-5 py-12 text-center"><span class="text-[14px] text-gray-500 font-bold">No se encontraron partidos.</span></td>
                         </tr>
-                        <tr v-for="partido in partidos.data" :key="partido.id" class="border-b border-[#E5E7EB] hover:bg-gray-50 transition-colors">
+                        
+                        <tr v-for="partido in partidos.data" :key="partido.id" 
+                            class="border-b border-[#E5E7EB] transition-colors group"
+                            :class="esPartidoPasado(partido.fecha) ? 'bg-gray-50/80' : 'hover:bg-gray-50'">
+                            
                             <td class="px-5 py-3 border-r border-[#E5E7EB]">
-                                <span class="font-bold text-[13px] text-[#374151] block">{{ formatearFecha(partido.fecha) }}</span>
-                                <span class="text-[#D4A843] font-black text-[13px]">{{ partido.hora_inicio.substring(0,5) }} hs</span>
+                                <span class="font-bold text-[13px] block" :class="esPartidoPasado(partido.fecha) ? 'text-gray-500' : 'text-[#374151]'">{{ formatearFecha(partido.fecha) }}</span>
+                                <span class="font-black text-[13px]" :class="esPartidoPasado(partido.fecha) ? 'text-gray-400' : 'text-[#D4A843]'">{{ partido.hora_inicio.substring(0,5) }} hs</span>
                                 <span class="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-[9px] font-black uppercase tracking-wider border border-gray-200 mt-1 block w-max">{{ partido.categoria }}</span>
                             </td>
+                            
                             <td class="px-5 py-3 border-r border-[#E5E7EB] text-center min-w-[180px]">
-                                <div class="font-black text-[12px] text-[#0D1B3E] uppercase">{{ partido.equipo_local }}</div>
+                                <div class="font-black text-[12px] uppercase" :class="esPartidoPasado(partido.fecha) ? 'text-gray-500' : 'text-[#0D1B3E]'">{{ partido.equipo_local }}</div>
                                 <div class="text-[9px] text-gray-400 font-bold my-0.5">VS</div>
-                                <div class="font-black text-[12px] text-[#0D1B3E] uppercase">{{ partido.equipo_visitante }}</div>
+                                <div class="font-black text-[12px] uppercase" :class="esPartidoPasado(partido.fecha) ? 'text-gray-500' : 'text-[#0D1B3E]'">{{ partido.equipo_visitante }}</div>
                                 <div class="text-[11px] text-[#6B7280] mt-1.5 font-medium flex items-center justify-center gap-1">{{ partido.cancha }}</div>
                             </td>
                             
-                            <td class="px-4 py-3 border-r border-[#E5E7EB] bg-blue-50/10 relative group cursor-pointer">
-                                <div v-if="getPrincipal(partido)" class="flex items-center gap-3">
+
+
+
+
+
+                           <td class="px-4 py-3 border-r border-[#E5E7EB] relative group/celda cursor-pointer" :class="esPartidoPasado(partido.fecha) ? '' : 'bg-blue-50/10'">
+                                <div v-if="getPrincipal(partido)" class="flex items-center gap-3" :class="esPartidoPasado(partido.fecha) ? 'opacity-70' : ''">
                                     <div class="w-8 h-8 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-                                        <img v-if="getPrincipal(partido).user.foto_perfil" :src="`/storage/${getPrincipal(partido).user.foto_perfil}`" class="w-full h-full object-cover">
+                                        <img v-if="getPrincipal(partido).user.foto_perfil" :src="`/storage/${getPrincipal(partido).user.foto_perfil}`" class="w-full h-full object-cover grayscale" :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{ getPrincipal(partido).user.name.charAt(0) }}{{ getPrincipal(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
@@ -274,17 +299,17 @@ const getStatusClasses = (estado) => {
                                 <span v-else class="text-[11px] text-gray-400 font-medium italic flex items-center justify-center h-full">-</span>
                                 
                                 <Link v-if="getPrincipal(partido)" :href="route('admin.arbitros.show', getPrincipal(partido).user.id)" 
-                                      class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover:scale-100">
+                                      class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover/celda:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover/celda:scale-100">
                                     <span class="text-[11px] font-black text-[#0D1B3E] uppercase tracking-widest flex items-center gap-1.5 hover:text-[#D4A843] transition-colors">
                                         Ver Ficha
                                     </span>
                                 </Link>
                             </td>
 
-                            <td class="px-4 py-3 border-r border-[#E5E7EB] bg-blue-50/10 relative group cursor-pointer">
-                                <div v-if="getAsistente(partido)" class="flex items-center gap-3">
+                            <td class="px-4 py-3 border-r border-[#E5E7EB] relative group/celda cursor-pointer" :class="esPartidoPasado(partido.fecha) ? '' : 'bg-blue-50/10'">
+                                <div v-if="getAsistente(partido)" class="flex items-center gap-3" :class="esPartidoPasado(partido.fecha) ? 'opacity-70' : ''">
                                     <div class="w-8 h-8 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-                                        <img v-if="getAsistente(partido).user.foto_perfil" :src="`/storage/${getAsistente(partido).user.foto_perfil}`" class="w-full h-full object-cover">
+                                        <img v-if="getAsistente(partido).user.foto_perfil" :src="`/storage/${getAsistente(partido).user.foto_perfil}`" class="w-full h-full object-cover grayscale" :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{ getAsistente(partido).user.name.charAt(0) }}{{ getAsistente(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
@@ -294,15 +319,15 @@ const getStatusClasses = (estado) => {
                                 </div>
                                 <span v-else class="text-[11px] text-gray-400 font-medium italic flex items-center justify-center h-full">-</span>
                                 
-                                <Link v-if="getAsistente(partido)" :href="route('admin.arbitros.show', getAsistente(partido).user.id)" class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover:scale-100">
+                                <Link v-if="getAsistente(partido)" :href="route('admin.arbitros.show', getAsistente(partido).user.id)" class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover/celda:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover/celda:scale-100">
                                     <span class="text-[11px] font-black text-[#0D1B3E] uppercase tracking-widest flex items-center gap-1.5 hover:text-[#D4A843] transition-colors">Ver Ficha</span>
                                 </Link>
                             </td>
 
-                            <td class="px-4 py-3 border-r border-[#E5E7EB] bg-blue-50/10 relative group cursor-pointer">
-                                <div v-if="getAsistente2(partido)" class="flex items-center gap-3">
+                            <td class="px-4 py-3 border-r border-[#E5E7EB] relative group/celda cursor-pointer" :class="esPartidoPasado(partido.fecha) ? '' : 'bg-blue-50/10'">
+                                <div v-if="getAsistente2(partido)" class="flex items-center gap-3" :class="esPartidoPasado(partido.fecha) ? 'opacity-70' : ''">
                                     <div class="w-8 h-8 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-                                        <img v-if="getAsistente2(partido).user.foto_perfil" :src="`/storage/${getAsistente2(partido).user.foto_perfil}`" class="w-full h-full object-cover">
+                                        <img v-if="getAsistente2(partido).user.foto_perfil" :src="`/storage/${getAsistente2(partido).user.foto_perfil}`" class="w-full h-full object-cover grayscale" :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{ getAsistente2(partido).user.name.charAt(0) }}{{ getAsistente2(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
@@ -312,15 +337,15 @@ const getStatusClasses = (estado) => {
                                 </div>
                                 <span v-else class="text-[11px] text-gray-400 font-medium italic flex items-center justify-center h-full">-</span>
                                 
-                                <Link v-if="getAsistente2(partido)" :href="route('admin.arbitros.show', getAsistente2(partido).user.id)" class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover:scale-100">
+                                <Link v-if="getAsistente2(partido)" :href="route('admin.arbitros.show', getAsistente2(partido).user.id)" class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover/celda:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover/celda:scale-100">
                                     <span class="text-[11px] font-black text-[#0D1B3E] uppercase tracking-widest flex items-center gap-1.5 hover:text-[#D4A843] transition-colors">Ver Ficha</span>
                                 </Link>
                             </td>
 
-                            <td class="px-4 py-3 border-r border-[#E5E7EB] bg-blue-50/10 relative group cursor-pointer">
-                                <div v-if="getAsistente3(partido)" class="flex items-center gap-3">
+                            <td class="px-4 py-3 border-r border-[#E5E7EB] relative group/celda cursor-pointer" :class="esPartidoPasado(partido.fecha) ? '' : 'bg-blue-50/10'">
+                                <div v-if="getAsistente3(partido)" class="flex items-center gap-3" :class="esPartidoPasado(partido.fecha) ? 'opacity-70' : ''">
                                     <div class="w-8 h-8 rounded-full bg-white border border-gray-200 overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-                                        <img v-if="getAsistente3(partido).user.foto_perfil" :src="`/storage/${getAsistente3(partido).user.foto_perfil}`" class="w-full h-full object-cover">
+                                        <img v-if="getAsistente3(partido).user.foto_perfil" :src="`/storage/${getAsistente3(partido).user.foto_perfil}`" class="w-full h-full object-cover grayscale" :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{ getAsistente3(partido).user.name.charAt(0) }}{{ getAsistente3(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
@@ -330,15 +355,28 @@ const getStatusClasses = (estado) => {
                                 </div>
                                 <span v-else class="text-[11px] text-gray-400 font-medium italic flex items-center justify-center h-full">-</span>
                                 
-                                <Link v-if="getAsistente3(partido)" :href="route('admin.arbitros.show', getAsistente3(partido).user.id)" class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover:scale-100">
+                                <Link v-if="getAsistente3(partido)" :href="route('admin.arbitros.show', getAsistente3(partido).user.id)" class="absolute inset-1 bg-white/95 backdrop-blur-[2px] flex items-center justify-center opacity-0 group-hover/celda:opacity-100 transition-all duration-300 border border-[#D4A843]/50 rounded shadow-sm z-10 scale-95 group-hover/celda:scale-100">
                                     <span class="text-[11px] font-black text-[#0D1B3E] uppercase tracking-widest flex items-center gap-1.5 hover:text-[#D4A843] transition-colors">Ver Ficha</span>
                                 </Link>
                             </td>
+
+
+
+
+
+
+
                             
-                            <td class="px-5 py-3 text-center sticky right-0 bg-white group-hover:bg-gray-50 border-l border-[#E5E7EB] shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]">
-                                <button @click="abrirModalReasignar(partido)" class="text-[#0D1B3E] font-bold text-[11px] uppercase tracking-wider bg-[#0D1B3E]/5 px-3 py-2 rounded border border-[#0D1B3E]/20 hover:bg-[#D4A843]/10 hover:text-[#A87C20] hover:border-[#D4A843]/30 transition-colors w-full">
+                            <td class="px-5 py-3 text-center sticky right-0 border-l border-[#E5E7EB] shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]" :class="esPartidoPasado(partido.fecha) ? 'bg-gray-50/80' : 'bg-white group-hover:bg-gray-50'">
+                                
+                                <span v-if="esPartidoPasado(partido.fecha)" class="inline-block bg-[#111827] text-white font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded shadow-sm opacity-90">
+                                    Terminado
+                                </span>
+                                
+                                <button v-else @click="abrirModalReasignar(partido)" class="text-[#0D1B3E] font-bold text-[11px] uppercase tracking-wider bg-[#0D1B3E]/5 px-3 py-2 rounded border border-[#0D1B3E]/20 hover:bg-[#D4A843]/10 hover:text-[#A87C20] hover:border-[#D4A843]/30 transition-colors w-full">
                                     Reasignar
                                 </button>
+                                
                             </td>
                         </tr>
                     </tbody>
