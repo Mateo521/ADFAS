@@ -39,7 +39,7 @@ const submit = () => {
                 Información del Perfil
             </h2>
             <p class="text-[13px] text-[#6B7280] font-medium">
-                Actualiza tu nombre, correo electrónico, número de contacto y foto de perfil.
+                Actualizá tu nombre, correo electrónico, número de contacto y foto de perfil.
             </p>
         </header>
 
