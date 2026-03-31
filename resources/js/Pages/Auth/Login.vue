@@ -53,7 +53,7 @@ onMounted(() => {
                 Portal
             </p>
             <h1
-                class="font-['Playfair_Display',serif]- text-[32px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-[14px]">
+                class="- text-[32px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-[14px]">
                 Acceso al sistema
             </h1>
             <div class="flex items-center justify-center gap-2.5">

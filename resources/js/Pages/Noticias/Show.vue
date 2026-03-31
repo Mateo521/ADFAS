@@ -106,7 +106,7 @@ const confirmarEliminacion = () => {
                         </div>
                     </div>
 
-                    <h1 class="font-['Playfair_Display',serif]- text-[36px] md:text-[48px] font-extrabold text-[#0D1B3E] leading-[1.15] mb-6">
+                    <h1 class="- text-[36px] md:text-[48px] font-extrabold text-[#0D1B3E] leading-[1.15] mb-6">
                         {{ noticia.titulo }}
                     </h1>
                     <div class="flex items-center gap-3 mb-10">

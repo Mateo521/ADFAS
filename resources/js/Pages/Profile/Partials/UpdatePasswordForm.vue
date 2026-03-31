@@ -32,11 +32,11 @@ const updatePassword = () => {
 <template>
     <section>
         <header class="mb-6">
-            <h2 class="font-['Playfair_Display',serif] text-[24px] font-extrabold text-[#0D1B3E] mb-1">
-                Actualizar Contraseña
+            <h2 class=" text-[24px] font-extrabold text-[#0D1B3E] mb-1">
+                Actualizar contraseña
             </h2>
             <p class="text-[13px] text-[#6B7280] font-medium">
-                Asegúrate de que tu cuenta esté usando una contraseña larga y aleatoria para mantenerte seguro.
+                Asegurate de que tu cuenta esté usando una contraseña larga y aleatoria para mantenerte seguro.
             </p>
         </header>
 

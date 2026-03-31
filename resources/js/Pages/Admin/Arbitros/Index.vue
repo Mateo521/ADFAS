@@ -86,7 +86,7 @@ const limpiarFiltro = () => {
                 <div>
                     <p class="text-[11px] font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Plantel Oficial</p>
                     <h1
-                        class="font-['Playfair_Display',serif] text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
+                        class=" text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
                         Directorio de Árbitros
                     </h1>
                     <div class="flex items-center gap-2.5">

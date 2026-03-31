@@ -35,7 +35,7 @@ const submit = () => {
     <AuthenticatedLayout>
         
         <div class="mb-8">
-            <h1 class="font-['Playfair_Display',serif]- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
+            <h1 class="- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
                 Importar Planilla
             </h1>
             <div class="flex items-center gap-2.5 mb-2">

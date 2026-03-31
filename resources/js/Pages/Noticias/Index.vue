@@ -33,7 +33,7 @@ const formatearTextoWhatsApp = (texto) => {
         <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
                 <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Comunicados Oficiales</p>
-                <h1 class="font-['Playfair_Display',serif]- text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
+                <h1 class="- text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
                     Tablón de Noticias
                 </h1>
                 <div class="flex items-center gap-2.5">
@@ -60,7 +60,7 @@ const formatearTextoWhatsApp = (texto) => {
                     <div class="w-20 h-20 bg-[#0D1B3E] rounded-full flex items-center justify-center mb-5 border-[3px] border-[#D4A843]/30 shadow-inner">
                         <svg class="w-8 h-8 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2-0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
                     </div>
-                    <h2 class="font-['Playfair_Display',serif]- text-[22px] font-extrabold text-[#0D1B3E] mb-2 uppercase tracking-wide">Sin comunicados recientes</h2>
+                    <h2 class="- text-[22px] font-extrabold text-[#0D1B3E] mb-2 uppercase tracking-wide">Sin comunicados recientes</h2>
                     <p class="text-[14px] text-[#6B7280] font-medium">El tablón de anuncios oficial se encuentra vacío en este momento.</p>
                 </div>
             </div>
@@ -90,7 +90,7 @@ const formatearTextoWhatsApp = (texto) => {
                         </span>
                     </div>
                     
-                    <h2 class="font-['Playfair_Display',serif]- text-[24px] md:text-[28px] font-extrabold text-[#0D1B3E] mb-3 leading-tight group-hover:text-[#D4A843] transition-colors duration-300 line-clamp-2">
+                    <h2 class="- text-[24px] md:text-[28px] font-extrabold text-[#0D1B3E] mb-3 leading-tight group-hover:text-[#D4A843] transition-colors duration-300 line-clamp-2">
                         {{ noticia.titulo }}
                     </h2>
                     

@@ -35,7 +35,7 @@ const submit = () => {
 <template>
     <section>
         <header class="mb-6">
-            <h2 class="font-['Playfair_Display',serif] text-[24px] font-extrabold text-[#0D1B3E] mb-1">
+            <h2 class=" text-[24px] font-extrabold text-[#0D1B3E] mb-1">
                 Información del Perfil
             </h2>
             <p class="text-[13px] text-[#6B7280] font-medium">

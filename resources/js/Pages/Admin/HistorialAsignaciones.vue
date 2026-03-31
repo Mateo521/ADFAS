@@ -203,7 +203,7 @@ const getStatusClasses = (estado) => {
             
             <div class="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 class="font-['Playfair_Display',serif]- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
+                    <h1 class="- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
                         Gestión y Monitoreo
                     </h1>
                     <div class="flex items-center gap-2.5 mb-2">
@@ -397,7 +397,7 @@ const getStatusClasses = (estado) => {
                 
                 <div class="bg-[#0D1B3E] p-6 text-center relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-[#D4A843]/20 rounded-full blur-2xl"></div>
-                    <h2 class="relative z-10 font-['Playfair_Display',serif]- text-[22px] font-extrabold text-white uppercase tracking-wide">
+                    <h2 class="relative z-10 - text-[22px] font-extrabold text-white uppercase tracking-wide">
                         Modificar Designación
                     </h2>
                     <p class="relative z-10 text-[12px] font-medium text-[#D4A843] mt-1 uppercase tracking-widest">
