@@ -23,6 +23,15 @@ const Toast = Swal.mixin({
 });
 
 
+const formatearTextoWhatsApp = (texto) => {
+    if (!texto) return '';
+    let seguro = texto.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    seguro = seguro.replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-[#0D1B3E]">$1</strong>');
+    seguro = seguro.replace(/\*(.*?)\*/g, '<strong class="font-black text-[#0D1B3E]">$1</strong>');
+    seguro = seguro.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
+    return seguro;
+};
+
 const mostrarModalLicencia = ref(false);
 
 const formLicencia = useForm({
@@ -57,6 +66,8 @@ const abrirModalDetalles = (tipo) => {
     }
     mostrarModalDetalles.value = true;
 };
+
+
 
 
 let intervalId = null;
@@ -448,7 +459,9 @@ const colorNoticia = (tipo) => {
                         <span class="text-base text-[#0D1B3E]/40 font-bold shrink-0">{{ new Date(noticia.created_at).toLocaleDateString('es-ES') }}</span>
                     </div>
                     <h3 class="text-sm font-black text-[#0D1B3E] truncate mb-0.5">{{ noticia.titulo }}</h3>
-                    <p class="text-base text-[#0D1B3E]/50 font-medium truncate">{{ noticia.contenido }}</p>
+
+                    <p class="text-base text-[#0D1B3E]/50 font-medium truncate" v-html="formatearTextoWhatsApp(noticia.contenido)"></p>
+
                 </div>
             </Link>
 
