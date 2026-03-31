@@ -18,12 +18,14 @@ class ImportController extends Controller
 
     public function upload(Request $request)
     {
-   
+        // 1. Volvemos a pedir la fecha base
         $request->validate([
-            'documento' => 'required|mimes:xlsx,csv|max:5120'
+            'documento' => 'required|mimes:xlsx,csv|max:5120',
+            'fecha_base' => 'required|date' 
         ]);
 
         $file = $request->file('documento');
+        $fechaBase = Carbon::parse($request->fecha_base); // Ej: 2026-03-20
         $extension = $file->getClientOriginalExtension();
 
         $reader = SimpleExcelReader::create($file->getRealPath(), $extension)->noHeaderRow();
@@ -34,17 +36,16 @@ class ImportController extends Controller
         $titulosEncontrados = false;
         $indices = []; 
 
-        $filasCrudas->each(function(array $fila) use (&$partidosGuardados, &$partidosActualizados, &$titulosEncontrados, &$indices) {
+        $filasCrudas->each(function(array $fila) use (&$partidosGuardados, &$partidosActualizados, &$titulosEncontrados, &$indices, $fechaBase) {
             
             $filaTexto = array_map(function($item) {
                 if ($item instanceof \DateTimeInterface) {
-               
                     return $item->format('Y-m-d H:i:s');  
                 }
                 return strtoupper(trim((string)$item));
             }, $fila);
 
-             
+            // Buscamos los encabezados (Incluyendo DIA)
             if (!$titulosEncontrados && in_array('LOCAL', $filaTexto) && in_array('VISITANTE', $filaTexto)) {
                 $titulosEncontrados = true;
                 $indices['cat'] = array_search('CAT.', $filaTexto) !== false ? array_search('CAT.', $filaTexto) : array_search('CATEGORIA', $filaTexto);
@@ -53,8 +54,6 @@ class ImportController extends Controller
                 $indices['cancha'] = array_search('CANCHA', $filaTexto);
                 $indices['hora'] = array_search('HORA', $filaTexto);
                 $indices['disciplina'] = array_search('DISCIPLINA', $filaTexto);
-                
-                 
                 $indices['dia'] = array_search('DIA', $filaTexto) !== false ? array_search('DIA', $filaTexto) : (array_search('DÍA', $filaTexto) !== false ? array_search('DÍA', $filaTexto) : array_search('FECHA', $filaTexto));
                 
                 return; 
@@ -78,25 +77,24 @@ class ImportController extends Controller
                     }
                 }
 
-               
-                $fechaExacta = Carbon::now()->format('Y-m-d');  
+                // 2. LA MAGIA: Combinar Fecha Base con el Día del Excel
+                $fechaExactaGuardar = $fechaBase->format('Y-m-d'); // Fallback por si la celda está vacía
                 
                 if (isset($indices['dia']) && !empty($fila[$indices['dia']])) {
-                    $celdaDia = $fila[$indices['dia']];
+                    $celdaDia = (string) $fila[$indices['dia']]; // Ej: "SABADO 21"
                     
+                    // Buscamos los números dentro del texto usando Expresiones Regulares
+                    preg_match('/\d+/', $celdaDia, $matches);
                     
-                    if ($celdaDia instanceof \DateTimeInterface) {
-                        $fechaExacta = $celdaDia->format('Y-m-d');
-                    } else {
-                       
+                    if (!empty($matches)) {
+                        $diaNumero = (int) $matches[0]; // Extrae el "21"
+                        
+                        // Creamos una copia de la fecha base para no alterar el mes/año original
+                        // y le seteamos el día que sacamos del excel.
                         try {
-                            
-                            $diaTexto = trim((string)$celdaDia);
-                            $diaTexto = str_replace('/', '-', $diaTexto);
-                            $fechaParseada = Carbon::parse($diaTexto);
-                            $fechaExacta = $fechaParseada->format('Y-m-d');
+                            $fechaExactaGuardar = $fechaBase->copy()->day($diaNumero)->format('Y-m-d');
                         } catch (\Exception $e) {
-                            
+                            // Si por algún motivo el día no es válido, se usa el fallback
                         }
                     }
                 }
@@ -107,10 +105,10 @@ class ImportController extends Controller
                 $cancha = isset($indices['cancha']) && isset($fila[$indices['cancha']]) ? (string)$fila[$indices['cancha']] : 'A Confirmar';
                 $disciplina = isset($indices['disciplina']) && isset($fila[$indices['disciplina']]) ? strtoupper(trim((string)$fila[$indices['disciplina']])) : null;
 
-           
+                // 3. GUARDAMOS con la fecha correctamente procesada
                 $partido = Partido::updateOrCreate(
                     [
-                        'fecha' => $fechaExacta,
+                        'fecha' => $fechaExactaGuardar,  
                         'hora_inicio' => $horaExacta,
                         'equipo_local' => $equipoLocal,
                         'equipo_visitante' => $equipoVisitante,
