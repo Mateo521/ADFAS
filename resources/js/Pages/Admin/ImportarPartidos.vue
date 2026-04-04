@@ -53,9 +53,9 @@ const submit = () => {
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <div>
-                        <h4 class="text-green-800 font-black text-[12px] uppercase tracking-widest mb-0.5">Protección Antiduplicados Activada</h4>
+                        <h4 class="text-green-800 font-black text-[12px] uppercase tracking-widest mb-0.5">Aviso duplicados</h4>
                         <p class="text-green-700 text-[13px] font-medium leading-snug">
-                            Si subís un Excel que ya habías cargado antes, el sistema <b>NO duplicará</b> los partidos. Solamente actualizará la información.
+                            Si subís un excel que ya habías cargado antes, el sistema <b>no va a duplicar</b> los partidos. Solamente va a actualizar la información.
                         </p>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ const submit = () => {
                     <ul class="text-white/80 font-medium space-y-4">
                         <li class="flex items-start gap-3">
                             <span class="text-[#D4A843] font-black mt-0.5 opacity-70">01.</span>
-                            <p class="leading-relaxed">Asegúrese de que el Excel contenga una columna llamada <strong class="text-white">DIA</strong> y que especifique el número (Ej: "SABADO 21")</p>
+                            <p class="leading-relaxed">Asegurate de que el excel tenga una columna llamada <strong class="text-white">DIA</strong> y que especifique el número (Ej: "SABADO 21")</p>
                         </li>
                         </ul>
                 </div>

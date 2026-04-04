@@ -268,7 +268,7 @@ const submit = () => {
                 </div>
                 <div class="flex-1">
                     <h3 class="text-green-800 font-black text-[15px] uppercase tracking-widest mb-1">Carga Completada con Éxito</h3>
-                    <p class="text-green-700 text-sm font-medium mb-4">El sistema ha procesado el archivo Excel y extraído las fechas correspondientes.</p>
+                    <p class="text-green-700 text-sm font-medium mb-4">El sistema procesó el archivo excel y extraído las fechas correspondientes.</p>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                         <div class="bg-white rounded-lg p-3 border border-green-100 shadow-sm flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center"><span class="text-green-600 font-black">{{ import_summary.total_filas }}</span></div>
@@ -435,7 +435,7 @@ const submit = () => {
 
             <div class="bg-white p-5 border border-t-0 border-[#E5E7EB] rounded-b-xl shadow-sm flex items-center justify-between z-30 shrink-0">
                 <p class="text-[12px] text-[#6B7280] font-medium hidden md:block">
-                    Al confirmar, se guardarán los datos de la pizarra y se enviarán las notificaciones.
+                    Al confirmar, se van a guardar los datos de la pizarra y se van a enviar las notificaciones.
                 </p>
                 <button type="submit" :disabled="form.processing" class="group relative overflow-hidden px-8 py-3.5 bg-gradient-to-r from-[#C9920E] via-[#D4A843] to-[#C9920E] bg-[length:200%_100%] text-[#0D1B3E] text-[12px] font-black uppercase tracking-[2px] rounded-lg transition-all duration-300 shadow-[0_2px_8px_rgba(212,168,67,0.3)] hover:bg-[100%_0] hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(168,124,32,0.35)] disabled:opacity-65 disabled:cursor-not-allowed disabled:transform-none w-full md:w-auto">
                     <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
