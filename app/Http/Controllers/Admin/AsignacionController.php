@@ -116,6 +116,11 @@ class AsignacionController extends Controller
         if ($request->filled('categoria')) {
             $query->where('categoria', 'LIKE', '%' . $request->categoria . '%');
         }
+
+        // NUEVO FILTRO POR DISCIPLINA
+        if ($request->filled('disciplina')) {
+            $query->where('disciplina', 'LIKE', '%' . $request->disciplina . '%');
+        }
         
         if ($request->filled('equipo')) {
             $query->where(function($q) use ($request) {
@@ -141,7 +146,8 @@ class AsignacionController extends Controller
         return Inertia::render('Admin/HistorialAsignaciones', [
             'partidos' => $partidos,
             'arbitros' => $arbitros,  
-            'filtros' => $request->only(['fecha', 'categoria', 'equipo', 'arbitro']) 
+            
+            'filtros' => $request->only(['fecha', 'categoria', 'equipo', 'arbitro', 'disciplina']) 
         ]);
     }
 

@@ -9,12 +9,12 @@ class Partido extends Model
 {
     use HasFactory;
 
-   
     protected $fillable = [
         'categoria',
         'equipo_local',
         'equipo_visitante',
         'cancha',
+        'disciplina',  
         'fecha',
         'hora_inicio',
         'estado',

@@ -18,14 +18,13 @@ class ImportController extends Controller
 
     public function upload(Request $request)
     {
-        // 1. Volvemos a pedir la fecha base
         $request->validate([
             'documento' => 'required|mimes:xlsx,csv|max:5120',
             'fecha_base' => 'required|date' 
         ]);
 
         $file = $request->file('documento');
-        $fechaBase = Carbon::parse($request->fecha_base); // Ej: 2026-03-20
+        $fechaBase = Carbon::parse($request->fecha_base); 
         $extension = $file->getClientOriginalExtension();
 
         $reader = SimpleExcelReader::create($file->getRealPath(), $extension)->noHeaderRow();
@@ -45,7 +44,7 @@ class ImportController extends Controller
                 return strtoupper(trim((string)$item));
             }, $fila);
 
-            // Buscamos los encabezados (Incluyendo DIA)
+       
             if (!$titulosEncontrados && in_array('LOCAL', $filaTexto) && in_array('VISITANTE', $filaTexto)) {
                 $titulosEncontrados = true;
                 $indices['cat'] = array_search('CAT.', $filaTexto) !== false ? array_search('CAT.', $filaTexto) : array_search('CATEGORIA', $filaTexto);
@@ -53,19 +52,19 @@ class ImportController extends Controller
                 $indices['visitante'] = array_search('VISITANTE', $filaTexto);
                 $indices['cancha'] = array_search('CANCHA', $filaTexto);
                 $indices['hora'] = array_search('HORA', $filaTexto);
-                $indices['disciplina'] = array_search('DISCIPLINA', $filaTexto);
                 $indices['dia'] = array_search('DIA', $filaTexto) !== false ? array_search('DIA', $filaTexto) : (array_search('DÍA', $filaTexto) !== false ? array_search('DÍA', $filaTexto) : array_search('FECHA', $filaTexto));
+                
+       
+                $indices['disciplina'] = array_search('DISCIPLINA', $filaTexto) !== false ? array_search('DISCIPLINA', $filaTexto) : array_search('DEPARTAMENTO', $filaTexto);
                 
                 return; 
             }
 
             if ($titulosEncontrados) {
-                
                 if (empty($fila[$indices['local']]) || empty($fila[$indices['visitante']]) || $fila[$indices['local']] === 'LOCAL' || $fila[$indices['local']] === 'LIGA SANLUISEÑA DE FÚTBOL') {
                     return;
                 }
 
-                // Extracción de HORA
                 $horaExacta = '00:00:00';
                 if (isset($indices['hora']) && !empty($fila[$indices['hora']])) {
                     $horaCelda = $fila[$indices['hora']];
@@ -77,25 +76,16 @@ class ImportController extends Controller
                     }
                 }
 
-                // 2. LA MAGIA: Combinar Fecha Base con el Día del Excel
-                $fechaExactaGuardar = $fechaBase->format('Y-m-d'); // Fallback por si la celda está vacía
+                $fechaExactaGuardar = $fechaBase->format('Y-m-d'); 
                 
                 if (isset($indices['dia']) && !empty($fila[$indices['dia']])) {
-                    $celdaDia = (string) $fila[$indices['dia']]; // Ej: "SABADO 21"
-                    
-                    // Buscamos los números dentro del texto usando Expresiones Regulares
+                    $celdaDia = (string) $fila[$indices['dia']]; 
                     preg_match('/\d+/', $celdaDia, $matches);
-                    
                     if (!empty($matches)) {
-                        $diaNumero = (int) $matches[0]; // Extrae el "21"
-                        
-                        // Creamos una copia de la fecha base para no alterar el mes/año original
-                        // y le seteamos el día que sacamos del excel.
+                        $diaNumero = (int) $matches[0]; 
                         try {
                             $fechaExactaGuardar = $fechaBase->copy()->day($diaNumero)->format('Y-m-d');
-                        } catch (\Exception $e) {
-                            // Si por algún motivo el día no es válido, se usa el fallback
-                        }
+                        } catch (\Exception $e) {}
                     }
                 }
 
@@ -103,9 +93,10 @@ class ImportController extends Controller
                 $equipoVisitante = (string)$fila[$indices['visitante']];
                 $categoria = isset($indices['cat']) && isset($fila[$indices['cat']]) ? (string)$fila[$indices['cat']] : 'Sin definir';
                 $cancha = isset($indices['cancha']) && isset($fila[$indices['cancha']]) ? (string)$fila[$indices['cancha']] : 'A Confirmar';
-                $disciplina = isset($indices['disciplina']) && isset($fila[$indices['disciplina']]) ? strtoupper(trim((string)$fila[$indices['disciplina']])) : null;
+                
+          
+                $disciplina = isset($indices['disciplina']) && isset($fila[$indices['disciplina']]) ? strtoupper(trim((string)$fila[$indices['disciplina']])) : 'FUTBOL 11';
 
-                // 3. GUARDAMOS con la fecha correctamente procesada
                 $partido = Partido::updateOrCreate(
                     [
                         'fecha' => $fechaExactaGuardar,  

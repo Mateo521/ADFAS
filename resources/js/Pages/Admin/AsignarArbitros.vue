@@ -31,14 +31,28 @@ const mostrarResumen = ref(!!props.import_summary);
 
 onMounted(() => {
     const borradorGuardado = localStorage.getItem(CLAVE_BORRADOR);
+    
     if (borradorGuardado && props.partidos.length > 0) {
         const asignacionesRecuperadas = JSON.parse(borradorGuardado);
-        if (asignacionesRecuperadas.length === form.asignaciones.length) {
+        
+        
+        const idsActuales = props.partidos.map(p => p.id).sort().join(',');
+        const idsBorrador = asignacionesRecuperadas.map(a => a.partido_id).sort().join(',');
+
+        if (idsActuales === idsBorrador) {
             form.asignaciones = asignacionesRecuperadas;
             tieneBorrador.value = true;
             Toast.fire({ icon: 'info', title: 'Progreso recuperado', text: 'Se restauraron tus asignaciones previas.', timer: 4000 });
         } else {
+            
             localStorage.removeItem(CLAVE_BORRADOR);
+            form.asignaciones = props.partidos.map(partido => ({
+                partido_id: partido.id,
+                principal_id: '',
+                asistente_id: '',
+                asistente_2_id: '',
+                asistente_3_id: ''
+            }));
         }
     }
 });
@@ -51,9 +65,6 @@ watch(() => form.asignaciones, (nuevosDatos) => {
         Toast.fire({ icon: 'success', title: 'Cambios guardados', timer: 1500 });
     }, 1000);
 }, { deep: true });
-
-
- 
 
 const formatearFechaCompleta = (fechaString) => {
     if (!fechaString) return '';
@@ -77,12 +88,20 @@ const partidosPorCancha = computed(() => {
 const canchasDisponibles = computed(() => Object.keys(partidosPorCancha.value).sort());
 const canchaSeleccionada = ref(null);
 const fechaSeleccionada = ref('TODAS');
+const disciplinaSeleccionada = ref('TODAS'); // NUEVO: Filtro de Disciplina
 
 // Fechas disponibles según la cancha elegida
 const fechasDeCancha = computed(() => {
     if (!canchaSeleccionada.value || !partidosPorCancha.value[canchaSeleccionada.value]) return [];
     const fechas = partidosPorCancha.value[canchaSeleccionada.value].map(p => p.datos.fecha);
     return [...new Set(fechas)].sort();
+});
+
+// NUEVO: Disciplinas únicas disponibles en todos los partidos
+const disciplinasDisponibles = computed(() => {
+    if (!props.partidos) return [];
+    const disciplinas = props.partidos.map(p => p.disciplina || 'FUTBOL 11');
+    return [...new Set(disciplinas)].sort();
 });
 
 watch(canchasDisponibles, (nuevasCanchas) => {
@@ -93,10 +112,9 @@ watch(canchasDisponibles, (nuevasCanchas) => {
 }, { immediate: true });
 
 watch(canchaSeleccionada, () => {
-    fechaSeleccionada.value = 'TODAS'; // Reseteamos la fecha al cambiar de cancha
+    fechaSeleccionada.value = 'TODAS';
 });
 
-// Función matemática para ordenar por categoría (De Menor a Mayor)
 const getCategoriaRank = (categoria) => {
     const cat = (categoria || '').toUpperCase();
     if (cat.includes('SUB 10') || cat.includes('SUB-10') || cat.includes('SUB10')) return 1;
@@ -114,7 +132,7 @@ const getCategoriaRank = (categoria) => {
     return 99;
 };
 
-// Agrupamos, Filtramos por Día y Ordenamos
+// Agrupamos, Filtramos por Día, Filtramos por Disciplina y Ordenamos
 const partidosTabla = computed(() => {
     if (!canchaSeleccionada.value || !partidosPorCancha.value[canchaSeleccionada.value]) return {};
     
@@ -123,6 +141,11 @@ const partidosTabla = computed(() => {
     // Filtro por Fecha
     if (fechaSeleccionada.value !== 'TODAS') {
         partidos = partidos.filter(p => p.datos.fecha === fechaSeleccionada.value);
+    }
+
+    // NUEVO: Filtro por Disciplina
+    if (disciplinaSeleccionada.value !== 'TODAS') {
+        partidos = partidos.filter(p => (p.datos.disciplina || 'FUTBOL 11') === disciplinaSeleccionada.value);
     }
     
     // Ordenamos: Fecha -> Categoría -> Hora
@@ -145,8 +168,6 @@ const partidosTabla = computed(() => {
     }, {});
 });
 
-
- 
 const limpiarBorrador = () => {
     Swal.fire({
         title: '¿Limpiar pizarra?',
@@ -220,7 +241,6 @@ const formatearNombreArbitro = (arbitro, partido) => {
     return nombreBase;
 };
 
-// Solo bloquea si se superponen en TIEMPO y en EL MISMO DÍA
 const arbitrosDisponibles = (indexPartidoActual) => {
     const partidoActual = props.partidos[indexPartidoActual];
     const inicioActual = aMinutos(partidoActual.hora_inicio);
@@ -228,7 +248,6 @@ const arbitrosDisponibles = (indexPartidoActual) => {
 
     const arbitrosOcupados = form.asignaciones.map((asignacion, i) => {
         const otroPartido = props.partidos[i];
-        // Aquí está la magia: SOLO verifica si es la misma FECHA
         if (i !== indexPartidoActual && otroPartido.fecha === partidoActual.fecha) {
             const inicioOtro = aMinutos(otroPartido.hora_inicio);
             const finOtro = inicioOtro + obtenerDuracion(otroPartido.disciplina);
@@ -312,7 +331,7 @@ const submit = () => {
 
         <form v-else @submit.prevent="submit" class="flex flex-col gap-6">
 
-            <div class="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6 z-10 relative">
+            <div class="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 z-10 relative">
                 
                 <div class="flex flex-col gap-2">
                     <label class="block text-[11px] font-black text-[#6B7280] uppercase tracking-[0.15em] pl-1">1. Seleccionar Cancha</label>
@@ -326,16 +345,29 @@ const submit = () => {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="block text-[11px] font-black text-[#6B7280] uppercase tracking-[0.15em] pl-1">2. Filtrar por Día (Opcional)</label>
+                    <label class="block text-[11px] font-black text-[#6B7280] uppercase tracking-[0.15em] pl-1">2. Filtrar por Día</label>
                     <div class="relative">
                         <select v-model="fechaSeleccionada" class="block w-full text-[13px] font-bold border-[#E5E7EB] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 rounded-lg py-2.5 pl-10 pr-4 bg-gray-50 hover:bg-white transition-colors cursor-pointer text-[#0D1B3E] shadow-sm appearance-none">
-                            <option value="TODAS">Mostrar toda la semana completa</option>
+                            <option value="TODAS">Mostrar toda la semana</option>
                             <option v-for="fecha in fechasDeCancha" :key="fecha" :value="fecha">Solo ver {{ formatearFechaCompleta(fecha) }}</option>
                         </select>
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"><svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
                     </div>
                 </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="block text-[11px] font-black text-[#6B7280] uppercase tracking-[0.15em] pl-1">3. Filtrar por Tipo</label>
+                    <div class="relative">
+                        <select v-model="disciplinaSeleccionada" class="block w-full text-[13px] font-bold border-[#E5E7EB] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 rounded-lg py-2.5 pl-10 pr-4 bg-gray-50 hover:bg-white transition-colors cursor-pointer text-[#0D1B3E] shadow-sm appearance-none">
+                            <option value="TODAS">Todas las disciplinas</option>
+                            <option v-for="disciplina in disciplinasDisponibles" :key="disciplina" :value="disciplina">{{ disciplina }}</option>
+                        </select>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"><svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg></div>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                    </div>
+                </div>
+
             </div>
 
             <div v-if="canchaSeleccionada && Object.keys(partidosTabla).length > 0" class="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -376,7 +408,10 @@ const submit = () => {
                                 </tr>
 
                                 <tr v-for="item in partidosDia" :key="item.datos.id" class="border-b border-[#E5E7EB] hover:bg-gray-50 transition-colors group">
-                                    <td class="px-5 py-3 border-r border-[#E5E7EB] bg-white group-hover:bg-gray-50"><span class="text-[#D4A843] font-black text-[13px]">{{ item.datos.hora_inicio.substring(0, 5) }}</span></td>
+                                    <td class="px-5 py-3 border-r border-[#E5E7EB] bg-white group-hover:bg-gray-50">
+                                        <span class="text-[#D4A843] font-black text-[13px] block">{{ item.datos.hora_inicio.substring(0, 5) }}</span>
+                                        <span class="text-[9px] text-gray-400 font-bold uppercase">{{ item.datos.disciplina }}</span>
+                                    </td>
                                     <td class="px-5 py-3 border-r border-[#E5E7EB] text-center"><span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-[10px] font-black uppercase tracking-wider border border-gray-200">{{ item.datos.categoria }}</span></td>
                                     <td class="px-5 py-3 text-right font-black text-[13px] text-[#0D1B3E] uppercase">{{ item.datos.equipo_local }}</td>
                                     <td class="px-2 py-3 text-center text-[10px] font-bold text-gray-400">VS</td>

@@ -32,6 +32,36 @@ const formatearTextoWhatsApp = (texto) => {
     return seguro;
 };
 
+// ═════════════════════════════════════════════════════════
+// NUEVO: ESTILOS DINÁMICOS POR DISCIPLINA (Futsal vs Futbol 11)
+// ═════════════════════════════════════════════════════════
+const getEstiloPartido = (disciplina) => {
+    const texto = (disciplina || '').toUpperCase();
+    
+    if (texto.includes('FUTSAL')) {
+        return {
+            borde: 'border-emerald-600/30',
+            headerBg: 'bg-emerald-700',
+            headerText: 'text-emerald-100',
+            tagCat: 'bg-emerald-600 border-emerald-400/50 text-white',
+            tagDis: 'bg-emerald-900/50 text-emerald-100 border border-emerald-500/30',
+            vsBg: 'bg-emerald-700',
+            vsText: 'text-white'
+        };
+    }
+    
+    // Por defecto (Fútbol 11 u otros) mantenemos el Azul y Dorado institucional
+    return {
+        borde: 'border-[#0D1B3E]/10',
+        headerBg: 'bg-[#0D1B3E]',
+        headerText: 'text-[#D4A843]',
+        tagCat: 'bg-[#D4A843]/15 border-[#D4A843]/30 text-[#D4A843]',
+        tagDis: 'bg-white/10 text-gray-300 border border-white/10',
+        vsBg: 'bg-[#0D1B3E]',
+        vsText: 'text-[#D4A843]'
+    };
+};
+
 const mostrarModalLicencia = ref(false);
 
 const formLicencia = useForm({
@@ -67,9 +97,6 @@ const abrirModalDetalles = (tipo) => {
     mostrarModalDetalles.value = true;
 };
 
-
-
-
 let intervalId = null;
 let confirmadasAnteriores = props.statsAdmin ? props.statsAdmin.confirmadas : 0;
 let rechazadasAnteriores = props.statsAdmin ? props.statsAdmin.rechazadas : 0;
@@ -82,12 +109,12 @@ const formatearFecha = (fecha) => {
 
 let idsAnteriores = props.designaciones ? props.designaciones.map(d => d.id).join(',') : '';
 let licenciasAnteriores = props.licenciasPendientes ? props.licenciasPendientes.length : 0;
+
 onMounted(() => {
     intervalId = setInterval(() => {
 
         if (props.esAdmin) {
             router.reload({
-                
                 only: ['statsAdmin', 'listaPendientes', 'listaRechazadas', 'licenciasPendientes'], 
                 preserveScroll: true,
                 preserveState: true,
@@ -105,7 +132,6 @@ onMounted(() => {
                         rechazadasAnteriores = nuevasRechazadas;
                     }
                     
-                 
                     if (nuevasLicencias > licenciasAnteriores) {
                         Toast.fire({ icon: 'info', title: 'Un árbitro envió un CERTIFICADO MÉDICO' });
                     }
@@ -120,7 +146,7 @@ onMounted(() => {
                     }
                 }
             });
-        }else {
+        } else {
             router.reload({
                 only: ['designaciones', 'stats', 'noticias'],
                 preserveScroll: true,
@@ -335,13 +361,28 @@ const colorNoticia = (tipo) => {
                     </button>
                 </div>
 
-                <div v-for="desig in designaciones" :key="desig.id" class="bg-white rounded border border-[#0D1B3E]/10 overflow-hidden shadow-sm">
-                    <div class="bg-[#0D1B3E] px-6 py-3 flex items-center justify-between">
-                        <span class="text-[#D4A843] text-[10px] font-black uppercase tracking-[0.2em]">Partido Designado</span>
-                        <span class="px-2.5 py-1 bg-[#D4A843]/15 border border-[#D4A843]/30 text-[#D4A843] text-[10px] font-black uppercase tracking-wider rounded-md">
+                <div v-for="desig in designaciones" :key="desig.id" class="bg-white rounded overflow-hidden shadow-sm border transition-colors duration-300" :class="getEstiloPartido(desig.partido.disciplina).borde">
+                    
+                   
+                   
+                    <div class="px-6 py-3 flex items-center justify-between transition-colors duration-300" :class="getEstiloPartido(desig.partido.disciplina).headerBg">
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-black uppercase tracking-[0.2em]" :class="getEstiloPartido(desig.partido.disciplina).headerText">
+                                Partido Designado
+                            </span>
+                            
+                            <span class="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded" :class="getEstiloPartido(desig.partido.disciplina).tagDis">
+                                {{ desig.partido.disciplina || 'FÚTBOL 11' }}
+                            </span>
+                        </div>
+
+                        <span class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md border" :class="getEstiloPartido(desig.partido.disciplina).tagCat">
                             {{ desig.partido.categoria }}
                         </span>
                     </div>
+
+
 
                     <div class="p-6 md:p-8">
                         <div class="flex flex-col lg:flex-row gap-8 lg:gap-10">
@@ -352,7 +393,7 @@ const colorNoticia = (tipo) => {
                                         <p class="text-xl md:text-2xl font-black text-[#0D1B3E] leading-tight">{{ desig.partido.equipo_local }}</p>
                                     </div>
                                     <div class="shrink-0 flex flex-col items-center gap-1">
-                                        <span class="text-base font-black text-[#D4A843] bg-[#0D1B3E] px-3 py-1.5 rounded-md">VS</span>
+                                        <span class="text-base font-black px-3 py-1.5 rounded-md transition-colors" :class="[getEstiloPartido(desig.partido.disciplina).vsBg, getEstiloPartido(desig.partido.disciplina).vsText]">VS</span>
                                     </div>
                                     <div class="flex-1 text-center">
                                         <p class="text-[10px] font-black text-[#0D1B3E]/40 uppercase tracking-[0.15em] mb-1">Visitante</p>
@@ -402,8 +443,8 @@ const colorNoticia = (tipo) => {
 
                             <div class="flex flex-col items-center justify-center gap-4 lg:border-l lg:border-[#0D1B3E]/8 lg:pl-10 min-w-[200px]">
                                 <div v-if="desig.estado_confirmacion === 'pendiente'" class="flex gap-2 w-full">
-                                    <button @click="responder(desig.id, 'confirmado')" class="flex-1 py-3 bg-green-50 text-green-800 border border-green-400 font-black text-xs uppercase rounded">Asisto</button>
-                                    <button @click="responder(desig.id, 'rechazado')" class="flex-1 py-3 bg-red-50 text-red-800 border border-red-400 font-black text-xs uppercase rounded">No Asisto</button>
+                                    <button @click="responder(desig.id, 'confirmado')" class="flex-1 py-3 bg-green-50 text-green-800 border border-green-400 font-black text-xs uppercase rounded hover:bg-green-100 transition-colors">Asisto</button>
+                                    <button @click="responder(desig.id, 'rechazado')" class="flex-1 py-3 bg-red-50 text-red-800 border border-red-400 font-black text-xs uppercase rounded hover:bg-red-100 transition-colors">No Asisto</button>
                                 </div>
                                 <div v-else-if="desig.estado_confirmacion === 'confirmado'" class="w-full text-center">
                                     <div class="bg-green-50 text-green-800 border border-green-400 py-3 font-black text-xs uppercase rounded w-full mb-2">¡Confirmado!</div>
@@ -615,4 +656,3 @@ const colorNoticia = (tipo) => {
     background: #94a3b8;
 }
 </style>
-
