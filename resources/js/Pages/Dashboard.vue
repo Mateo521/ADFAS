@@ -15,7 +15,8 @@ const props = defineProps({
     noticias: Array,
     listaPendientes: Array, 
     listaRechazadas: Array,
-    licenciasPendientes: Array
+    licenciasPendientes: Array,
+    misLicencias: Array  
 });
 
 const Toast = Swal.mixin({
@@ -183,7 +184,7 @@ const responder = (idDesignacion, estadoRespuesta) => {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Sí, cancelar asistencia',
             cancelButtonText: 'Volver',
-            customClass: { popup: 'font-["Lato",sans-serif] rounded-xl' }
+            customClass: { popup: 'font-["Lato",sans-serif] ' }
         }).then((result) => {
             if (result.isConfirmed) enviarRespuesta(idDesignacion, estadoRespuesta);
         });
@@ -243,7 +244,7 @@ const colorNoticia = (tipo) => {
                 </h2>
             </div>
 
-            <div v-if="props.licenciasPendientes && props.licenciasPendientes.length > 0" class="mb-8 p-5 bg-red-50 border border-red-200 rounded-xl shadow-sm animate-fade-in">
+            <div v-if="props.licenciasPendientes && props.licenciasPendientes.length > 0" class="mb-8 p-5 bg-red-50 border border-red-200  shadow-sm animate-fade-in">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="relative flex h-3 w-3">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -474,7 +475,49 @@ const colorNoticia = (tipo) => {
                     Por el momento no tenés ninguna designación próxima confirmada.
                 </p>
             </div>
+
+
+            <div v-if="misLicencias && misLicencias.length > 0" class="mb-10">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
+                    <span class="w-2.5 h-2.5 bg-[#D4A843] rounded-sm rotate-45 block"></span>
+                </div>
+                <h2 class="text-sm font-black text-[#0D1B3E] uppercase ">Mis Certificados y Licencias</h2>
+            </div>
+            
+            <div class="grid gap-4">
+                <div v-for="licencia in misLicencias" :key="licencia.id" class="bg-white border border-[#E5E7EB]  p-5 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center justify-between" :class="{'border-l-4 border-l-amber-400': licencia.estado === 'pendiente', 'border-l-4 border-l-green-500': licencia.estado === 'aprobado', 'border-l-4 border-l-red-500': licencia.estado === 'rechazado'}">
+                    
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded" :class="{'bg-amber-100 text-amber-700': licencia.estado === 'pendiente', 'bg-green-100 text-green-700': licencia.estado === 'aprobado', 'bg-red-100 text-red-700': licencia.estado === 'rechazado'}">
+                                {{ licencia.estado }}
+                            </span>
+                            <span class="text-[12px] font-bold text-gray-500">
+                                {{ formatearFecha(licencia.fecha_desde) }} al {{ formatearFecha(licencia.fecha_hasta) }}
+                            </span>
+                        </div>
+                        <p class="text-sm font-bold text-[#0D1B3E]">{{ licencia.motivo }}</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <a v-if="licencia.certificado || licencia.certificado_path || licencia.archivo" 
+                           :href="`/storage/${licencia.certificado || licencia.certificado_path || licencia.archivo}`" 
+                           target="_blank" 
+                           class="flex-1 md:flex-none text-center px-4 py-2 bg-[#0D1B3E]/5 text-[#0D1B3E] hover:bg-[#D4A843]/10 hover:text-[#A87C20] hover:border-[#D4A843]/30 border border-[#0D1B3E]/20 text-xs font-black uppercase rounded transition-colors flex items-center justify-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                            Ver Documento
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        </div>
+
+
+
+
 
         <div class="flex items-center gap-3 mb-5">
             <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
@@ -539,12 +582,12 @@ const colorNoticia = (tipo) => {
                     </div>
 
                     <div class="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                        <div v-if="datosModal.length === 0" class="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                        <div v-if="datosModal.length === 0" class="text-center py-12 bg-gray-50  border border-dashed border-gray-200">
                             <p class="text-gray-500 font-bold uppercase tracking-widest text-sm">No hay registros para mostrar.</p>
                         </div>
                         
                         <div v-else class="space-y-3">
-                            <div v-for="item in datosModal" :key="item.id" class="border border-gray-100 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
+                            <div v-for="item in datosModal" :key="item.id" class="border border-gray-100  p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
                                 
                                 <div class="flex-1">
                                     <Link :href="route('admin.arbitros.show', item.user.id)" class="font-black text-[#0D1B3E] text-base mb-1 hover:text-[#D4A843] transition-colors cursor-pointer inline-flex items-center gap-2">

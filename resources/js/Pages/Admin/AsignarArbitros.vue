@@ -279,7 +279,7 @@ const submit = () => {
 
     <AuthenticatedLayout>
 
-        <div v-if="import_summary && mostrarResumen" class="mb-8 bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm relative overflow-hidden animate-fade-in">
+        <div v-if="import_summary && mostrarResumen" class="mb-8 bg-green-50 border border-green-200  p-5 shadow-sm relative overflow-hidden animate-fade-in">
             <div class="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
             <div class="flex items-start gap-4 relative z-10">
                 <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shrink-0 shadow-sm mt-0.5">
@@ -331,7 +331,7 @@ const submit = () => {
 
         <form v-else @submit.prevent="submit" class="flex flex-col gap-6">
 
-            <div class="bg-white p-5 rounded-xl border border-[#E5E7EB] shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 z-10 relative">
+            <div class="bg-white p-5  border border-[#E5E7EB] shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6 z-10 relative">
                 
                 <div class="flex flex-col gap-2">
                     <label class="block text-[11px] font-black text-[#6B7280] uppercase tracking-[0.15em] pl-1">1. Seleccionar Cancha</label>
@@ -370,7 +370,7 @@ const submit = () => {
 
             </div>
 
-            <div v-if="canchaSeleccionada && Object.keys(partidosTabla).length > 0" class="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div v-if="canchaSeleccionada && Object.keys(partidosTabla).length > 0" class="bg-white border border-[#E5E7EB]  shadow-sm overflow-hidden flex flex-col">
 
                 <div class="bg-[#0D1B3E] px-6 py-4 border-b border-[#D4A843]/30 flex items-center justify-between">
                     <div class="flex items-center gap-3">

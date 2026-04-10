@@ -33,7 +33,7 @@ const submit = () => {
             
             Toast.fire({
                 icon: 'success',
-                title: '¡Noticia publicada con éxito!'
+                title: 'Noticia publicada con éxito'
             });
         },
     });

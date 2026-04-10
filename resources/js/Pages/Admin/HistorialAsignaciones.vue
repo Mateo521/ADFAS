@@ -541,7 +541,7 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
         <div v-if="modalAbierto"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-['Lato',sans-serif] overflow-y-auto">
             <div
-                class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-formAppear border border-[#D4A843]/30 my-8">
+                class="bg-white  shadow-2xl w-full max-w-2xl overflow-hidden animate-formAppear border border-[#D4A843]/30 my-8">
 
                 <div class="bg-[#0D1B3E] p-6 text-center relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-[#D4A843]/20 rounded-full blur-2xl"></div>

@@ -7,17 +7,17 @@ use Inertia\Inertia;
 use App\Models\Designacion;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Noticia;
-use App\Models\User;  
+use App\Models\User;
 
 class DashboardController extends Controller
 {
-public function index()
+    public function index()
     {
         $user = Auth::user();
 
-     
+
         if ($user->rol === 'admin') {
-            
+
             $pendientes = \App\Models\Designacion::with(['user', 'partido'])
                 ->where('estado_confirmacion', 'pendiente')
                 ->get();
@@ -26,7 +26,7 @@ public function index()
                 ->where('estado_confirmacion', 'rechazado')
                 ->get();
 
-         
+
             $licenciasPendientes = \App\Models\Licencia::with('user')
                 ->where('estado', 'pendiente')
                 ->get();
@@ -41,43 +41,50 @@ public function index()
                 ],
                 'listaPendientes' => $pendientes,
                 'listaRechazadas' => $rechazadas,
-                'licenciasPendientes' => $licenciasPendientes,  
+                'licenciasPendientes' => $licenciasPendientes,
             ]);
         }
 
 
- 
-        $designaciones = \App\Models\Designacion::with(['partido.designaciones.user'])  
+
+        $designaciones = \App\Models\Designacion::with(['partido.designaciones.user'])
             ->select('designaciones.*')
             ->join('partidos', 'partidos.id', '=', 'designaciones.partido_id')
             ->where('designaciones.user_id', $user->id)
             ->where('partidos.fecha', '>=', now()->toDateString())
-            ->orderByRaw("FIELD(designaciones.estado_confirmacion, 'pendiente', 'confirmado', 'rechazado')") 
+            ->orderByRaw("FIELD(designaciones.estado_confirmacion, 'pendiente', 'confirmado', 'rechazado')")
             ->orderBy('partidos.fecha', 'asc')
             ->orderBy('partidos.hora_inicio', 'asc')
-            ->get(); 
+            ->get();
 
         $admin = \App\Models\User::where('rol', 'admin')->first();
-        $telefonoAdmin = $admin && $admin->telefono ? $admin->telefono : '5492664000000'; 
+        $telefonoAdmin = $admin && $admin->telefono ? $admin->telefono : '5492664000000';
 
         $partidosConfirmados = \App\Models\Designacion::where('user_id', $user->id)
             ->where('estado_confirmacion', 'confirmado')
             ->count();
-            
+
         $totalDesignaciones = \App\Models\Designacion::where('user_id', $user->id)->count();
 
         $ultimasNoticias = \App\Models\Noticia::latest()->take(3)->get();
 
+
+        $misLicencias = \App\Models\Licencia::where('user_id', $user->id)
+            ->latest()
+            ->get();
+
         return Inertia::render('Dashboard', [
             'esAdmin' => false,
-            'designaciones' => $designaciones,  
-            'telefonoAdmin' => $telefonoAdmin,  
+            'designaciones' => $designaciones,
+            'telefonoAdmin' => $telefonoAdmin,
             'stats' => [
                 'confirmados' => $partidosConfirmados,
                 'total' => $totalDesignaciones
             ],
-            'noticias' => $ultimasNoticias 
+            'noticias' => $ultimasNoticias,
+            'misLicencias' => $misLicencias
         ]);
+
     }
     // (Asisto / no asisto)
     public function responderDesignacion(Request $request, Designacion $designacion)

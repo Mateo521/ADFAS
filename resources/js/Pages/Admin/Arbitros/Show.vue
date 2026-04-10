@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link , router } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
+
 const props = defineProps({
     arbitro: Object,
     stats: Object,
@@ -21,7 +22,6 @@ const formatearFecha = (fecha) => {
     return `${day}/${month}/${year}`;
 };
 
- 
 const cambiarEstadoLicencia = (id, nuevoEstado) => {
     Swal.fire({
         title: `¿${nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1)} certificado?`,
@@ -95,19 +95,19 @@ const cambiarEstadoLicencia = (id, nuevoEstado) => {
                 <div class="lg:col-span-2 space-y-8">
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-white border border-[#E5E7EB] rounded-xl p-5 border-l-4 border-l-[#0D1B3E] shadow-sm">
+                        <div class="bg-white border border-[#E5E7EB]  p-5 border-l-4 border-l-[#0D1B3E] shadow-sm">
                             <p class="text-[10px] font-black text-[#6B7280] uppercase tracking-[0.15em] mb-1">Total Asignado</p>
                             <p class="text-3xl font-black text-[#0D1B3E]">{{ stats.total }}</p>
                         </div>
-                        <div class="bg-white border border-green-100 rounded-xl p-5 border-l-4 border-l-green-500 shadow-sm">
+                        <div class="bg-white border border-green-100  p-5 border-l-4 border-l-green-500 shadow-sm">
                             <p class="text-[10px] font-black text-green-600/70 uppercase tracking-[0.15em] mb-1">Confirmadas</p>
                             <p class="text-3xl font-black text-green-600">{{ stats.confirmadas }}</p>
                         </div>
-                        <div class="bg-white border border-amber-100 rounded-xl p-5 border-l-4 border-l-amber-400 shadow-sm">
+                        <div class="bg-white border border-amber-100  p-5 border-l-4 border-l-amber-400 shadow-sm">
                             <p class="text-[10px] font-black text-amber-700/70 uppercase tracking-[0.15em] mb-1">Pendientes</p>
                             <p class="text-3xl font-black text-amber-600">{{ stats.pendientes }}</p>
                         </div>
-                        <div class="bg-white border border-red-100 rounded-xl p-5 border-l-4 border-l-red-500 shadow-sm">
+                        <div class="bg-white border border-red-100  p-5 border-l-4 border-l-red-500 shadow-sm">
                             <p class="text-[10px] font-black text-red-600/70 uppercase tracking-[0.15em] mb-1">Ausencias</p>
                             <p class="text-3xl font-black text-red-600">{{ stats.rechazadas }}</p>
                         </div>
@@ -121,7 +121,7 @@ const cambiarEstadoLicencia = (id, nuevoEstado) => {
                         </h3>
                         
                         <div class="grid gap-4">
-                            <div v-for="licencia in licencias" :key="licencia.id" class="bg-white border border-[#E5E7EB] rounded-xl p-5 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center justify-between" :class="{'border-l-4 border-l-amber-400': licencia.estado === 'pendiente', 'border-l-4 border-l-green-500': licencia.estado === 'aprobado', 'border-l-4 border-l-red-500': licencia.estado === 'rechazado'}">
+                            <div v-for="licencia in licencias" :key="licencia.id" class="bg-white border border-[#E5E7EB]  p-5 shadow-sm flex flex-col md:flex-row gap-4 items-start md:items-center justify-between" :class="{'border-l-4 border-l-amber-400': licencia.estado === 'pendiente', 'border-l-4 border-l-green-500': licencia.estado === 'aprobado', 'border-l-4 border-l-red-500': licencia.estado === 'rechazado'}">
                                 
                                 <div class="flex-1">
                                     <div class="flex items-center gap-3 mb-1">
@@ -136,8 +136,13 @@ const cambiarEstadoLicencia = (id, nuevoEstado) => {
                                 </div>
 
                                 <div class="flex items-center gap-2 w-full md:w-auto">
-                                    <a v-if="licencia.certificado_path" :href="`/storage/${licencia.certificado_path}`" target="_blank" class="flex-1 md:flex-none text-center px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-black uppercase rounded transition-colors">
-                                        Ver Archivo
+                                    
+                                    <a v-if="licencia.certificado || licencia.certificado_path || licencia.archivo" 
+                                       :href="`/storage/${licencia.certificado || licencia.certificado_path || licencia.archivo}`" 
+                                       target="_blank" 
+                                       class="flex-1 md:flex-none text-center px-4 py-2 bg-[#0D1B3E]/5 text-[#0D1B3E] hover:bg-[#D4A843]/10 hover:text-[#A87C20] hover:border-[#D4A843]/30 border border-[#0D1B3E]/20 text-xs font-black uppercase rounded transition-colors flex items-center justify-center gap-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                        Ver Certificado
                                     </a>
                                     
                                     <template v-if="licencia.estado === 'pendiente'">
@@ -156,7 +161,7 @@ const cambiarEstadoLicencia = (id, nuevoEstado) => {
                             Últimos 10 Partidos
                         </h3>
                         
-                        <div class="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
+                        <div class="bg-white border border-[#E5E7EB]  shadow-sm overflow-hidden">
                             <table class="w-full text-left whitespace-nowrap">
                                 <thead class="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                                     <tr>

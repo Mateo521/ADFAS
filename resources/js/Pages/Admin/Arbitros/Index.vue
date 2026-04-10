@@ -87,7 +87,7 @@ const limpiarFiltro = () => {
                     <p class="text-[11px] font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Plantel Oficial</p>
                     <h1
                         class=" text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
-                        Directorio de Árbitros
+                        Directorio de árbitros
                     </h1>
                     <div class="flex items-center gap-2.5">
                         <span class="w-16 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>
@@ -165,7 +165,7 @@ const limpiarFiltro = () => {
             </div>
 
             <div v-if="arbitros.links.length > 3" class="mt-12 flex justify-center">
-                <nav class="inline-flex gap-2 p-1.5 bg-white border border-[#E5E7EB] rounded-xl shadow-sm">
+                <nav class="inline-flex gap-2 p-1.5 bg-white border border-[#E5E7EB]  shadow-sm">
                     <template v-for="(link, key) in arbitros.links" :key="key">
                         <div v-if="link.url === null"
                             class="px-4 py-2 text-[11px] font-black text-gray-300 uppercase tracking-widest cursor-not-allowed"

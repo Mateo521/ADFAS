@@ -78,17 +78,17 @@ const submit = () => {
 
                     <div class="flex flex-col gap-2">
                         <label class="text-[11px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Cuerpo del Comunicado</label>
-                        <textarea v-model="form.contenido" rows="8" required class="w-full px-5 py-4 bg-[#F9FAFB] border border-[#D1D5DB] rounded-xl text-[15px] font-medium text-[#374151] focus:border-[#D4A843] focus:bg-white focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all resize-y"></textarea>
+                        <textarea v-model="form.contenido" rows="8" required class="w-full px-5 py-4 bg-[#F9FAFB] border border-[#D1D5DB]  text-[15px] font-medium text-[#374151] focus:border-[#D4A843] focus:bg-white focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all resize-y"></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-[#E5E7EB]">
-                        <div class="group relative border-2 border-dashed border-[#D1D5DB] hover:border-[#D4A843]/60 bg-[#F9FAFB] hover:bg-white rounded-xl p-6 transition-all duration-300">
+                        <div class="group relative border-2 border-dashed border-[#D1D5DB] hover:border-[#D4A843]/60 bg-[#F9FAFB] hover:bg-white  p-6 transition-all duration-300">
                             <p class="text-[13px] font-black text-[#0D1B3E] uppercase tracking-wide mb-1">Cambiar Portada</p>
                             <p class="text-[11px] font-bold text-[#9CA3AF] mb-3">Deja en blanco para conservar la actual.</p>
                             <input type="file" @input="form.imagen = $event.target.files[0]" accept="image/*" class="block w-full text-[12px] text-[#6B7280] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-[#0D1B3E] file:text-white cursor-pointer focus:outline-none">
                         </div>
 
-                        <div class="group relative border-2 border-dashed border-[#D1D5DB] hover:border-[#D4A843]/60 bg-[#F9FAFB] hover:bg-white rounded-xl p-6 transition-all duration-300">
+                        <div class="group relative border-2 border-dashed border-[#D1D5DB] hover:border-[#D4A843]/60 bg-[#F9FAFB] hover:bg-white  p-6 transition-all duration-300">
                             <p class="text-[13px] font-black text-[#0D1B3E] uppercase tracking-wide mb-1">Cambiar Documento</p>
                             <p class="text-[11px] font-bold text-[#9CA3AF] mb-3">Deja en blanco para conservar el actual.</p>
                             <input type="file" @input="form.archivo = $event.target.files[0]" accept=".pdf,.doc,.docx,.xls,.xlsx" class="block w-full text-[12px] text-[#6B7280] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-[11px] file:font-black file:uppercase file:bg-[#0D1B3E] file:text-white cursor-pointer focus:outline-none">

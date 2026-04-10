@@ -70,7 +70,7 @@ const formatearTextoWhatsApp = (texto) => {
                 
                 <div v-if="noticia.imagen_ruta" class="w-full md:w-[280px] h-48 md:h-auto shrink-0 overflow-hidden relative border-r border-[#E5E7EB]">
                     <div class="absolute inset-0 bg-[#0D1B3E]/10 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                    <img :src="`/storage/${noticia.imagen_ruta}`" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                    <img :src="`/storage/${noticia.imagen_ruta}`" class="w-full h-full object-cover  transition-transform duration-700 ease-out">
                 </div>
                 
                 <div v-else class="w-full md:w-[280px] h-48 md:h-auto bg-[#0D1B3E] shrink-0 relative overflow-hidden flex items-center justify-center border-r border-[#E5E7EB]">
@@ -104,7 +104,7 @@ const formatearTextoWhatsApp = (texto) => {
             </Link>
 
             <div v-if="noticias.links.length > 3" class="mt-12 flex justify-center">
-                <nav class="inline-flex gap-2 p-1.5 bg-white border border-[#E5E7EB] rounded-xl shadow-sm">
+                <nav class="inline-flex gap-2 p-1.5 bg-white border border-[#E5E7EB]  shadow-sm">
                     <template v-for="(link, key) in noticias.links" :key="key">
                         <div v-if="link.url === null" 
                              class="px-4 py-2 text-base font-black text-gray-300 uppercase tracking-widest cursor-not-allowed"
