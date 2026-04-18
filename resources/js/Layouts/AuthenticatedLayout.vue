@@ -73,6 +73,14 @@ const showingNavigationDropdown = ref(false);
                             Panel de árbitros
                         </Link>
 
+                        <Link :href="route('admin.espectadores.index')"
+                            class="px-4 py-2 text-sm font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                            :class="route().current('admin.arbitros.*')
+                                ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25'
+                                : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
+                            Espectadores
+                        </Link>
+
                     </template>
 
                     <div class="w-px h-4 bg-white/15 mx-1"></div>
@@ -184,6 +192,16 @@ const showingNavigationDropdown = ref(false);
                         <span class="w-1 h-3 rounded-full"
                             :class="route().current('admin.arbitros.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
                         Panel de árbitros
+                    </Link>
+
+                    <Link :href="route('admin.espectadores.index')"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-black uppercase tracking-[0.15em] transition-colors"
+                        :class="route().current('admin.arbitros.*')
+                            ? 'bg-[#D4A843]/12 text-[#D4A843]'
+                            : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                        <span class="w-1 h-3 rounded-full"
+                            :class="route().current('admin.arbitros.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                        Espectadores
                     </Link>
                 </template>
 

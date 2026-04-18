@@ -69,12 +69,22 @@ class DashboardController extends Controller
         $ultimasNoticias = \App\Models\Noticia::latest()->take(3)->get();
 
 
+
+
         $misLicencias = \App\Models\Licencia::where('user_id', $user->id)
             ->latest()
             ->get();
 
+
+        $jornadas = \App\Models\Partido::whereNotNull('jornada')
+            ->where('jornada', '!=', '')
+            ->distinct()
+            ->orderBy('created_at', 'desc')
+            ->pluck('jornada');
+
         return Inertia::render('Dashboard', [
             'esAdmin' => false,
+            'esEspectador' => $user->rol === 'espectador',
             'designaciones' => $designaciones,
             'telefonoAdmin' => $telefonoAdmin,
             'stats' => [
@@ -82,7 +92,8 @@ class DashboardController extends Controller
                 'total' => $totalDesignaciones
             ],
             'noticias' => $ultimasNoticias,
-            'misLicencias' => $misLicencias
+            'misLicencias' => $misLicencias,
+            'jornadas' => $jornadas
         ]);
 
     }

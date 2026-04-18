@@ -11,24 +11,26 @@ use App\Models\Designacion;
 
 class AsignacionController extends Controller
 {
-  public function index()
+    public function index()
     {
         $partidos = Partido::doesntHave('designaciones')
-                           ->orderBy('fecha', 'asc')
-                           ->orderBy('hora_inicio', 'asc')
-                           ->get();
+            ->orderBy('fecha', 'asc')
+            ->orderBy('hora_inicio', 'asc')
+            ->get();
 
-       
+
         $arbitros = User::where('rol', 'arbitro')
-                        ->with(['licencias' => function($query) {
-                            $query->where('estado', 'aprobado');
-                        }, 
-                        'designaciones' => function($query) {
-                            
-                            $query->with('partido')->latest()->take(10); 
-                        }])
-                        ->orderBy('apellido', 'asc')
-                        ->get();
+            ->with([
+                'licencias' => function ($query) {
+                    $query->where('estado', 'aprobado');
+                },
+                'designaciones' => function ($query) {
+
+                    $query->with('partido')->latest()->take(10);
+                }
+            ])
+            ->orderBy('apellido', 'asc')
+            ->get();
 
         return Inertia::render('Admin/AsignarArbitros', [
             'partidos' => $partidos,
@@ -37,24 +39,52 @@ class AsignacionController extends Controller
         ]);
     }
 
+
+    public function pizarraEnVivo(Request $request)
+    {
+        $query = Partido::with(['designaciones.user']);
+
+
+        if ($request->has('jornada')) {
+            $query->where('jornada', $request->jornada);
+        } else {
+
+            $query->where('fecha', '>=', now()->subDays(1)->toDateString());
+        }
+
+        $partidos = $query->orderBy('fecha', 'asc')
+            ->orderBy('hora_inicio', 'asc')
+            ->get();
+
+        $arbitros = User::where('rol', 'arbitro')->orderBy('apellido', 'asc')->get();
+
+        return Inertia::render('Admin/AsignarArbitros', [
+            'partidos' => $partidos,
+            'arbitros' => $arbitros,
+            'isEspectador' => true,
+            'jornadaActual' => $request->jornada
+        ]);
+    }
+
+
     public function store(Request $request)
     {
-      
+
         $request->validate([
             'asignaciones' => 'required|array',
             'asignaciones.*.partido_id' => 'required|exists:partidos,id',
             'asignaciones.*.principal_id' => 'nullable|exists:users,id',
             'asignaciones.*.asistente_id' => 'nullable|exists:users,id',
-            'asignaciones.*.asistente_2_id' => 'nullable|exists:users,id',  
-            'asignaciones.*.asistente_3_id' => 'nullable|exists:users,id',  
+            'asignaciones.*.asistente_2_id' => 'nullable|exists:users,id',
+            'asignaciones.*.asistente_3_id' => 'nullable|exists:users,id',
         ]);
 
         $partidosAsignados = 0;
 
         foreach ($request->asignaciones as $asignacion) {
-         
+
             if (!empty($asignacion['principal_id']) || !empty($asignacion['asistente_id']) || !empty($asignacion['asistente_2_id']) || !empty($asignacion['asistente_3_id'])) {
-                
+
                 if (!empty($asignacion['principal_id'])) {
                     Designacion::create([
                         'partido_id' => $asignacion['partido_id'],
@@ -73,7 +103,7 @@ class AsignacionController extends Controller
                     ]);
                 }
 
-             
+
                 if (!empty($asignacion['asistente_2_id'])) {
                     Designacion::create([
                         'partido_id' => $asignacion['partido_id'],
@@ -83,7 +113,7 @@ class AsignacionController extends Controller
                     ]);
                 }
 
-                
+
                 if (!empty($asignacion['asistente_3_id'])) {
                     Designacion::create([
                         'partido_id' => $asignacion['partido_id'],
@@ -92,7 +122,7 @@ class AsignacionController extends Controller
                         'estado_confirmacion' => 'pendiente'
                     ]);
                 }
-                
+
                 Partido::where('id', $asignacion['partido_id'])->update([
                     'estado' => 'publicado'
                 ]);
@@ -112,62 +142,72 @@ class AsignacionController extends Controller
         if ($request->filled('fecha')) {
             $query->where('fecha', $request->fecha);
         }
-        
+
         if ($request->filled('categoria')) {
             $query->where('categoria', 'LIKE', '%' . $request->categoria . '%');
         }
 
-        // NUEVO FILTRO POR DISCIPLINA
         if ($request->filled('disciplina')) {
             $query->where('disciplina', 'LIKE', '%' . $request->disciplina . '%');
         }
-        
+
+
+        if ($request->filled('jornada')) {
+            $query->where('jornada', $request->jornada);
+        }
+
         if ($request->filled('equipo')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('equipo_local', 'LIKE', '%' . $request->equipo . '%')
-                  ->orWhere('equipo_visitante', 'LIKE', '%' . $request->equipo . '%');
+                    ->orWhere('equipo_visitante', 'LIKE', '%' . $request->equipo . '%');
             });
         }
 
         if ($request->filled('arbitro')) {
             $query->whereHas('designaciones.user', function ($q) use ($request) {
                 $q->where('name', 'LIKE', '%' . $request->arbitro . '%')
-                  ->orWhere('apellido', 'LIKE', '%' . $request->arbitro . '%');
+                    ->orWhere('apellido', 'LIKE', '%' . $request->arbitro . '%');
             });
         }
 
         $partidos = $query->orderBy('fecha', 'desc')
-                          ->orderBy('hora_inicio', 'desc')
-                          ->paginate(20)
-                          ->withQueryString();
+            ->orderBy('hora_inicio', 'desc')
+            ->paginate(20)
+            ->withQueryString();
 
         $arbitros = \App\Models\User::where('rol', 'arbitro')->orderBy('apellido', 'asc')->get();
 
+
+        $jornadas = Partido::whereNotNull('jornada')
+            ->where('jornada', '!=', '')
+            ->distinct()
+            ->pluck('jornada');
+
         return Inertia::render('Admin/HistorialAsignaciones', [
             'partidos' => $partidos,
-            'arbitros' => $arbitros,  
-            
-            'filtros' => $request->only(['fecha', 'categoria', 'equipo', 'arbitro', 'disciplina']) 
+            'arbitros' => $arbitros,
+            'jornadas' => $jornadas,
+            'filtros' => $request->only(['fecha', 'categoria', 'equipo', 'arbitro', 'disciplina', 'jornada'])
         ]);
     }
 
     public function updateReasignacion(Request $request, Partido $partido)
     {
-        
+
         $request->validate([
             'principal_id' => 'required|exists:users,id',
             'asistente_id' => 'nullable|exists:users,id',
-            'asistente_2_id' => 'nullable|exists:users,id',  
-            'asistente_3_id' => 'nullable|exists:users,id'   
+            'asistente_2_id' => 'nullable|exists:users,id',
+            'asistente_3_id' => 'nullable|exists:users,id'
         ]);
-        
+
         $partido->designaciones()->delete();
-       
+
         \App\Models\Designacion::create([
             'partido_id' => $partido->id,
             'user_id' => $request->principal_id,
             'funcion' => 'ARBITRO PRINCIPAL',
-            'estado_confirmacion' => 'pendiente' 
+            'estado_confirmacion' => 'pendiente'
         ]);
 
         if ($request->asistente_id) {
@@ -179,7 +219,7 @@ class AsignacionController extends Controller
             ]);
         }
 
-    
+
         if ($request->asistente_2_id) {
             \App\Models\Designacion::create([
                 'partido_id' => $partido->id,
@@ -189,7 +229,7 @@ class AsignacionController extends Controller
             ]);
         }
 
- 
+
         if ($request->asistente_3_id) {
             \App\Models\Designacion::create([
                 'partido_id' => $partido->id,
@@ -199,6 +239,6 @@ class AsignacionController extends Controller
             ]);
         }
 
-        return back();  
+        return back();
     }
 }

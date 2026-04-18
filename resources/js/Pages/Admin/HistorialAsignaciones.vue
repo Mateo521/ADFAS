@@ -6,22 +6,24 @@ import Swal from 'sweetalert2';
 
 const props = defineProps({
     partidos: Object,
-    arbitros: Array,  
-    filtros: Object
+    arbitros: Array,
+    filtros: Object,
+    jornadas: Array
 });
 
 const filtroFecha = ref(props.filtros.fecha || '');
 const filtroCategoria = ref(props.filtros.categoria || '');
 const filtroEquipo = ref(props.filtros.equipo || '');
-const filtroArbitro = ref(props.filtros.arbitro || '');  
-const filtroDisciplina = ref(props.filtros.disciplina || ''); // NUEVO: Variable para la disciplina
+const filtroArbitro = ref(props.filtros.arbitro || '');
+const filtroDisciplina = ref(props.filtros.disciplina || '');
+const filtroJornada = ref(props.filtros.jornada || '');
 
 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
 
 const formatearFecha = (fecha) => {
     if (!fecha) return '';
-    const partes = fecha.split('-');  
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;  
+    const partes = fecha.split('-');
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
 };
 
 const esPartidoPasado = (fechaString) => {
@@ -53,12 +55,12 @@ const abrirModalReasignar = (partido) => {
     const asistente = getAsistente(partido);
     const asistente2 = getAsistente2(partido);
     const asistente3 = getAsistente3(partido);
- 
+
     formReasignar.principal_id = principal ? principal.user_id : '';
     formReasignar.asistente_id = asistente ? asistente.user_id : '';
     formReasignar.asistente_2_id = asistente2 ? asistente2.user_id : '';
     formReasignar.asistente_3_id = asistente3 ? asistente3.user_id : '';
-    
+
     modalAbierto.value = true;
 };
 
@@ -67,12 +69,12 @@ const cerrarModal = () => {
     partidoSeleccionado.value = null;
     formReasignar.reset();
 };
- 
+
 const arbitrosDisponibles = computed(() => {
     if (!partidoSeleccionado.value) return props.arbitros;
-    
+
     const pActual = partidoSeleccionado.value;
-     
+
     const ocupados = props.partidos.data.map(p => {
         if (p.id !== pActual.id && p.fecha === pActual.fecha && p.hora_inicio === pActual.hora_inicio) {
             return p.designaciones.map(d => d.user_id);
@@ -110,7 +112,7 @@ const confirmarReasignacion = () => {
         }
     });
 };
- 
+
 let intervalId = null;
 
 const obtenerEstadosEnPantalla = () => {
@@ -128,13 +130,13 @@ let estadosAnteriores = obtenerEstadosEnPantalla();
 onMounted(() => {
     intervalId = setInterval(() => {
         if (!modalAbierto.value) {
-            router.reload({ 
-                only: ['partidos'], 
-                preserveScroll: true, 
+            router.reload({
+                only: ['partidos'],
+                preserveScroll: true,
                 preserveState: true,
                 onSuccess: (page) => {
                     const nuevosPartidos = page.props.partidos.data;
-                    
+
                     nuevosPartidos.forEach(partido => {
                         partido.designaciones.forEach(desig => {
                             const estadoViejo = estadosAnteriores[desig.id];
@@ -147,7 +149,7 @@ onMounted(() => {
 
                                 if (estadoNuevo === 'confirmado' || estadoNuevo === 'rechazado') {
                                     const esConfirmado = estadoNuevo === 'confirmado';
-                                    
+
                                     Swal.fire({
                                         toast: true,
                                         position: 'top-end',
@@ -175,27 +177,29 @@ onMounted(() => {
                 }
             });
         }
-    }, 5000); 
+    }, 5000);
 });
 
 onUnmounted(() => { if (intervalId) clearInterval(intervalId); });
 
 const aplicarFiltros = () => {
-    router.get(route('admin.historial.index'), { 
-        fecha: filtroFecha.value, 
-        categoria: filtroCategoria.value, 
+    router.get(route('admin.historial.index'), {
+        fecha: filtroFecha.value,
+        categoria: filtroCategoria.value,
         equipo: filtroEquipo.value,
         arbitro: filtroArbitro.value,
-        disciplina: filtroDisciplina.value // NUEVO: Enviamos el filtro al controlador
+        disciplina: filtroDisciplina.value,
+        jornada: filtroJornada.value
     }, { preserveState: true, replace: true });
 };
 
 const limpiarFiltros = () => {
-    filtroFecha.value = ''; 
-    filtroCategoria.value = ''; 
-    filtroEquipo.value = ''; 
-    filtroArbitro.value = '';  
-    filtroDisciplina.value = ''; // NUEVO: Limpiamos el filtro
+    filtroFecha.value = '';
+    filtroCategoria.value = '';
+    filtroEquipo.value = '';
+    filtroArbitro.value = '';
+    filtroDisciplina.value = '';
+    filtroJornada.value = '';
     aplicarFiltros();
 };
 
@@ -215,6 +219,11 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
         <div class="font-['Lato',sans-serif]">
 
             <div class="mb-8 flex items-center justify-between">
+
+
+
+
+
                 <div>
                     <h1 class="- text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">
                         Gestión y Monitoreo
@@ -226,6 +235,9 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                     <p class="text-[12px] text-[#6B7280] font-medium tracking-wide">Supervisa el estado de confirmación
                         de los árbitros en tiempo real y revisa el historial.</p>
                 </div>
+
+
+
                 <div
                     class="hidden md:flex items-center gap-2 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full shadow-sm">
                     <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -233,11 +245,28 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                 </div>
             </div>
 
-            <div class="bg-white p-5 rounded border border-[#E5E7EB] shadow-sm mb-6 flex flex-wrap gap-4 items-end relative overflow-hidden">
+            <div v-if="jornadas && jornadas.length > 0"
+                class="mb-6 flex gap-3 overflow-x-auto hide-scrollbar pb-2 snap-x">
+                <button @click="filtroJornada = ''; aplicarFiltros()"
+                    class="shrink-0 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.15em] transition-all border snap-start"
+                    :class="filtroJornada === '' ? 'bg-[#0D1B3E] text-[#D4A843] border-[#0D1B3E] shadow-md' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:bg-gray-50 hover:text-[#0D1B3E]'">
+                    Todo el Historial
+                </button>
+
+                <button v-for="jor in jornadas" :key="jor" @click="filtroJornada = jor; aplicarFiltros()"
+                    class="shrink-0 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.15em] transition-all border snap-start"
+                    :class="filtroJornada === jor ? 'bg-[#0D1B3E] text-[#D4A843] border-[#0D1B3E] shadow-md' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:bg-gray-50 hover:text-[#0D1B3E]'">
+                    {{ jor }}
+                </button>
+            </div>
+
+            <div
+                class="bg-white p-5 rounded border border-[#E5E7EB] shadow-sm mb-6 flex flex-wrap gap-4 items-end relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1 h-full bg-[#D4A843]"></div>
-                
+
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-[10px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Buscar por Fecha</label>
+                    <label class="text-[10px] font-black tracking-[1px] uppercase text-[#0D1B3E]">Buscar por
+                        Fecha</label>
                     <input type="date" v-model="filtroFecha" @change="aplicarFiltros"
                         class="w-[160px] px-3 py-2 border border-[#D1D5DB] rounded-lg text-[13px] font-medium text-[#111827] focus:border-[#D4A843] focus:ring-[2px] focus:ring-[#D4A843]/20 transition-all uppercase tracking-wide">
                 </div>
@@ -325,23 +354,26 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                             <td class="px-5 py-3 border-r border-[#E5E7EB]">
                                 <span class="font-bold text-[13px] block"
                                     :class="esPartidoPasado(partido.fecha) ? 'text-gray-500' : 'text-[#374151]'">{{
-                                    formatearFecha(partido.fecha) }}</span>
+                                        formatearFecha(partido.fecha) }}</span>
                                 <span class="font-black text-[13px] block"
                                     :class="esPartidoPasado(partido.fecha) ? 'text-gray-400' : 'text-[#D4A843]'">{{
-                                    partido.hora_inicio.substring(0,5) }} hs</span>
-                                <span class="text-[9px] text-gray-400 font-bold uppercase mt-0.5 block">{{ partido.disciplina || 'FUTBOL 11' }}</span>
+                                        partido.hora_inicio.substring(0, 5) }} hs</span>
+                                <span class="text-[9px] text-gray-400 font-bold uppercase mt-0.5 block">{{
+                                    partido.disciplina || 'FUTBOL 11' }}</span>
                             </td>
 
                             <td class="px-5 py-3 border-r border-[#E5E7EB] text-center min-w-[180px]">
                                 <div class="font-black text-[12px] uppercase"
                                     :class="esPartidoPasado(partido.fecha) ? 'text-gray-500' : 'text-[#0D1B3E]'">{{
-                                    partido.equipo_local }}</div>
+                                        partido.equipo_local }}</div>
                                 <div class="text-[9px] text-gray-400 font-bold my-0.5">VS</div>
                                 <div class="font-black text-[12px] uppercase"
                                     :class="esPartidoPasado(partido.fecha) ? 'text-gray-500' : 'text-[#0D1B3E]'">{{
-                                    partido.equipo_visitante }}</div>
+                                        partido.equipo_visitante }}</div>
                                 <div class="flex items-center justify-center gap-1 mt-1.5">
-                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-[9px] font-black uppercase tracking-wider border border-gray-200">{{ partido.categoria }}</span>
+                                    <span
+                                        class="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-[9px] font-black uppercase tracking-wider border border-gray-200">{{
+                                            partido.categoria }}</span>
                                 </div>
                                 <div
                                     class="text-[11px] text-[#6B7280] mt-1 font-medium flex items-center justify-center gap-1">
@@ -360,12 +392,12 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                                             :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{
                                             getPrincipal(partido).user.name.charAt(0) }}{{
-                                            getPrincipal(partido).user.apellido.charAt(0) }}</span>
+                                                getPrincipal(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
                                         <p class="font-bold text-[12px] text-[#111827] uppercase">{{
                                             getPrincipal(partido).user.apellido }}, {{
-                                            getPrincipal(partido).user.name.charAt(0) }}.</p>
+                                                getPrincipal(partido).user.name.charAt(0) }}.</p>
 
                                         <span
                                             class="text-[8px] px-2 py-0.5 rounded-full border uppercase font-black tracking-widest transition-colors duration-500"
@@ -402,12 +434,12 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                                             :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{
                                             getAsistente(partido).user.name.charAt(0) }}{{
-                                            getAsistente(partido).user.apellido.charAt(0) }}</span>
+                                                getAsistente(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
                                         <p class="font-bold text-[12px] text-[#111827] uppercase">{{
                                             getAsistente(partido).user.apellido }}, {{
-                                            getAsistente(partido).user.name.charAt(0) }}.</p>
+                                                getAsistente(partido).user.name.charAt(0) }}.</p>
                                         <span
                                             class="text-[8px] px-2 py-0.5 rounded-full border uppercase font-black tracking-widest transition-colors duration-500"
                                             :class="getStatusClasses(getAsistente(partido).estado_confirmacion, partido.fecha)">
@@ -440,12 +472,12 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                                             :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{
                                             getAsistente2(partido).user.name.charAt(0) }}{{
-                                            getAsistente2(partido).user.apellido.charAt(0) }}</span>
+                                                getAsistente2(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
                                         <p class="font-bold text-[12px] text-[#111827] uppercase">{{
                                             getAsistente2(partido).user.apellido }}, {{
-                                            getAsistente2(partido).user.name.charAt(0) }}.</p>
+                                                getAsistente2(partido).user.name.charAt(0) }}.</p>
                                         <span
                                             class="text-[8px] px-2 py-0.5 rounded-full border uppercase font-black tracking-widest transition-colors duration-500"
                                             :class="getStatusClasses(getAsistente2(partido).estado_confirmacion, partido.fecha)">
@@ -478,12 +510,12 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                                             :class="!esPartidoPasado(partido.fecha) && 'grayscale-0'">
                                         <span v-else class="text-[10px] font-black text-gray-500">{{
                                             getAsistente3(partido).user.name.charAt(0) }}{{
-                                            getAsistente3(partido).user.apellido.charAt(0) }}</span>
+                                                getAsistente3(partido).user.apellido.charAt(0) }}</span>
                                     </div>
                                     <div class="flex flex-col items-start gap-1">
                                         <p class="font-bold text-[12px] text-[#111827] uppercase">{{
                                             getAsistente3(partido).user.apellido }}, {{
-                                            getAsistente3(partido).user.name.charAt(0) }}.</p>
+                                                getAsistente3(partido).user.name.charAt(0) }}.</p>
                                         <span
                                             class="text-[8px] px-2 py-0.5 rounded-full border uppercase font-black tracking-widest transition-colors duration-500"
                                             :class="getStatusClasses(getAsistente3(partido).estado_confirmacion, partido.fecha)">

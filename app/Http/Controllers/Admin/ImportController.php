@@ -18,33 +18,38 @@ class ImportController extends Controller
 
     public function upload(Request $request)
     {
+
         $request->validate([
             'documento' => 'required|mimes:xlsx,csv|max:5120',
-            'fecha_base' => 'required|date' 
+            'fecha_base' => 'required|date',
+            'jornada' => 'required|string|max:50'
         ]);
 
         $file = $request->file('documento');
-        $fechaBase = Carbon::parse($request->fecha_base); 
+        $fechaBase = Carbon::parse($request->fecha_base);
+
+
+        $jornada = strtoupper(trim($request->jornada));
+
         $extension = $file->getClientOriginalExtension();
 
         $reader = SimpleExcelReader::create($file->getRealPath(), $extension)->noHeaderRow();
         $filasCrudas = $reader->getRows();
 
         $partidosGuardados = 0;
-        $partidosActualizados = 0;  
+        $partidosActualizados = 0;
         $titulosEncontrados = false;
-        $indices = []; 
+        $indices = [];
 
-        $filasCrudas->each(function(array $fila) use (&$partidosGuardados, &$partidosActualizados, &$titulosEncontrados, &$indices, $fechaBase) {
-            
-            $filaTexto = array_map(function($item) {
+        $filasCrudas->each(function (array $fila) use (&$partidosGuardados, &$partidosActualizados, &$titulosEncontrados, &$indices, $fechaBase, $jornada) {
+
+            $filaTexto = array_map(function ($item) {
                 if ($item instanceof \DateTimeInterface) {
-                    return $item->format('Y-m-d H:i:s');  
+                    return $item->format('Y-m-d H:i:s');
                 }
-                return strtoupper(trim((string)$item));
+                return strtoupper(trim((string) $item));
             }, $fila);
 
-       
             if (!$titulosEncontrados && in_array('LOCAL', $filaTexto) && in_array('VISITANTE', $filaTexto)) {
                 $titulosEncontrados = true;
                 $indices['cat'] = array_search('CAT.', $filaTexto) !== false ? array_search('CAT.', $filaTexto) : array_search('CATEGORIA', $filaTexto);
@@ -53,11 +58,9 @@ class ImportController extends Controller
                 $indices['cancha'] = array_search('CANCHA', $filaTexto);
                 $indices['hora'] = array_search('HORA', $filaTexto);
                 $indices['dia'] = array_search('DIA', $filaTexto) !== false ? array_search('DIA', $filaTexto) : (array_search('DÍA', $filaTexto) !== false ? array_search('DÍA', $filaTexto) : array_search('FECHA', $filaTexto));
-                
-       
                 $indices['disciplina'] = array_search('DISCIPLINA', $filaTexto) !== false ? array_search('DISCIPLINA', $filaTexto) : array_search('DEPARTAMENTO', $filaTexto);
-                
-                return; 
+
+                return;
             }
 
             if ($titulosEncontrados) {
@@ -76,30 +79,29 @@ class ImportController extends Controller
                     }
                 }
 
-                $fechaExactaGuardar = $fechaBase->format('Y-m-d'); 
-                
+                $fechaExactaGuardar = $fechaBase->format('Y-m-d');
+
                 if (isset($indices['dia']) && !empty($fila[$indices['dia']])) {
-                    $celdaDia = (string) $fila[$indices['dia']]; 
+                    $celdaDia = (string) $fila[$indices['dia']];
                     preg_match('/\d+/', $celdaDia, $matches);
                     if (!empty($matches)) {
-                        $diaNumero = (int) $matches[0]; 
+                        $diaNumero = (int) $matches[0];
                         try {
                             $fechaExactaGuardar = $fechaBase->copy()->day($diaNumero)->format('Y-m-d');
-                        } catch (\Exception $e) {}
+                        } catch (\Exception $e) {
+                        }
                     }
                 }
 
-                $equipoLocal = (string)$fila[$indices['local']];
-                $equipoVisitante = (string)$fila[$indices['visitante']];
-                $categoria = isset($indices['cat']) && isset($fila[$indices['cat']]) ? (string)$fila[$indices['cat']] : 'Sin definir';
-                $cancha = isset($indices['cancha']) && isset($fila[$indices['cancha']]) ? (string)$fila[$indices['cancha']] : 'A Confirmar';
-                
-          
-                $disciplina = isset($indices['disciplina']) && isset($fila[$indices['disciplina']]) ? strtoupper(trim((string)$fila[$indices['disciplina']])) : 'FUTBOL 11';
+                $equipoLocal = (string) $fila[$indices['local']];
+                $equipoVisitante = (string) $fila[$indices['visitante']];
+                $categoria = isset($indices['cat']) && isset($fila[$indices['cat']]) ? (string) $fila[$indices['cat']] : 'Sin definir';
+                $cancha = isset($indices['cancha']) && isset($fila[$indices['cancha']]) ? (string) $fila[$indices['cancha']] : 'A Confirmar';
+                $disciplina = isset($indices['disciplina']) && isset($fila[$indices['disciplina']]) ? strtoupper(trim((string) $fila[$indices['disciplina']])) : 'FUTBOL 11';
 
                 $partido = Partido::updateOrCreate(
                     [
-                        'fecha' => $fechaExactaGuardar,  
+                        'fecha' => $fechaExactaGuardar,
                         'hora_inicio' => $horaExacta,
                         'equipo_local' => $equipoLocal,
                         'equipo_visitante' => $equipoVisitante,
@@ -107,8 +109,9 @@ class ImportController extends Controller
                     [
                         'categoria' => $categoria,
                         'cancha' => $cancha,
-                        'disciplina' => $disciplina,  
-                        'estado' => 'publicado'  
+                        'disciplina' => $disciplina,
+                        'jornada' => $jornada,
+                        'estado' => 'publicado'
                     ]
                 );
 
@@ -120,7 +123,7 @@ class ImportController extends Controller
             }
         });
 
-       return redirect()->route('admin.asignar.index')
+        return redirect()->route('admin.asignar.index')
             ->with('import_summary', [
                 'nuevos' => $partidosGuardados,
                 'actualizados' => $partidosActualizados,
