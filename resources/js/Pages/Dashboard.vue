@@ -219,7 +219,7 @@ const colorNoticia = (tipo) => {
 
     <AuthenticatedLayout>
 
-        <div class="mb-10 pb-8 border-b border-[#0D1B3E]/10">
+        <div class="mb-10 pb-8 border-b  mx-auto max-w-7xl border-[#0D1B3E]/10">
             <p class="text-[#A87C20] text-base font-black uppercase tracking-[0.25em] mb-2">
                 Bienvenido de vuelta
             </p>
@@ -446,7 +446,7 @@ const colorNoticia = (tipo) => {
             <div v-if="!props.esEspectador && misLicencias && misLicencias.length > 0" class="mb-10">
             </div>
 
-            <div v-if="designaciones && designaciones.length > 0" class="mb-10 space-y-6">
+            <div v-if="designaciones && designaciones.length > 0" class="mb-10 mx-auto max-w-7xl space-y-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-3">
                         <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
@@ -695,14 +695,14 @@ const colorNoticia = (tipo) => {
 
 
 
-        <div class="flex items-center gap-3 mb-5">
+        <div class="flex items-center gap-3 mx-auto max-w-7xl mb-5">
             <div class="flex items-center justify-center w-7 h-7 bg-[#0D1B3E] rounded-md">
                 <span class="w-2.5 h-2.5 bg-[#D4A843] rounded-sm rotate-45 block"></span>
             </div>
             <h2 class="text-sm font-black text-[#0D1B3E] uppercase ">Tablón de Noticias</h2>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-3 mx-auto max-w-7xl">
             <div v-if="!noticias || noticias.length === 0"
                 class="bg-white border border-dashed border-[#0D1B3E]/15 rounded p-8 text-center">
                 <p class="text-sm text-[#0D1B3E]/40 font-bold uppercase tracking-wide">No hay noticias recientes.</p>
