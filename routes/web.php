@@ -12,20 +12,15 @@ use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsEspectador;
 use App\Http\Controllers\Admin\EspectadorController;
 use App\Http\Middleware\VerificarCuotaAlDia;
+use App\Http\Controllers\Admin\TarifaController;
 use App\Models\Ajuste;
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/cuota-requerida', function () {
-        $ajustes = Ajuste::first(); 
-        return inertia('Pagos/Requerido', [
-            'ajustes' => $ajustes
-        ]);
-    })->name('pagos.requerido');
+    Route::get('/cuota-requerida', [App\Http\Controllers\Admin\PagoController::class, 'pantallaBloqueo'])->name('pagos.requerido');
 });
-
 Route::middleware(['auth', 'aprobado', VerificarCuotaAlDia::class])->group(function () {
 
 
@@ -76,6 +71,13 @@ Route::middleware(['auth', 'aprobado', VerificarCuotaAlDia::class])->group(funct
         Route::get('/admin/espectadores', [EspectadorController::class, 'index'])->name('admin.espectadores.index');
         Route::post('/admin/espectadores', [EspectadorController::class, 'store'])->name('admin.espectadores.store');
         Route::delete('/admin/espectadores/{user}', [EspectadorController::class, 'destroy'])->name('admin.espectadores.destroy');
+
+
+        // Gestión de Aranceles/Tarifas
+        Route::get('/admin/tarifas', [TarifaController::class, 'index'])->name('admin.tarifas.index');
+        Route::post('/admin/tarifas', [TarifaController::class, 'store'])->name('admin.tarifas.store');
+        Route::put('/admin/tarifas/{tarifa}', [TarifaController::class, 'update'])->name('admin.tarifas.update');
+        Route::delete('/admin/tarifas/{tarifa}', [TarifaController::class, 'destroy'])->name('admin.tarifas.destroy');
 
 
         Route::get('/admin/pagos', [PagoController::class, 'index'])->name('admin.pagos.index');

@@ -127,7 +127,7 @@ const limpiarFiltro = () => {
 
                 <Link v-for="arbitro in arbitros.data" :key="arbitro.id"
                     :href="route('admin.arbitros.show', arbitro.id)"
-                    class="group bg-white rounded-2xl border border-[#E5E7EB] p-6 text-center hover:border-[#D4A843]/50 hover:shadow-[0_12px_30px_rgba(13,27,62,0.06)] transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+                    class="group bg-white  border border-[#E5E7EB] p-6 text-center hover:border-[#D4A843]/50 hover:shadow-[0_12px_30px_rgba(13,27,62,0.06)] transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
 
                     <div
                         class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#D4A843]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-bl-full">
@@ -158,7 +158,7 @@ const limpiarFiltro = () => {
             </div>
 
             <div v-if="arbitros.data.length === 0"
-                class="bg-white border border-[#E5E7EB] rounded-2xl p-16 text-center shadow-sm">
+                class="bg-white border border-[#E5E7EB]  p-16 text-center shadow-sm">
                 <p class="text-lg font-black text-[#0D1B3E] uppercase tracking-widest mb-2">No se encontraron árbitros
                 </p>
                 <p class="text-sm text-[#6B7280] font-medium">Intentá con otro término de búsqueda.</p>

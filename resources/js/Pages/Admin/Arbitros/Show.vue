@@ -61,7 +61,7 @@ const cambiarEstadoLicencia = (id, nuevoEstado) => {
                 
                 <div class="lg:col-span-1 space-y-6">
                     
-                    <div class="bg-white border border-[#E5E7EB] rounded-2xl p-8 text-center shadow-sm relative overflow-hidden">
+                    <div class="bg-white border border-[#E5E7EB]  p-8 text-center shadow-sm relative overflow-hidden">
                         <div class="absolute top-0 inset-x-0 h-32 bg-[#0D1B3E] border-b-4 border-[#D4A843]"></div>
                         
                         <div class="relative w-32 h-32 mx-auto rounded-full bg-[#F9FAFB] border-4 border-white shadow-lg overflow-hidden flex items-center justify-center mt-8 mb-4">
@@ -158,7 +158,7 @@ const cambiarEstadoLicencia = (id, nuevoEstado) => {
                         </div>
                     </div>
                         <h3 class=" text-[20px] font-extrabold text-[#0D1B3E] mb-4">
-                            Últimos 10 Partidos
+                            Últimos 10 partidos
                         </h3>
                         
                         <div class="bg-white border border-[#E5E7EB]  shadow-sm overflow-hidden">

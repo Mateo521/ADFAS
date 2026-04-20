@@ -52,7 +52,7 @@ const eliminarEspectador = (id, nombre) => {
     <Head title="Cuentas de Espectadores - ADFAS" />
 
     <AuthenticatedLayout>
-        <div class="max-w-6xl mx-auto pb-12 font-['Lato',sans-serif]">
+        <div class="max-w-7xl mx-auto pb-12 font-['Lato',sans-serif]">
             
             <div class="mb-8">
                 <h1 class="text-[28px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-2 uppercase tracking-wide">Cuentas de Visualización</h1>
@@ -63,7 +63,7 @@ const eliminarEspectador = (id, nombre) => {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <div class="lg:col-span-1">
-                    <div class="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-white border border-[#E5E7EB] rounded-sm shadow-sm overflow-hidden">
                         <div class="bg-[#0D1B3E] px-5 py-4 border-b border-[#D4A843]/30">
                             <h3 class="text-white font-black uppercase tracking-widest text-[13px] flex items-center gap-2">
                                 <svg class="w-4 h-4 text-[#D4A843]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -92,7 +92,7 @@ const eliminarEspectador = (id, nombre) => {
                 </div>
 
                 <div class="lg:col-span-2">
-                    <div class="bg-white border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
+                    <div class="bg-white border border-[#E5E7EB] rounded-sm shadow-sm overflow-hidden">
                         <table class="w-full text-left whitespace-nowrap">
                             <thead class="bg-[#F9FAFB] border-b border-[#E5E7EB]">
                                 <tr>

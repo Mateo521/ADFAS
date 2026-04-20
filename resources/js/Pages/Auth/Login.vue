@@ -85,7 +85,7 @@ onMounted(() => {
                             <path d="M1 4.5l6 4 6-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
                         </svg>
                     </span>
-                    Correo Electrónico Oficial
+                    Correo electrónico
                 </label>
                 <div class="relative rounded-lg border-[1.5px] bg-white transition-all duration-200 focus-within:border-[#D4A843] focus-within:ring-[3px] focus-within:ring-[#D4A843]/15"
                     :class="form.errors.email ? 'border-[#B91C1C]' : 'border-[#D1D5DB]'">
@@ -107,7 +107,7 @@ onMounted(() => {
                                 stroke-linecap="round" />
                         </svg>
                     </span>
-                    Contraseña Privada
+                    Contraseña
                 </label>
                 <div class="relative rounded-lg border-[1.5px] bg-white transition-all duration-200 focus-within:border-[#D4A843] focus-within:ring-[3px] focus-within:ring-[#D4A843]/15"
                     :class="form.errors.password ? 'border-[#B91C1C]' : 'border-[#D1D5DB]'">

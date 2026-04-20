@@ -399,7 +399,7 @@ const colorNoticia = (tipo) => {
             <div v-if="props.esEspectador" class="space-y-8 mb-10">
 
                 <div
-                    class="bg-gradient-to-br from-[#0D1B3E] to-[#1E3370] rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+                    class="bg-gradient-to-br from-[#0D1B3E] to-[#1E3370]  p-8 text-white shadow-xl relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-[#D4A843]/10 rounded-full -mr-20 -mt-20 blur-3xl">
                     </div>
                     <div class="relative z-10">
@@ -409,7 +409,7 @@ const colorNoticia = (tipo) => {
                             las confirma.
                         </p>
                         <Link :href="route('pizarra.envivo')"
-                            class="inline-flex items-center gap-3 px-8 py-4 bg-[#D4A843] text-[#0D1B3E] font-black uppercase text-xs tracking-widest rounded-xl hover:bg-white transition-all shadow-lg hover:-translate-y-1">
+                            class="inline-flex items-center gap-3 px-8 py-4 bg-[#D4A843] text-[#0D1B3E] font-black uppercase text-xs tracking-widest rounded-sm hover:bg-white transition-all shadow-lg hover:-translate-y-1">
                             <span class="relative flex h-3 w-3">
                                 <span
                                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0D1B3E] opacity-40"></span>
@@ -432,7 +432,7 @@ const colorNoticia = (tipo) => {
                     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         <Link v-for="jornada in jornadas" :key="jornada"
                             :href="route('pizarra.envivo', { jornada: jornada })"
-                            class="bg-white border border-[#E5E7EB] p-6 rounded-2xl text-center hover:border-[#D4A843] hover:shadow-lg transition-all group">
+                            class="bg-white border border-[#E5E7EB] p-6  text-center hover:border-[#D4A843] hover:shadow-lg transition-all group">
                             <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Ver Reporte</p>
                             <p class="text-lg font-black text-[#0D1B3E] group-hover:text-[#A87C20] transition-colors">{{
                                 jornada }}</p>
@@ -754,7 +754,7 @@ const colorNoticia = (tipo) => {
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6 border border-gray-100">
+                    class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white  shadow-2xl sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6 border border-gray-100">
 
                     <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
                         <div class="flex items-center gap-3">
@@ -872,7 +872,7 @@ const colorNoticia = (tipo) => {
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-gray-100">
+                    class="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white  shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 border border-gray-100">
 
                     <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
                         <div class="flex items-center gap-3">
