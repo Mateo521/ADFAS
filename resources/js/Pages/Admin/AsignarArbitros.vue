@@ -209,11 +209,7 @@ const aMinutos = (horaStr) => {
     return (horas * 60) + (minutos || 0);
 };
 
-const obtenerDuracion = (disciplina) => {
-    const texto = (disciplina || '').toString().toUpperCase();
-    if (texto.includes('FEMENINO') || texto.includes('FUTSAL') || texto.includes('INFERIORES') || texto === 'F' || texto === 'I') return 90;
-    return 120;
-};
+
 
 const obtenerLicenciaActiva = (arbitro, fechaPartido) => {
     if (!arbitro.licencias || arbitro.licencias.length === 0) return null;
@@ -256,17 +252,46 @@ const formatearNombreArbitro = (arbitro, partido) => {
     return nombreBase;
 };
 
+const obtenerDuracion = (partido) => {
+    if (!partido) return 120;
+
+    const cat = (partido.categoria || '').toString().toUpperCase();
+    const disc = (partido.disciplina || '').toString().toUpperCase();
+
+    // Regla 1: 2018 y 2019 duran 1 hora (60 minutos)
+    if (cat.includes('2018') || cat.includes('2019')) {
+        return 60;
+    }
+
+    // Regla 2: Infantiles (hasta 2017) y Femenino/Futsal duran 1h 30m (90 minutos)
+    const infantiles90 = ['SUB19', 'SUB 19', '6TA', '7MA', '8VA', '9NA', 'PRE9', 'PRE 9', '2014', '2015', '2016', '2017'];
+    const esInfantil90 = infantiles90.some(c => cat.includes(c));
+
+    if (esInfantil90 || disc.includes('FEMENINO') || disc.includes('FUTSAL') || disc.includes('INFERIORES')) {
+        return 90;
+    }
+
+
+    return 120;
+};
+
+// FUNCIÓN ACTUALIZADA PARA USAR LA NUEVA DURACIÓN
 const arbitrosDisponibles = (indexPartidoActual) => {
     const partidoActual = props.partidos[indexPartidoActual];
     const inicioActual = aMinutos(partidoActual.hora_inicio);
-    const finActual = inicioActual + obtenerDuracion(partidoActual.disciplina);
+
+    // Ahora le pasamos el objeto partido completo para que analice la categoría
+    const finActual = inicioActual + obtenerDuracion(partidoActual);
 
     const arbitrosOcupados = form.asignaciones.map((asignacion, i) => {
         const otroPartido = props.partidos[i];
         if (i !== indexPartidoActual && otroPartido.fecha === partidoActual.fecha) {
             const inicioOtro = aMinutos(otroPartido.hora_inicio);
-            const finOtro = inicioOtro + obtenerDuracion(otroPartido.disciplina);
 
+            // Aquí también le pasamos el objeto completo
+            const finOtro = inicioOtro + obtenerDuracion(otroPartido);
+
+            // Verificamos si hay choque de horarios
             if (inicioActual < finOtro && finActual > inicioOtro) {
                 return [asignacion.principal_id, asignacion.asistente_id, asignacion.asistente_2_id, asignacion.asistente_3_id];
             }
