@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\EspectadorController;
 use App\Http\Middleware\VerificarCuotaAlDia;
 use App\Http\Controllers\Admin\TarifaController;
 use App\Models\Ajuste;
+use App\Http\Controllers\Arbitro\MisPartidosController;
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -33,7 +34,7 @@ Route::middleware(['auth', 'aprobado', VerificarCuotaAlDia::class])->group(funct
 
     Route::get('/noticias', [NoticiaController::class, 'index'])->name('noticias.index');
 
-
+    Route::get('/mis-partidos', [MisPartidosController::class, 'index'])->name('mis-partidos.index');
     Route::patch('/designaciones/{designacion}/responder', [DesignacionController::class, 'responder'])->name('designaciones.responder');
     Route::post('/licencias', [App\Http\Controllers\LicenciaController::class, 'store'])->name('licencias.store');
 

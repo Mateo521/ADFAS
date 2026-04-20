@@ -84,6 +84,15 @@ const showingNavigationDropdown = ref(false);
                         </div>
                     </template>
 
+                    <template v-if="user.rol === 'arbitro'">
+                        <div class="w-px h-4 bg-white/15 mx-1"></div>
+                        <Link :href="route('mis-partidos.index')"
+                            class="px-3 py-2 text-xs lg:text-sm font-black uppercase tracking-[0.15em] rounded-md transition-all duration-200"
+                            :class="route().current('mis-partidos.*') ? 'text-[#D4A843] bg-[#D4A843]/10 ring-1 ring-[#D4A843]/25' : 'text-white/55 hover:text-white hover:bg-white/[0.07]'">
+                            Mis Partidos
+                        </Link>
+                    </template>
+
                     <div class="w-px h-4 bg-white/15 mx-1"></div>
 
                     <Link :href="route('noticias.index')"
@@ -164,6 +173,15 @@ const showingNavigationDropdown = ref(false);
                     <Link :href="route('admin.tarifas.index')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-black uppercase tracking-[0.15em] transition-colors" :class="route().current('admin.tarifas.*') ? 'bg-[#D4A843]/12 text-[#D4A843]' : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
                         <span class="w-1 h-3 rounded-full" :class="route().current('admin.tarifas.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
                         Aranceles
+                    </Link>
+                </template>
+
+                <template v-if="user.rol === 'arbitro'">
+                    <div class="pt-4 pb-1 pl-4 text-[10px] font-black text-[#D4A843]/60 uppercase tracking-widest">Mi Actividad</div>
+                    
+                    <Link :href="route('mis-partidos.index')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-base font-black uppercase tracking-[0.15em] transition-colors" :class="route().current('mis-partidos.*') ? 'bg-[#D4A843]/12 text-[#D4A843]' : 'text-white/60 hover:bg-white/[0.06] hover:text-white'">
+                        <span class="w-1 h-3 rounded-full" :class="route().current('mis-partidos.*') ? 'bg-[#D4A843]' : 'bg-white/20'"></span>
+                        Mis Partidos
                     </Link>
                 </template>
 
