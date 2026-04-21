@@ -735,13 +735,14 @@ const submit = () => {
 
             <div
                 class="bg-white p-5 border border-t-0 border-[#E5E7EB] rounded-b-xl shadow-sm flex items-center justify-between z-30 shrink-0">
-                <p class="text-[12px] text-[#6B7280] font-medium hidden md:block">
-                    Al confirmar, se van a guardar los datos de la pizarra y se van a enviar las notificaciones.
-                </p>
+
 
 
                 <div v-if="!isEspectador"
                     class="bg-white p-5 border border-t-0 border-[#E5E7EB] rounded-b-xl shadow-sm flex items-center justify-between z-30 shrink-0">
+                    <p class="text-[12px] text-[#6B7280] font-medium hidden md:block">
+                        Al confirmar, se van a guardar los datos de la pizarra y se van a enviar las notificaciones.
+                    </p>
                     <button type="submit" :disabled="form.processing"
                         class="group relative overflow-hidden px-8 py-3.5 bg-gradient-to-r from-[#C9920E] via-[#D4A843] to-[#C9920E] bg-[length:200%_100%] text-[#0D1B3E] text-[12px] font-black uppercase tracking-[2px] rounded-lg transition-all duration-300 shadow-[0_2px_8px_rgba(212,168,67,0.3)] hover:bg-[100%_0] hover:-translate-y-[1px] hover:shadow-[0_8px_20px_rgba(168,124,32,0.35)] disabled:opacity-65 disabled:cursor-not-allowed disabled:transform-none w-full md:w-auto">
                         <div

@@ -67,7 +67,7 @@ const confirmarEliminacion = () => {
 
     <AuthenticatedLayout>
         
-        <div class="max-w-4xl mx-auto pb-12 font-['Lato',sans-serif]">
+        <div class="max-w-7xl mx-auto pb-12 font-['Lato',sans-serif]">
             
             <div class="mb-6">
                 <Link :href="route('noticias.index')" class="inline-flex items-center gap-2 text-[12px] font-bold text-[#6B7280] hover:text-[#D4A843] uppercase tracking-widest transition-colors group">

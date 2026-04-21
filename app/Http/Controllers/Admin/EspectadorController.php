@@ -30,7 +30,7 @@ class EspectadorController extends Controller
 
         User::create([
             'name' => $request->name,
-            'apellido' => 'Visualizador',
+            'apellido' => 'Espectador',
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'rol' => 'espectador',

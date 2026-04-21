@@ -13,6 +13,6 @@ class IsEspectador
             return $next($request);
         }
 
-        abort(403, 'Acceso denegado. Esta sección es exclusiva para visualizadores y administradores.');
+        abort(403, 'Acceso denegado. Esta sección es exclusiva para espectadores y administradores.');
     }
 }

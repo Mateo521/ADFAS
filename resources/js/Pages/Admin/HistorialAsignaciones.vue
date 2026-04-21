@@ -245,19 +245,16 @@ const getAsistente3 = (partido) => partido.designaciones.find(d => d.funcion ===
                 </div>
             </div>
 
-            <div v-if="jornadas && jornadas.length > 0"
-                class="mb-6 flex gap-3 overflow-x-auto hide-scrollbar pb-2 snap-x">
-                <button @click="filtroJornada = ''; aplicarFiltros()"
-                    class="shrink-0 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.15em] transition-all border snap-start"
-                    :class="filtroJornada === '' ? 'bg-[#0D1B3E] text-[#D4A843] border-[#0D1B3E] shadow-md' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:bg-gray-50 hover:text-[#0D1B3E]'">
-                    Todo el Historial
-                </button>
-
-                <button v-for="jor in jornadas" :key="jor" @click="filtroJornada = jor; aplicarFiltros()"
-                    class="shrink-0 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.15em] transition-all border snap-start"
-                    :class="filtroJornada === jor ? 'bg-[#0D1B3E] text-[#D4A843] border-[#0D1B3E] shadow-md' : 'bg-white text-[#6B7280] border-[#E5E7EB] hover:bg-gray-50 hover:text-[#0D1B3E]'">
-                    {{ jor }}
-                </button>
+            <div v-if="jornadas && jornadas.length > 0" class="mb-6 max-w-xs">
+                <label class="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Seleccionar
+                    Jornada</label>
+                <select v-model="filtroJornada" @change="aplicarFiltros()"
+                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-[#D4A843] focus:border-[#D4A843] font-bold text-[#0D1B3E] shadow-sm bg-white cursor-pointer">
+                    <option value="">TODAS LAS JORNADAS</option>
+                    <option v-for="jor in jornadas" :key="jor" :value="jor">
+                        {{ jor }}
+                    </option>
+                </select>
             </div>
 
             <div

@@ -46,7 +46,7 @@ const formatDate = (fechaStr) => {
                     </svg>
                 </div>
                 <h1 class="text-xl font-black text-white uppercase tracking-widest relative z-10">Acceso Suspendido</h1>
-                <p class="text-red-100 text-xs font-bold mt-1 uppercase relative z-10">Período de pago finalizado (Día
+                <p class="text-red-100 text-xs font-bold mt-1 uppercase relative z-10">Período de pago terminado (Día
                     {{ dia_vencimiento }})</p>
             </div>
 

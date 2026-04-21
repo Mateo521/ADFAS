@@ -180,7 +180,9 @@ class AsignacionController extends Controller
 
         $jornadas = Partido::whereNotNull('jornada')
             ->where('jornada', '!=', '')
+            ->whereYear('fecha', now()->year)
             ->distinct()
+            ->orderBy('jornada', 'asc')
             ->pluck('jornada');
 
         return Inertia::render('Admin/HistorialAsignaciones', [

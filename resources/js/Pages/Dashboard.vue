@@ -403,10 +403,9 @@ const colorNoticia = (tipo) => {
                     <div class="absolute top-0 right-0 w-64 h-64 bg-[#D4A843]/10 rounded-full -mr-20 -mt-20 blur-3xl">
                     </div>
                     <div class="relative z-10">
-                        <h2 class="text-2xl font-black uppercase tracking-tighter mb-2">Pizarra en Vivo</h2>
-                        <p class="text-[#D4A843] font-bold text-sm mb-6 max-w-md leading-relaxed">
-                            Accedé al monitor en tiempo real para ver las designaciones a medida que el administrador
-                            las confirma.
+                        <h2 class="text-2xl font-black uppercase tracking-tighter mb-2">Pizarra</h2>
+                        <p class="text-[#D4A843] font-bold text-sm mb-6  leading-relaxed">
+                            Accedé al monitor para ver las designaciones a medida que el administrador las confirma.
                         </p>
                         <Link :href="route('pizarra.envivo')"
                             class="inline-flex items-center gap-3 px-8 py-4 bg-[#D4A843] text-[#0D1B3E] font-black uppercase text-xs tracking-widest rounded-sm hover:bg-white transition-all shadow-lg hover:-translate-y-1">
@@ -415,7 +414,7 @@ const colorNoticia = (tipo) => {
                                     class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0D1B3E] opacity-40"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-[#0D1B3E]"></span>
                             </span>
-                            Ingresar al Monitor en Vivo
+                            Ingresar
                         </Link>
                     </div>
                 </div>

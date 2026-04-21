@@ -30,11 +30,11 @@ const formatearTextoWhatsApp = (texto) => {
 
     <AuthenticatedLayout>
         
-        <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="mb-10 max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-                <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Comunicados Oficiales</p>
+                <p class="text-base font-black tracking-[3px] uppercase text-[#A87C20] mb-2">Comunicados</p>
                 <h1 class="- text-[32px] md:text-[40px] font-extrabold text-[#0D1B3E] leading-[1.1] mb-3">
-                    Tablón de Noticias
+                    Tablón de noticias
                 </h1>
                 <div class="flex items-center gap-2.5">
                     <span class="w-16 h-px bg-gradient-to-r from-[#D4A843] to-transparent"></span>
@@ -52,7 +52,7 @@ const formatearTextoWhatsApp = (texto) => {
             </Link>
         </div>
 
-        <div class="space-y-6 max-w-7xl pb-10">
+        <div class="space-y-6 max-w-7xl mx-auto pb-10">
             
             <div v-if="noticias.data.length === 0" class="bg-white border border-[#E5E7EB] rounded p-16 text-center shadow-sm relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-b from-[#F9FAFB] to-white pointer-events-none"></div>
