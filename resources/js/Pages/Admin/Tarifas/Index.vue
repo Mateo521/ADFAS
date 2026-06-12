@@ -106,13 +106,17 @@ const formatMoneda = (monto) => {
 
                         <form @submit.prevent="crearTarifa" class="flex flex-col gap-4">
                             <div>
-                                <label
-                                    class="block text-[10px] font-black text-gray-500 uppercase mb-1">Disciplina</label>
-                                <select v-model="form.disciplina"
-                                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-[#D4A843] focus:border-[#D4A843]">
-                                    <option value="FUTBOL 11">FÚTBOL 11</option>
-                                    <option value="FUTSAL">FUTSAL</option>
-                                </select>
+                                <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Disciplina</label>
+                                <input type="text" v-model="form.disciplina" list="disciplinas-list" required placeholder="Ej: FUTBOL 11"
+                                    class="w-full text-sm border-gray-300 rounded-lg focus:ring-[#D4A843] focus:border-[#D4A843] uppercase">
+                                
+                                <datalist id="disciplinas-list">
+                                    <option value="FUTBOL 11"></option>
+                                    <option value="FUTSAL"></option>
+                                    <option value="FUTBOL FEMENINO"></option>
+                                    <option value="FUTBOL INFANTIL"></option>
+                                    <option value="COPA LIGA"></option>
+                                </datalist>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-black text-gray-500 uppercase mb-1">Categoría (Ej:

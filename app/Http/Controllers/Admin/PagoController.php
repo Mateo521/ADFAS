@@ -114,32 +114,54 @@ class PagoController extends Controller
             return redirect()->route('dashboard');
         }
 
+        $ajustes = \App\Models\Ajuste::first();
+        $diaLimite = $ajustes ? $ajustes->cuota_dia_vencimiento : 10;
+        $diaActual = now()->day;
 
-        $mesFacturacion = now()->subMonth()->month;
-        $anioFacturacion = now()->subMonth()->year;
+        $fechaLimite = $diaActual > $diaLimite ? now()->startOfMonth() : now()->subMonth()->startOfMonth();
 
-        $yaPago = \App\Models\Pago::where('user_id', $user->id)
-            ->where('mes', $mesFacturacion)
-            ->where('anio', $anioFacturacion)
-            ->where('estado', 'pagado')
-            ->exists();
 
-        if ($yaPago) {
+        $designacionesHistoricas = Designacion::with('partido')
+            ->where('user_id', $user->id)
+            ->where('estado_confirmacion', 'confirmado')
+            ->whereHas('partido', function ($q) use ($fechaLimite) {
+                $q->where('fecha', '<', $fechaLimite);
+            })
+            ->get()
+            ->groupBy(function ($desig) {
+                return \Carbon\Carbon::parse($desig->partido->fecha)->format('Y-m');
+            })->sortKeys();
+
+        $mesDeuda = null;
+        $anioDeuda = null;
+        $designacionesACobrar = [];
+
+
+        foreach ($designacionesHistoricas as $mesAnio => $designaciones) {
+            [$anio, $mes] = explode('-', $mesAnio);
+
+            $yaPago = \App\Models\Pago::where('user_id', $user->id)
+                ->where('anio', $anio)->where('mes', $mes)->where('estado', 'pagado')
+                ->exists();
+
+            if (!$yaPago) {
+                $mesDeuda = $mes;
+                $anioDeuda = $anio;
+                $designacionesACobrar = $designaciones;
+                break;
+            }
+        }
+
+
+        if (!$mesDeuda) {
             return redirect()->route('dashboard');
         }
 
-        $tarifas = Tarifa::all();
-        $designaciones = Designacion::with('partido')
-            ->where('user_id', $user->id)
-            ->where('estado_confirmacion', 'confirmado')
-            ->whereHas('partido', function ($q) use ($mesFacturacion, $anioFacturacion) {
-                $q->whereMonth('fecha', $mesFacturacion)->whereYear('fecha', $anioFacturacion);
-            })->get();
-
+        $tarifas = \App\Models\Tarifa::all();
         $total_ganado = 0;
         $ticket = [];
 
-        foreach ($designaciones as $desig) {
+        foreach ($designacionesACobrar as $desig) {
             $partido = $desig->partido;
             $tarifaAplicada = $tarifas->first(function ($t) use ($partido) {
                 return strtoupper($t->categoria) === strtoupper($partido->categoria) &&
@@ -165,15 +187,14 @@ class PagoController extends Controller
         }
 
 
-        $ajustes = \App\Models\Ajuste::first();
-        $dia_vencimiento = $ajustes ? $ajustes->cuota_dia_vencimiento : 10;
+        $nombreMes = \Carbon\Carbon::createFromDate($anioDeuda, $mesDeuda, 1)->translatedFormat('F Y');
 
-        return Inertia::render('Pagos/Requerido', [
+        return \Inertia\Inertia::render('Pagos/Requerido', [
             'ticket' => $ticket,
             'total_ganado' => $total_ganado,
-            'monto_a_pagar' => $total_ganado * 0.10, // 10%
-            'mes_nombre' => now()->subMonth()->translatedFormat('F'),
-            'dia_vencimiento' => $dia_vencimiento
+            'monto_a_pagar' => $total_ganado * 0.10,
+            'mes_nombre' => $nombreMes,
+            'dia_vencimiento' => $diaLimite
         ]);
     }
 
